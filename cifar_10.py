@@ -5,6 +5,7 @@ import copy
 
 from keras.preprocessing.image import ImageDataGenerator
 from keras.engine.training import _make_batches
+from keras.metrics import categorical_accuracy
 from keras.models import Sequential
 from keras.models import model_from_json
 from keras.layers import Dense, Dropout, Activation, Flatten, Input
@@ -37,7 +38,9 @@ class Cifar_Net(object):
 
     def __init__(self, epochs, data_manager,
                  expt_dir, expt_prefix,
-                 batch_size = 32, data_augmentation = True,
+                 metric_fnc = categorical_accuracy,
+                 batch_size = 32, 
+                 data_augmentation = True,
                  epochs_per_recording = None,
                  save_iters = True):
 
@@ -77,7 +80,7 @@ class Cifar_Net(object):
         print("Compiling model ...")
         self.model.compile(loss='mean_squared_error',
                            optimizer=self.opt,
-                           metrics=['accuracy'])
+                           metrics=[metric_fnc])
 
         # Summarize            
         self.summary()
