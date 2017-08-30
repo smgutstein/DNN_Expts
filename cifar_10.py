@@ -226,8 +226,10 @@ class Cifar_Net(object):
 
 if __name__ == '__main__':
 
-    x = DataManager(10)
-    x.make_n_hot_encoding_dict()
+    import pdb
+    pdb.set_trace()
+    x = DataManager('n_hot_encoding', 10)
+    x.make_encoding_dict(nb_hot=1)
     x.encode_labels()
     y = Cifar_Net(10, x, 'temp', 'expt1')
     y.train()

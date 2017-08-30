@@ -9,18 +9,20 @@ from keras import backend as K
 import copy
 from collections import defaultdict
 import json
+import importlib
 import itertools
 import numpy as np
 import pickle
 import random
 import sys
+import types
 
 from display_cifar10 import Data_Display
 #from encoding import Encoding
 
 class DataManager(object):
 
-    def __init__(self, nb_code_bits=10):
+    def __init__(self, encoding_module, nb_code_bits=10):
 
         #Specify number of output nodes in net (i.e. number of bits in encoding)
         self.nb_code_bits = nb_code_bits
@@ -31,7 +33,10 @@ class DataManager(object):
         #Load raw data as numpy arrays
         self._load_data()
 
-        #Initialize TBD attributes 
+        #Initialize TBD attributes
+        self.encoding_module = encoding_module
+        temp = importlib.import_module(self.encoding_module)
+        self.make_encoding_dict = types.MethodType(temp.make_encoding_dict, self)
         self.encoding_dict = None
 
     def _init_num_name_dicts(self):       
@@ -57,19 +62,19 @@ class DataManager(object):
         self.y_train_orig = self.y_train
         self.y_test_orig = self.y_test
 
-    def make_n_hot_encoding_dict(self, hot=1.0, not_hot=0.0, nb_hot=1):
-        '''Create n-hot codes'''
-        print("Creating %d-hot encodings"%(nb_hot))      
-        # relu hot/not_hot
-        self.not_hot = not_hot
-        self.hot = hot
+    ## def make_n_hot_encoding_dict(self, hot=1.0, not_hot=0.0, nb_hot=1):
+    ##     '''Create n-hot codes'''
+    ##     print("Creating %d-hot encodings"%(nb_hot))      
+    ##     # relu hot/not_hot
+    ##     self.not_hot = not_hot
+    ##     self.hot = hot
 
-        #Make n-hot encoding dict
-        self.encoding_dict = \
-          enc_utils.make_n_hot_nb_2_encoding_dict(self.y_train, self.nb_code_bits,
-                                                     not_hot, hot, nb_hot)
-        #self._record_encoding()
-        self.encoding_type = str(nb_hot) + "-hot"
+    ##     #Make n-hot encoding dict
+    ##     self.encoding_dict = \
+    ##       enc_utils.make_n_hot_nb_2_encoding_dict(self.y_train, self.nb_code_bits,
+    ##                                                  not_hot, hot, nb_hot)
+    ##     #self._record_encoding()
+    ##     self.encoding_type = str(nb_hot) + "-hot"
 
     def encode_labels(self):
         '''Convert array of class nums to arrays of encodings'''
