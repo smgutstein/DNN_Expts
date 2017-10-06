@@ -27,20 +27,22 @@ class Data_Display(object):
         self.bprev = Button(self.axprev, 'Previous')
         self.bprev.on_clicked(self.prev)
 
-
+        
+    def start_display(self):
         self.show_image()
+        plt.ion()
         plt.show()
 
     def show_image(self):
         self.ax.clear()
-        curr_im = self.images[self.ctr,:,:,:]
+        self.curr_im = self.images[self.ctr,:,:,:]
 
-        category_num = self.labels[self.ctr][0]
-        category_str = self.label_dict[category_num]
-        category_str += ' (' + str(category_num) + ')'
+        self.category_num = self.labels[self.ctr][0]
+        self.category_str = self.label_dict[self.category_num]
+        self.category_str += ' (' + str(self.category_num) + ')'
 
-        self.ax.set_title(category_str)
-        self.ax.imshow(curr_im)
+        self.ax.set_title(self.category_str)
+        self.ax.imshow(self.curr_im)
                 
 
     def next(self, event):
