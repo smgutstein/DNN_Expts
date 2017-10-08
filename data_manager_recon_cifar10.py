@@ -1,24 +1,12 @@
 from __future__ import print_function
 
 from keras.datasets import cifar10
-# from keras.preprocessing.image import ImageDataGenerator
-# from keras.utils import np_utils
-# from keras.utils import encoding_utils as enc_utils
-# from keras import backend as K
-
-# import copy
-# from collections import defaultdict
-# import json
 import importlib
-# import itertools
 import numpy as np
 import pickle
-# import random
-# import sys
 import types
 
 from display_cifar10 import Data_Display
-#from encoding import Encoding
 
 class DataManager(object):
 
@@ -26,37 +14,38 @@ class DataManager(object):
                  encoding_param_dict,
                  encoding_module_param_dict):
 
-        #Specify number of output nodes in net (i.e. number of bits in encoding)
+        # Specify number of output nodes in net (i.e. number of bits in encoding)
         self.nb_code_bits = int(encoding_param_dict['nb_code_bits'])
         
-        #Init dicts that map class numbers to class names
-        self._init_num_name_dicts()
+        # Init dicts that map class numbers to class names
+        self._init_num_name_dicts(encoding_param_dict['class_names'],)
 
-        #Load raw data as numpy arrays
+        # Load raw data as numpy arrays
         self._load_data()
 
-        #Import make_encoding_dict method and dynamically make it a member function
-        #of this instance of DataManager
+        # Import make_encoding_dict method and dynamically make it a member function
+        # of this instance of DataManager
         self.encoding_module = encoding_module_param_dict['encoding_module']
         temp = importlib.import_module(self.encoding_module)
         self.make_encoding_dict = types.MethodType(temp.make_encoding_dict,
-                                                    self)
+                                                   self)
         joint_dict = encoding_param_dict.copy()
         joint_dict.update(encoding_module_param_dict)
         joint_dict['encoding_activation_fnc'] = encoding_activation_fnc
         self.make_encoding_dict(**joint_dict)
-        #self.encoding_dict = None
         self.encode_labels()
+        self.curr_encoding_info = dict()
+        self.curr_encoding_info['label_dict'] = {}
+        self.curr_encoding_info['encoding_dict'] = {}
         self.data_display = Data_Display(self.X_test, self.y_test,
                                          self.label_dict)
 
-    def _init_num_name_dicts(self):       
+    def _init_num_name_dicts(self, category_name_file):
         # Make class_num/class_name dictionaries
-        with open("cifar10_dicts_all.pkl","r") as f:
-             self.label_dict = pickle.load(f)
+        with open(category_name_file, "r") as f:
+            self.label_dict = pickle.load(f)
 
     def _load_data(self):
-        #Load data
         print("Loading data")
         (self.X_train, self.y_train), \
         (self.X_test, self.y_test) = cifar10.load_data()
@@ -73,12 +62,11 @@ class DataManager(object):
         self.y_train_orig = self.y_train
         self.y_test_orig = self.y_test
 
-
     def encode_labels(self):
-        '''Convert array of class nums to arrays of encodings'''
+        """Convert array of class nums to arrays of encodings"""
 
         print("Creating encoding matrices for train & test data")      
-        #Make array of encodings
+        # Make array of encodings
         self.encodings = np.asarray([self.encoding_dict[x]
                                      for x in sorted(self.encoding_dict)])
         
@@ -89,8 +77,8 @@ class DataManager(object):
                                                          self.encoding_dict)
 
     def convert_class_num_to_encoding(self, y, nb_2_encoding_dict):
-        '''Take vector of class numbers and convert to array
-           of target output codes for each class'''
+        """Take vector of class numbers and convert to array
+           of target output codes for each class"""
 
         # Find number of output bits by looking at arbitrary
         # code word
@@ -98,7 +86,7 @@ class DataManager(object):
         nb_outputs = len(nb_2_encoding_dict[temp])
 
         # Turn 2D array into 1D list of class numbers    
-        y=y.ravel()
+        y = y.ravel()
         Y = np.empty((len(y), nb_outputs))
 
         # Create encoding matrix - ith row is
@@ -125,7 +113,7 @@ class DataManager(object):
             formatted_targets = [fmt_str.format(x) for x in curr_targets]
             line_len = 0
             for x in formatted_targets:
-                if line_len >= nums_per_row :
+                if line_len >= nums_per_row:
                     curr_line += '\n' + indent_str1
                     line_len = 0
                 curr_line += x + spacer
@@ -135,4 +123,3 @@ class DataManager(object):
 
 if __name__ == '__main__':
     pass
-    

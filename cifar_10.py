@@ -1,33 +1,12 @@
 from __future__ import print_function
 
-from collections import defaultdict
-import copy
 import importlib
 import inspect
-
 from keras.preprocessing.image import ImageDataGenerator
-from keras.engine.training import _make_batches
-from keras.models import Sequential
-from keras.models import model_from_json
-from keras.layers import Dense, Dropout, Activation, Flatten, Input
-from keras.layers import Conv2D, Convolution2D, MaxPooling2D
 from keras.optimizers import SGD, Adagrad
-from keras.utils import np_utils
 from keras import backend as K
-
-from local_metric import hot_bit, ECOC_accuracy
-import json
-import numpy as np
-from operator import itemgetter
 import os
 import pickle
-import random
-import scipy
-import sys
-
-import importlib
-from theano import tensor as T
-from theano import function as Tfunc
 
 from data_manager_recon_cifar10 import DataManager
 
@@ -43,10 +22,11 @@ class Cifar_Net(object):
                  expt_dir, expt_prefix,
                  net_param_dict,
                  expt_param_dict,
-                 batch_size = 32, 
-                 data_augmentation = True,
-                 epochs_per_recording = None,
-                 save_iters = True):
+                 metric_param_dict,
+                 batch_size=32,
+                 data_augmentation=True,
+                 epochs_per_recording=None,
+                 save_iters=True):
 
         self.epochs = int(expt_param_dict['epochs'])
         self.data_manager = data_manager
@@ -62,11 +42,11 @@ class Cifar_Net(object):
 
         # Ensure expt output dir exists
         if expt_dir is not None:
-           try: 
-             os.makedirs(expt_dir)
-           except OSError:
-             if not os.path.isdir(expt_dir):
-                raise        
+            try:
+                os.makedirs(expt_dir)
+            except OSError:
+                if not os.path.isdir(expt_dir):
+                    raise
                 
         # Make optimizer
         self.opt = SGD(lr=0.05, decay=1e-6, momentum=0.9, nesterov=True)            
@@ -78,8 +58,8 @@ class Cifar_Net(object):
         self.init_data_manager(data_manager)
 
         # Import accuracy function
-        temp = importlib.import_module(expt_param_dict['metrics_module'])
-        metric_fnc = getattr(temp, expt_param_dict['accuracy_metric'])
+        temp = importlib.import_module(metric_param_dict['metrics_module'])
+        metric_fnc = getattr(temp, metric_param_dict['accuracy_metric'])
         metric_fnc_args = inspect.getargspec(metric_fnc)
         if metric_fnc_args.args == ['y_encode']:
             metric_fnc = metric_fnc(self.data_manager.encoding_matrix)
@@ -87,7 +67,7 @@ class Cifar_Net(object):
         print("Initializing architecture ...")
         self.init_model(net_param_dict)
 
-         # Compile model
+        # Compile model
         print("Compiling model ...")
         self.model.compile(loss='mean_squared_error',
                            optimizer=self.opt,
@@ -96,8 +76,6 @@ class Cifar_Net(object):
         # Summarize            
         self.summary()
         print (self.data_manager.get_targets_str())
-
-
 
     def summary(self):
         print ("\n============================================================\n")
@@ -109,14 +87,9 @@ class Cifar_Net(object):
         print ("\nModel:")
         self.model.summary()
         print ("\n============================================================\n")
-            
-            
 
     def init_data_manager(self, data_manager):
         self.data_manager = data_manager
-        #pickle.dump(self.data_manager,
-        #            open(os.path.join(self.expt_dir, 'data_manager.pkl'), 'w'))
-
 
     def init_model(self, net_param_dict):
         
@@ -124,12 +97,12 @@ class Cifar_Net(object):
         temp = importlib.import_module(net_param_dict['arch_module'])
         build_architecture = getattr(temp, "build_architecture")
         if K.image_data_format() != 'channels_last':
-            input_shape=(self.img_channels,
-                         self.img_rows, self.img_cols)
+            input_shape = (self.img_channels,
+                           self.img_rows, self.img_cols)
         else:
-            input_shape=(self.img_rows,
-                         self.img_cols, self.img_channels)
-        
+            input_shape = (self.img_rows,
+                           self.img_cols, self.img_channels)
+
         self.model = build_architecture(input_shape,
                                         self.nb_output_nodes,
                                         net_param_dict['output_activation'])
@@ -138,21 +111,22 @@ class Cifar_Net(object):
         json_str = self.model.to_json()        
         model_file = os.path.join(self.expt_dir,
                                   self.expt_prefix + "_init.json")
-        open(model_file,"w").write(json_str)
+        open(model_file, "w").write(json_str)
 
         # Save initial net weights
         self.save_net("0")
 
-    def train(self, data_augmentation = True, batch_size = 32):
+    def train(self, data_augmentation=True, batch_size=32):
 
+        results_file = open(os.path.join(self.expt_dir, 'results.txt'), 'a')
         init_train_loss, init_train_acc = \
-          self.model.evaluate(self.data_manager.X_train,
-                              self.data_manager.Y_train)
+        self.model.evaluate(self.data_manager.X_train,
+                            self.data_manager.Y_train)
         init_test_loss, init_test_acc = \
-          self.model.evaluate(self.data_manager.X_test,
-                              self.data_manager.Y_test)
+        self.model.evaluate(self.data_manager.X_test,
+                            self.data_manager.Y_test)
         print("\nInit loss and acc:                             loss: ",
-              "%0.5f - acc: %0.5f - val_loss: %0.5f - val_acc: %0.5f"%
+              "%0.5f - acc: %0.5f - val_loss: %0.5f - val_acc: %0.5f" %
               (init_train_loss, init_train_acc,
                init_test_loss, init_test_acc))
 
@@ -162,14 +136,14 @@ class Cifar_Net(object):
             if not data_augmentation:
                 print('Not using data augmentation.')
                 dm = self.data_manager
-                self.model.fit(dm.X_train,
-                               dm.Y_train,
-                               batch_size=batch_size,
-                               epochs=self.epochs_per_recording,
-                               steps_per_epoch=dm.X_train.shape[0] // batch_size,
-                               validation_data=(dm.X_test,
-                                                dm.Y_test),
-                               shuffle=True)
+                results = self.model.fit(dm.X_train,
+                                         dm.Y_train,
+                                         batch_size=batch_size,
+                                         epochs=self.epochs_per_recording,
+                                         steps_per_epoch=dm.X_train.shape[0] // batch_size,
+                                         validation_data=(dm.X_test,
+                                                          dm.Y_test),
+                                         shuffle=True)
             else:
                 print('Using real-time data augmentation.')
 
@@ -194,35 +168,60 @@ class Cifar_Net(object):
                 datagen.fit(dm.X_train)
 
                 # fit the model on the batches generated by datagen.flow()
-                self.model.fit_generator(
-                    datagen.flow(dm.X_train,
-                                 dm.Y_train,
-                                 batch_size=batch_size),
-                                 steps_per_epoch=(dm.X_train.shape[0] //
-                                                  self.batch_size),
-                                  epochs=self.epochs_per_recording,
-                                  validation_data=(dm.X_test,
-                                                   dm.Y_test))
+                results = self.model.fit_generator(datagen.flow(dm.X_train,
+                                                                dm.Y_train,
+                                                                batch_size=batch_size),
+                                                   steps_per_epoch=(dm.X_train.shape[0] //
+                                                                    self.batch_size),
+                                                   epochs=self.epochs_per_recording,
+                                                   validation_data=(dm.X_test, dm.Y_test))
+
+            rh = results.history
+            for ctr, (tr_acc, tr_loss, te_acc, te_loss) in enumerate(zip(rh['ECOC_fnc'],
+                                                                         rh['loss'],
+                                                                         rh['val_ECOC_fnc'],
+                                                                         rh['val_loss'])):
+                epoch_str = 'Epoch ' + str(ctr + rec_num*self.epochs_per_recording) + ':  '
+                results_str1 = 'Train Acc: {:5.4f}  Train Loss {:5.4f}'.format(tr_acc, tr_loss)
+                results_str2 = 'Test Acc {:5.4f}  Test Loss{:5.4f}\n'.format(te_acc, te_loss)
+                results_str = epoch_str + '  '.join([results_str1, results_str2])
+                results_file.write(results_str)
 
             if self.save_iters:
                 epoch_num = str((rec_num + 1)*self.epochs_per_recording)
                 self.save_net(epoch_num)
-
+        results_file.close()
 
     def save_net(self, epoch_num):
         # Save net weights
         wt_file_name = self.expt_prefix + "_weights_" + \
                        str(epoch_num) + ".h5"
         weights_file = os.path.join(self.expt_dir, wt_file_name)
-                                    
 
-        print ("Saving ", weights_file)
-        if 'temp.txt' in weights_file:
+        dm = self.data_manager
+        if (dm.encoding_dict == dm.curr_encoding_info['encoding_dict'] and
+                dm.label_dict == dm.curr_encoding_info['label_dict']):
+            save_encodings = False
+        else:
+            dm.curr_encoding_info['encoding_dict'] = dm.encoding_dict
+            dm.curr_encoding_info['label_dict'] = dm.label_dict
+            encodings_file_name = self.expt_prefix + '_encodings_' + \
+                str(epoch_num) + '.pkl'
+            save_encodings = True
+
+        if 'temp' in self.expt_dir:
             overwrite = True
         else:
             overwrite = False
-        self.model.save_weights(weights_file, overwrite = True)
+        print("Saving ", weights_file)
+        self.model.save_weights(weights_file, overwrite=overwrite)
 
+        if save_encodings:
+            print ("Saving", encodings_file_name)
+            pickle.dump(dm.curr_encoding_info,
+                        open(os.path.join(self.expt_dir, encodings_file_name), 'w'))
+        else:
+            print ("No encoding change")
 
 if __name__ == '__main__':
 

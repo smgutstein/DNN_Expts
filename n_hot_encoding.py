@@ -1,6 +1,5 @@
 from __future__ import print_function
 import hot_not_hot_values as hnh
-# import local_backend as LK
 import numpy as np
 
 
