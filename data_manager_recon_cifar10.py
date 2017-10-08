@@ -11,6 +11,7 @@ from display_cifar10 import Data_Display
 class DataManager(object):
 
     def __init__(self, encoding_activation_fnc,
+                 class_names,
                  encoding_param_dict,
                  encoding_module_param_dict):
 
@@ -18,7 +19,7 @@ class DataManager(object):
         self.nb_code_bits = int(encoding_param_dict['nb_code_bits'])
         
         # Init dicts that map class numbers to class names
-        self._init_num_name_dicts(encoding_param_dict['class_names'],)
+        self._init_num_name_dicts(class_names,)
 
         # Load raw data as numpy arrays
         self._load_data()
