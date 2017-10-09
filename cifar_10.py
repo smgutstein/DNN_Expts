@@ -19,7 +19,7 @@ class Cifar_Net(object):
     img_channels = 3
 
     def __init__(self, data_manager,
-                 expt_dir, expt_prefix,
+                 expt_dir,
                  net_param_dict,
                  expt_param_dict,
                  metric_param_dict,
@@ -31,7 +31,7 @@ class Cifar_Net(object):
         self.epochs = int(expt_param_dict['epochs'])
         self.data_manager = data_manager
         self.expt_dir = expt_dir
-        self.expt_prefix = expt_prefix
+        self.expt_prefix = expt_dir
         self.batch_size = batch_size
         self.data_augmentation = data_augmentation
         if epochs_per_recording is None:

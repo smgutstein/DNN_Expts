@@ -94,13 +94,15 @@ def run_expt(expt_file):
      expt_param_dict] = get_expt_params(expt_file)
     outdir = file_param_dict['output_dir']
     make_sure_outdir_exists(outdir)
-    shutil.copy(expt_file, os.path.join(outdir, expt_file))
+    shutil.copy(expt_file, os.path.join(outdir,
+                                        os.path.basename(expt_file)))
     
     [encoding_param_dict,
      encoding_module_param_dict,
      metric_param_dict] = get_encoding_params(file_param_dict['encoding_cfg'])
     shutil.copy(file_param_dict['encoding_cfg'],
-                os.path.join(outdir, file_param_dict['encoding_cfg']))
+                os.path.join(outdir,
+                             os.path.basename(file_param_dict['encoding_cfg'])))
 
     try:
         from git import Repo, exc
@@ -132,7 +134,7 @@ def run_expt(expt_file):
                           file_param_dict['class_names'],
                           encoding_param_dict,
                           encoding_module_param_dict)
-    expt_net = Cifar_Net(expt_dm, outdir, 'expt1',
+    expt_net = Cifar_Net(expt_dm, outdir,
                          net_param_dict,
                          expt_param_dict,
                          metric_param_dict)
