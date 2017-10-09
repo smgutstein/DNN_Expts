@@ -122,5 +122,27 @@ class DataManager(object):
             out_str += curr_line + '\n'
         return out_str + '\n\n'
 
+    def get_targets_str_sign(self):
+        nums_per_row = 20
+        out_str = '\n'
+
+        for curr_class, curr_targets in sorted(self.encoding_dict.items()):
+            indent = len(str(curr_class) + ': ')
+            indent_str1 = ' ' * indent
+            curr_line = str(curr_class) + ': '
+            spacer = ' ' * 2
+
+            formatted_targets = ['+' if x == self.hot else '-'
+                                 for x in curr_targets]
+            line_len = 0
+            for x in formatted_targets:
+                if line_len >= nums_per_row:
+                    curr_line += '\n' + indent_str1
+                    line_len = 0
+                curr_line += x + spacer
+                line_len += 1
+            out_str += curr_line + '\n'
+        return out_str + '\n\n'
+
 if __name__ == '__main__':
     pass

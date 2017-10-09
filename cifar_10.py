@@ -75,7 +75,7 @@ class Cifar_Net(object):
 
         # Summarize            
         self.summary()
-        print (self.data_manager.get_targets_str())
+        print (self.data_manager.get_targets_str_sign())
 
     def summary(self):
         print ("\n============================================================\n")
@@ -199,15 +199,6 @@ class Cifar_Net(object):
         weights_file = os.path.join(self.expt_dir, wt_file_name)
 
         dm = self.data_manager
-        if (dm.encoding_dict == dm.curr_encoding_info['encoding_dict'] and
-                dm.label_dict == dm.curr_encoding_info['label_dict']):
-            save_encodings = False
-        else:
-            dm.curr_encoding_info['encoding_dict'] = dm.encoding_dict
-            dm.curr_encoding_info['label_dict'] = dm.label_dict
-            encodings_file_name = self.expt_prefix + '_encodings_' + \
-                str(epoch_num) + '.pkl'
-            save_encodings = True
 
         if 'temp' in self.expt_dir:
             overwrite = True
@@ -216,12 +207,18 @@ class Cifar_Net(object):
         print("Saving ", weights_file)
         self.model.save_weights(weights_file, overwrite=overwrite)
 
-        if save_encodings:
+        if (dm.encoding_dict == dm.curr_encoding_info['encoding_dict'] and
+                dm.label_dict == dm.curr_encoding_info['label_dict']):
+            print("No encoding change")
+        else:
+            dm.curr_encoding_info['encoding_dict'] = dm.encoding_dict
+            dm.curr_encoding_info['label_dict'] = dm.label_dict
+            encodings_file_name = self.expt_prefix + '_encodings_' + \
+                str(epoch_num) + '.pkl'
             print ("Saving", encodings_file_name)
             pickle.dump(dm.curr_encoding_info,
                         open(os.path.join(self.expt_dir, encodings_file_name), 'w'))
-        else:
-            print ("No encoding change")
+
 
 if __name__ == '__main__':
 
