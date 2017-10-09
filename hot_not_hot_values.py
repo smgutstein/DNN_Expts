@@ -39,3 +39,8 @@ def hot_not_hot_1_neg1(**kwargs):
 
     return hot, not_hot
 
+def hot_not_hot_handset(**kwargs):
+    hot = float(kwargs['hot'])
+    not_hot = float(kwargs['not_hot'])
+
+    return hot, not_hot
