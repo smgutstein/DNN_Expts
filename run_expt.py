@@ -131,7 +131,7 @@ def run_expt(expt_file):
     # Run Expt
     start_time = datetime.datetime.now()
     expt_dm = DataManager(net_param_dict['output_activation'],
-                          file_param_dict['class_names'],
+                          file_param_dict,
                           encoding_param_dict,
                           encoding_module_param_dict)
     expt_net = Cifar_Net(expt_dm, outdir,

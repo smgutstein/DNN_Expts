@@ -1,6 +1,6 @@
 from __future__ import print_function
 
-from keras.datasets import cifar10
+# from keras.datasets import cifar10
 import importlib
 import numpy as np
 import pickle
@@ -8,10 +8,17 @@ import types
 
 from display_cifar10 import Data_Display
 
+import os
+import sys
+file_dir = os.path.join(
+    os.path.dirname(os.path.realpath(__file__)), 'dataset_loaders')
+if file_dir not in sys.path:
+    sys.path.append(file_dir)
+
 class DataManager(object):
 
     def __init__(self, encoding_activation_fnc,
-                 class_names,
+                 file_param_dict,
                  encoding_param_dict,
                  encoding_module_param_dict):
 
@@ -19,10 +26,12 @@ class DataManager(object):
         self.nb_code_bits = int(encoding_param_dict['nb_code_bits'])
         
         # Init dicts that map class numbers to class names
-        self._init_num_name_dicts(class_names,)
+        self._init_num_name_dicts(file_param_dict['class_names'])
 
         # Load raw data as numpy arrays
-        self._load_data()
+        self.data_loading_module = file_param_dict['data_loader']
+        temp = importlib.import_module(self.data_loading_module)
+        self._load_data(temp)
 
         # Import make_encoding_dict method and dynamically make it a member function
         # of this instance of DataManager
@@ -46,10 +55,10 @@ class DataManager(object):
         with open(category_name_file, "r") as f:
             self.label_dict = pickle.load(f)
 
-    def _load_data(self):
+    def _load_data(self, data_load_module):
         print("Loading data")
         (self.X_train, self.y_train), \
-        (self.X_test, self.y_test) = cifar10.load_data()
+        (self.X_test, self.y_test) = data_load_module.load_data()
         self.X_train = self.X_train.astype('float32')
         self.X_test = self.X_test.astype('float32')
                         
