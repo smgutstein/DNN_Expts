@@ -63,6 +63,7 @@ class Cifar_Net(object):
         metric_fnc_args = inspect.getargspec(metric_fnc)
         if metric_fnc_args.args == ['y_encode']:
             metric_fnc = metric_fnc(self.data_manager.encoding_matrix)
+        self.acc_metric = metric_param_dict['accuracy_metric']
 
         print("Initializing architecture ...")
         self.init_model(net_param_dict)
@@ -177,9 +178,15 @@ class Cifar_Net(object):
                                                    validation_data=(dm.X_test, dm.Y_test))
 
             rh = results.history
-            for ctr, (tr_acc, tr_loss, te_acc, te_loss) in enumerate(zip(rh['ECOC_fnc'],
+
+            # Assumes only two metrics are 'loss' and name of accuracy metric
+            temp = set(self.model.metrics_names) - set(['loss'])
+            tr_acc_name = temp.pop()
+            va_acc_name = 'val_' + tr_acc_name
+            
+            for ctr, (tr_acc, tr_loss, te_acc, te_loss) in enumerate(zip(rh[tr_acc_name],
                                                                          rh['loss'],
-                                                                         rh['val_ECOC_fnc'],
+                                                                         rh[va_acc_name],
                                                                          rh['val_loss'])):
                 epoch_str = 'Epoch ' + str(ctr + rec_num*self.epochs_per_recording) + ':  '
                 results_str1 = 'Train Acc: {:5.4f}  Train Loss {:5.4f}'.format(tr_acc, tr_loss)

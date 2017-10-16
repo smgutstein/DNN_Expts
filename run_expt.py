@@ -125,7 +125,7 @@ def run_expt(expt_file):
             f.write("Branch Name: " + branch_name + '\n')
             f.write("Commit Num: " + commit_num + '\n')
             f.write("Changed Files: \n" + changed_files + '\n')
-    except:
+    except ImportError:
         pass
 
     # Run Expt
@@ -152,11 +152,10 @@ def run_expt(expt_file):
 
     return [expt_dm, expt_net]
 
+
 if __name__ == '__main__':
 
     # Get cmd line args
     args = get_cmd_line_args()
     expt_file_name = args.config_file
     [dm, net] = run_expt(expt_file_name)
-    import pdb
-    pdb.set_trace()

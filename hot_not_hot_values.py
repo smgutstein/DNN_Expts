@@ -22,8 +22,12 @@ def hot_not_hot_2nd_deriv_max(**kwargs):
     return hot, not_hot
 
 def hot_not_hot_softmax(**kwargs):
-    hot = float(kwargs['hot_val'])
-    not_hot = (1. - hot) / (float(kwargs['nb_code_bits']) - 1)
+    if 'hot_val' in kwargs:
+        hot = float(kwargs['hot_val'])
+        not_hot = (1. - hot) / (float(kwargs['nb_code_bits']) - 1)
+    else:
+        hot = 1.0
+        not_hot = 0.0
 
     return hot, not_hot
 
