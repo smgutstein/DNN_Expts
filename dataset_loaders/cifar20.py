@@ -10,7 +10,7 @@ from keras import backend as K
 import numpy as np
 
 
-def load_data(label_mode='fine'):
+def load_data(label_mode='coarse'):
     """Loads CIFAR100 dataset.
 
     # Arguments

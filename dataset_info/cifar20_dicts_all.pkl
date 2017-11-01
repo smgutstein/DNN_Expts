@@ -1,0 +1,62 @@
+(dp0
+I0
+S'aquatic mammal'
+p1
+sI1
+S'fish'
+p2
+sI2
+S'flowers'
+p3
+sI3
+S'food container'
+p4
+sI4
+S'fruit/vegetable'
+p5
+sI5
+S'household electrical device'
+p6
+sI6
+S'household furniture'
+p7
+sI7
+S'insects'
+p8
+sI8
+S'large carnivores'
+p9
+sI9
+S'large man-made outdoor things'
+p10
+sI10
+S'large natural outdoor scenes'
+p11
+sI11
+S'large omniivores & herbivores'
+p12
+sI12
+S'medium-sized mammals'
+p13
+sI13
+S'non-insect invertebrates'
+p14
+sI14
+S'people'
+p15
+sI15
+S'reptiles'
+p16
+sI16
+S'small mammals'
+p17
+sI17
+S'trees'
+p18
+sI18
+S'vehicles 1'
+p19
+sI19
+S'vehicles 2'
+p20
+s.
