@@ -105,7 +105,7 @@ def run_expt(expt_file):
                              os.path.basename(file_param_dict['encoding_cfg'])))
 
     try:
-        from git import Repo, exc
+        from git import Repo
         repo = Repo('.')
         branch_name = str(repo.active_branch)
         commit_num = str(repo.head.commit)
@@ -118,6 +118,9 @@ def run_expt(expt_file):
                                  for xx in raw_list]
             changed_files = '\n'.join(changed_file_list)
             print(changed_files + '\n')
+            changes = repo.git.diff(branch_name)
+            print("Changes:\n")
+            print(changes + '\n')
         else:
             changed_files = "None\n"
 
@@ -125,6 +128,8 @@ def run_expt(expt_file):
             f.write("Branch Name: " + branch_name + '\n')
             f.write("Commit Num: " + commit_num + '\n')
             f.write("Changed Files: \n" + changed_files + '\n')
+            f.write("Changes: \n")
+            f.write(changes + '\n')
     except ImportError:
         pass
 
