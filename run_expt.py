@@ -121,8 +121,10 @@ def run_expt(expt_file):
             changes = repo.git.diff(branch_name)
             print("Changes:\n")
             print(changes + '\n')
+            print("=======================================\n")
         else:
             changed_files = "None\n"
+            changes = "None\n"
 
         with open(os.path.join(outdir, 'git_info.txt'), 'w') as f:
             f.write("Branch Name: " + branch_name + '\n')
