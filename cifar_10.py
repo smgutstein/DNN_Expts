@@ -31,7 +31,7 @@ class Cifar_Net(object):
         self.epochs = int(expt_param_dict['epochs'])
         self.data_manager = data_manager
         self.expt_dir = expt_dir
-        self.expt_prefix = expt_dir
+        self.expt_prefix = os.path.basename(expt_dir)
         self.batch_size = batch_size
         self.data_augmentation = data_augmentation
         if epochs_per_recording is None:
@@ -190,7 +190,7 @@ class Cifar_Net(object):
                                                                          rh['val_loss'])):
                 epoch_str = 'Epoch ' + str(ctr + rec_num*self.epochs_per_recording) + ':  '
                 results_str1 = 'Train Acc: {:5.4f}  Train Loss {:5.4f}'.format(tr_acc, tr_loss)
-                results_str2 = 'Test Acc {:5.4f}  Test Loss{:5.4f}\n'.format(te_acc, te_loss)
+                results_str2 = 'Test Acc {:5.4f}  Test Loss {:5.4f}\n'.format(te_acc, te_loss)
                 results_str = epoch_str + '  '.join([results_str1, results_str2])
                 results_file.write(results_str)
 
@@ -220,6 +220,8 @@ class Cifar_Net(object):
         else:
             dm.curr_encoding_info['encoding_dict'] = dm.encoding_dict
             dm.curr_encoding_info['label_dict'] = dm.label_dict
+            dm.curr_encoding_info['hot'] = dm.hot
+            dm.curr_encoding_info['not_hot'] = dm.not_hot
             encodings_file_name = self.expt_prefix + '_encodings_' + \
                 str(epoch_num) + '.pkl'
             print ("Saving", encodings_file_name)

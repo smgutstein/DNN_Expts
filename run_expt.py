@@ -5,7 +5,42 @@ import datetime
 import errno
 import os
 import shutil
+import sys
 
+class Logger(object):
+    def __init__(self, filename="Expt_output.log"):
+        self.filename = filename
+        self.terminal = sys.stdout
+        self.log = open(filename, "a")
+        self.stdout = sys.stdout
+        self.stderr = sys.stderr
+        sys.stderr = sys.stdout = self
+
+    def write(self, message):
+        self.terminal.write(message)
+        self.log.write(message)
+
+    def flush(self):
+        self.terminal.flush()
+        self.log.flush()
+
+    def __getattr__(self, attr):
+        return getattr(self.terminal, attr)
+
+    def stop_log(self):
+        sys.stdout = self.stdout
+        sys.stderr = self.stderr
+        self.terminal = open(os.devnull,'w')
+        
+    def close_log(self, log_dir = ''):
+        self.log.close()
+        if log_dir != '':
+            shutil.move(self.filename,
+                            os.path.join(log_dir, self.filename))
+
+# Capture output with theano/keras & gpu info
+expt_log = Logger()
+import keras
 from cifar_10 import Cifar_Net
 from data_manager_recon_cifar10 import DataManager
 
@@ -84,6 +119,26 @@ def make_sure_outdir_exists(path):
     except OSError as exception:
         if exception.errno != errno.EEXIST:
             raise
+    return
+
+def make_outdir(main_dir, expt_dir):
+
+    if not os.path.isdir(main_dir):
+       make_sure_outdir_exists(main_dir)
+
+    done = False
+    suffix = ''
+    while not done:
+        curr_output_dir = os.path.join(main_dir, expt_dir + suffix)
+        if not os.path.isdir(curr_output_dir):
+           make_sure_outdir_exists(curr_output_dir)
+           done = True
+        elif suffix == '':
+            suffix = '_v1'
+        else:
+            version = int(suffix[2:]) + 1
+            suffix = '_v' + str(version)
+    return curr_output_dir
 
 
 def run_expt(expt_file):
@@ -92,10 +147,13 @@ def run_expt(expt_file):
     [file_param_dict,
      net_param_dict,
      expt_param_dict] = get_expt_params(expt_file)
-    outdir = file_param_dict['output_dir']
-    make_sure_outdir_exists(outdir)
+        
+    expt_set_dir = file_param_dict['expt_set_dir']
+    expt_dir = file_param_dict['expt_dir']
+    outdir = make_outdir(expt_set_dir, expt_dir)
     shutil.copy(expt_file, os.path.join(outdir,
                                         os.path.basename(expt_file)))
+
 
     [encoding_param_dict,
      encoding_module_param_dict,
@@ -106,6 +164,18 @@ def run_expt(expt_file):
 
     try:
         from git import Repo
+
+        keras_repo = Repo(os.path.dirname(keras.__path__[0]))
+        keras_branch_name = str(keras_repo.active_branch)
+        keras_commit_num = str(keras_repo.head.commit)
+
+        backend_name = keras.backend._BACKEND
+        if backend_name == 'theano':
+            temp = keras.backend.theano_backend.theano.__version__.split('-')
+            backend_version = '-'.join([temp[0],temp[1][0:8]])
+        else:
+            backend_version = "Unknown for " + backend_name
+        
         repo = Repo('.')
         branch_name = str(repo.active_branch)
         commit_num = str(repo.head.commit)
@@ -127,8 +197,12 @@ def run_expt(expt_file):
             changes = "None\n"
 
         with open(os.path.join(outdir, 'git_info.txt'), 'w') as f:
-            f.write("Branch Name: " + branch_name + '\n')
-            f.write("Commit Num: " + commit_num + '\n')
+            f.write("Keras Branch Name: " + keras_branch_name + '\n')
+            f.write("Keras Commit Num: " + keras_commit_num[0:8] + '\n')
+            f.write("Latent Branch Name: " + branch_name + '\n')
+            f.write("Latent Commit Num: " + commit_num[0:8] + '\n')
+            f.write("Backend: " + backend_name + '\n')
+            f.write("Backend Version: " + backend_version + '\n')
             f.write("Changed Files: \n" + changed_files + '\n')
             f.write("Changes: \n")
             f.write(changes + '\n')
@@ -145,6 +219,7 @@ def run_expt(expt_file):
                          net_param_dict,
                          expt_param_dict,
                          metric_param_dict)
+    expt_log.stop_log()
     expt_net.train()
     stop_time = datetime.datetime.now()
 
@@ -153,9 +228,16 @@ def run_expt(expt_file):
     seconds = int(round(run_time.total_seconds(stop_time - start_time)))
     minutes, seconds = divmod(seconds, 60)
     hours, minutes = divmod(minutes, 60)
-    print("Start Time: %s" % (start_time.strftime("%H:%M:%S %p %A %Y-%m-%d")))
-    print("Stop Time : %s" % (stop_time.strftime("%H:%M:%S %p %A %Y-%m-%d")))
-    print("Run Time  : {:d}:{:02d}:{:02d}".format(hours, minutes, seconds))
+    start_str = "Start Time: %s" % (start_time.strftime("%H:%M:%S %p %A %Y-%m-%d"))
+    stop_str = "Stop Time : %s" % (stop_time.strftime("%H:%M:%S %p %A %Y-%m-%d"))
+    tot_str = "Run Time  : {:d}:{:02d}:{:02d}".format(hours, minutes, seconds)
+    timing_info = '\n'.join([start_str, stop_str, tot_str])
+    print (timing_info)
+    expt_log.write(timing_info)
+    #print("Start Time: %s" % (start_time.strftime("%H:%M:%S %p %A %Y-%m-%d")))
+    #print("Stop Time : %s" % (stop_time.strftime("%H:%M:%S %p %A %Y-%m-%d")))
+    #print("Run Time  : {:d}:{:02d}:{:02d}".format(hours, minutes, seconds))
+    expt_log.close_log(outdir)
 
     return [expt_dm, expt_net]
 
