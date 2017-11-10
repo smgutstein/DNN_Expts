@@ -23,6 +23,7 @@ class Cifar_Net(object):
                  net_param_dict,
                  expt_param_dict,
                  metric_param_dict,
+                 optimizer_param_dict,
                  batch_size=32,
                  data_augmentation=True,
                  epochs_per_recording=None,
@@ -49,7 +50,11 @@ class Cifar_Net(object):
                     raise
                 
         # Make optimizer
-        self.opt = SGD(lr=0.05, decay=1e-6, momentum=0.9, nesterov=True)            
+        optimizer_module = optimizer_param_dict.pop('optimizer_module')
+        optimizer = optimizer_param_dict.pop('optimizer')
+        temp = importlib.import_module(optimizer_module)
+        optimizer_fnc = getattr(temp, optimizer)
+        self.opt = optimizer_fnc(optimizer_param_dict)
 
         # Prepare standard training
         print("Standard training")

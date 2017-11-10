@@ -7,6 +7,13 @@ import os
 import shutil
 import sys
 
+def is_number(in_str):
+    try:
+        float(in_str)
+        return True
+    except ValueError:
+        return False
+
 class Logger(object):
     def __init__(self, filename="Expt_output.log"):
         self.filename = filename
@@ -30,13 +37,14 @@ class Logger(object):
     def stop_log(self):
         sys.stdout = self.stdout
         sys.stderr = self.stderr
-        self.terminal = open(os.devnull,'w')
+        self.terminal = open(os.devnull, 'w')
         
-    def close_log(self, log_dir = ''):
+    def close_log(self, log_dir=''):
         self.log.close()
         if log_dir != '':
             shutil.move(self.filename,
-                            os.path.join(log_dir, self.filename))
+                        os.path.join(log_dir, self.filename))
+
 
 # Capture output with theano/keras & gpu info
 expt_log = Logger()
@@ -86,6 +94,20 @@ def get_encoding_params(expt_file):
            encoding_module_param_dict,
            metric_param_dict]
 
+def get_optimizer_params(optimizer_file):
+    
+    config = ConfigParser.ConfigParser()
+    config.read(optimizer_file)
+
+    # Get Optimizer Parameters
+    optimizer_params = config.items('Optimizer_Params')
+    optimizer_param_dict = {}
+    for curr_pair in optimizer_params:
+        optimizer_param_dict[curr_pair[0]] = curr_pair[1]
+
+    return optimizer_param_dict
+
+
 def get_expt_params(expt_file):
 
     config = ConfigParser.ConfigParser()
@@ -124,15 +146,15 @@ def make_sure_outdir_exists(path):
 def make_outdir(main_dir, expt_dir):
 
     if not os.path.isdir(main_dir):
-       make_sure_outdir_exists(main_dir)
+        make_sure_outdir_exists(main_dir)
 
     done = False
     suffix = ''
     while not done:
         curr_output_dir = os.path.join(main_dir, expt_dir + suffix)
         if not os.path.isdir(curr_output_dir):
-           make_sure_outdir_exists(curr_output_dir)
-           done = True
+            make_sure_outdir_exists(curr_output_dir)
+            done = True
         elif suffix == '':
             suffix = '_v1'
         else:
@@ -154,13 +176,20 @@ def run_expt(expt_file):
     shutil.copy(expt_file, os.path.join(outdir,
                                         os.path.basename(expt_file)))
 
-
     [encoding_param_dict,
      encoding_module_param_dict,
      metric_param_dict] = get_encoding_params(file_param_dict['encoding_cfg'])
     shutil.copy(file_param_dict['encoding_cfg'],
                 os.path.join(outdir,
                              os.path.basename(file_param_dict['encoding_cfg'])))
+
+    temp = get_optimizer_params(net_param_dict['optimizer_cfg'])
+    optimizer_param_dict = {x:float(temp[x]) if is_number(temp[x]) else temp[x]
+                            for x in temp}
+
+    shutil.copy(net_param_dict['optimizer_cfg'],
+                os.path.join(outdir,
+                             os.path.basename(net_param_dict['optimizer_cfg'])))
 
     try:
         from git import Repo
@@ -172,7 +201,7 @@ def run_expt(expt_file):
         backend_name = keras.backend._BACKEND
         if backend_name == 'theano':
             temp = keras.backend.theano_backend.theano.__version__.split('-')
-            backend_version = '-'.join([temp[0],temp[1][0:8]])
+            backend_version = '-'.join([temp[0], temp[1][0:8]])
         else:
             backend_version = "Unknown for " + backend_name
         
@@ -218,7 +247,8 @@ def run_expt(expt_file):
     expt_net = Cifar_Net(expt_dm, outdir,
                          net_param_dict,
                          expt_param_dict,
-                         metric_param_dict)
+                         metric_param_dict,
+                         optimizer_param_dict)
     expt_log.stop_log()
     expt_net.train()
     stop_time = datetime.datetime.now()
@@ -234,9 +264,6 @@ def run_expt(expt_file):
     timing_info = '\n'.join([start_str, stop_str, tot_str])
     print (timing_info)
     expt_log.write(timing_info)
-    #print("Start Time: %s" % (start_time.strftime("%H:%M:%S %p %A %Y-%m-%d")))
-    #print("Stop Time : %s" % (stop_time.strftime("%H:%M:%S %p %A %Y-%m-%d")))
-    #print("Run Time  : {:d}:{:02d}:{:02d}".format(hours, minutes, seconds))
     expt_log.close_log(outdir)
 
     return [expt_dm, expt_net]
