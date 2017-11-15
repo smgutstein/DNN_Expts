@@ -49,7 +49,7 @@ class Logger(object):
 # Capture output with theano/keras & gpu info
 expt_log = Logger()
 import keras
-from cifar_10 import Cifar_Net
+from cifar_net import Cifar_Net
 from data_manager_recon_cifar10 import DataManager
 
 def get_cmd_line_args():
@@ -160,6 +160,7 @@ def make_outdir(main_dir, expt_dir):
         else:
             version = int(suffix[2:]) + 1
             suffix = '_v' + str(version)
+    print ("Saving results to %s" % curr_output_dir)
     return curr_output_dir
 
 
