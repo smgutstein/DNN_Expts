@@ -12,6 +12,7 @@ expt1/
 expt2/
 *expts_results*/
 batch.sh
+cifar_75_expts/
 cifar_100_expts/
 cifar_200_expts/
 cifar_400_expts/
