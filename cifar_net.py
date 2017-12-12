@@ -3,7 +3,6 @@ from __future__ import print_function
 import importlib
 import inspect
 from keras.preprocessing.image import ImageDataGenerator
-from keras.optimizers import SGD, Adagrad
 from keras import backend as K
 from keras.models import model_from_json, model_from_yaml
 import os
