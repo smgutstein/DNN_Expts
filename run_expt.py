@@ -50,7 +50,7 @@ class Logger(object):
 expt_log = Logger()
 import keras
 from cifar_net import Cifar_Net
-from data_manager_recon_cifar10 import DataManager
+from data_manager import DataManager
 
 def get_cmd_line_args():
     
