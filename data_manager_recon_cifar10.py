@@ -5,7 +5,7 @@ import numpy as np
 import pickle
 import types
 
-from display_cifar10 import Data_Display
+from data_display import Data_Display
 
 import os
 import sys
