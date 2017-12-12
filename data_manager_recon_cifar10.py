@@ -35,13 +35,19 @@ class DataManager(object):
 
         # Import make_encoding_dict method and dynamically make it a member function
         # of this instance of DataManager
-        self.encoding_module = encoding_module_param_dict['encoding_module']
-        temp = importlib.import_module(self.encoding_module)
-        self.make_encoding_dict = types.MethodType(temp.make_encoding_dict,
-                                                   self)
         joint_dict = encoding_param_dict.copy()
         joint_dict.update(encoding_module_param_dict)
         joint_dict['encoding_activation_fnc'] = encoding_activation_fnc
+
+        if 'saved_encodings' in file_param_dict:
+            self.encoding_module = "recover_encoding"
+            joint_dict['saved_encodings'] = file_param_dict['saved_encodings']
+        else:
+            self.encoding_module = encoding_module_param_dict['encoding_module']
+            
+        temp = importlib.import_module(self.encoding_module)
+        self.make_encoding_dict = types.MethodType(temp.make_encoding_dict,
+                                                   self)
         self.make_encoding_dict(**joint_dict)
         self.encode_labels()
         self.curr_encoding_info = dict()

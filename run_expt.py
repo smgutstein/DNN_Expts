@@ -180,6 +180,8 @@ def run_expt(expt_file):
     [encoding_param_dict,
      encoding_module_param_dict,
      metric_param_dict] = get_encoding_params(file_param_dict['encoding_cfg'])
+    if 'saved_encodings' in file_param_dict:
+        encoding_param_dict['saved_encodings'] = file_param_dict['saved_encodings'] 
     shutil.copy(file_param_dict['encoding_cfg'],
                 os.path.join(outdir,
                              os.path.basename(file_param_dict['encoding_cfg'])))

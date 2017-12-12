@@ -5,6 +5,7 @@ import inspect
 from keras.preprocessing.image import ImageDataGenerator
 from keras.optimizers import SGD, Adagrad
 from keras import backend as K
+from keras.models import model_from_json, model_from_yaml
 import os
 import pickle
 
@@ -26,7 +27,6 @@ class Cifar_Net(object):
                  optimizer_param_dict,
                  batch_size=32,
                  data_augmentation=True,
-                 epochs_per_recording=None,
                  save_iters=True):
 
         self.epochs = int(expt_param_dict['epochs'])
@@ -35,11 +35,11 @@ class Cifar_Net(object):
         self.expt_prefix = os.path.basename(expt_dir)
         self.batch_size = batch_size
         self.data_augmentation = data_augmentation
-        if epochs_per_recording is None:
-            self.epochs_per_recording = self.epochs
-        else:
-            self.epochs_per_recording = epochs_per_recording
         self.save_iters = save_iters
+        if self.save_iters:
+            self.epochs_per_recording = int(expt_param_dict['epochs_per_recording'])
+        else:
+            self.epochs_per_recording = self.epochs
 
         # Ensure expt output dir exists
         if expt_dir is not None:
@@ -109,18 +109,32 @@ class Cifar_Net(object):
             input_shape = (self.img_rows,
                            self.img_cols, self.img_channels)
 
-        self.model = build_architecture(input_shape,
-                                        self.nb_output_nodes,
-                                        net_param_dict['output_activation'])
+        if 'saved_arch' in net_param_dict:
+            # Load architecture
+            if net_param_dict['saved_arch'][-4:] == 'json':
+                with open(net_param_dict['saved_arch'], 'r') as f:
+                    json_str = f.read()
+                    self.model = model_from_json(json_str)
+            elif net_param_dict['saved_arch'][-4:] == 'yaml':
+                with open(net_param_dict['saved_arch'], 'r') as f:
+                    yaml_str = f.read()
+                    self.model = model_from_yaml(yaml_str)
 
-        # Save net architecture, weights and class/encoding info
-        json_str = self.model.to_json()        
-        model_file = os.path.join(self.expt_dir,
-                                  self.expt_prefix + "_init.json")
-        open(model_file, "w").write(json_str)
+            # Load weights
+            self.model.load_weights(net_param_dict['saved_weights'])
+        else:
+            self.model = build_architecture(input_shape,
+                                            self.nb_output_nodes,
+                                            net_param_dict['output_activation'])
 
-        # Save initial net weights
-        self.save_net("0")
+            # Save net architecture, weights and class/encoding info
+            json_str = self.model.to_json()        
+            model_file = os.path.join(self.expt_dir,
+                                      self.expt_prefix + "_init.json")
+            open(model_file, "w").write(json_str)
+
+            # Save initial net weights
+            self.save_net("0")
 
     def train(self, data_augmentation=True, batch_size=32):
 
@@ -225,8 +239,7 @@ class Cifar_Net(object):
         else:
             dm.curr_encoding_info['encoding_dict'] = dm.encoding_dict
             dm.curr_encoding_info['label_dict'] = dm.label_dict
-            dm.curr_encoding_info['hot'] = dm.hot
-            dm.curr_encoding_info['not_hot'] = dm.not_hot
+            dm.curr_encoding_info['meta_encoding_dict'] = dm.meta_encoding_dict
             encodings_file_name = self.expt_prefix + '_encodings_' + \
                 str(epoch_num) + '.pkl'
             print ("Saving", encodings_file_name)
