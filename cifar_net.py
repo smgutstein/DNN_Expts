@@ -8,8 +8,6 @@ from keras.models import model_from_json, model_from_yaml
 import os
 import pickle
 
-from data_manager import DataManager
-
 class Cifar_Net(object):
 
     def __init__(self, data_manager,
@@ -240,16 +238,3 @@ class Cifar_Net(object):
             print ("Saving", encodings_file_name)
             pickle.dump(dm.curr_encoding_info,
                         open(os.path.join(self.expt_dir, encodings_file_name), 'w'))
-
-
-if __name__ == '__main__':
-
-    import pdb
-    pdb.set_trace()
-    x = DataManager('n_hot_encoding', 10)
-    x.make_encoding_dict(nb_hot=1)
-    x.encode_labels()
-    y = Cifar_Net(10, x, 'temp', 'expt1')
-    import pdb
-    pdb.set_trace()
-    y.train()
