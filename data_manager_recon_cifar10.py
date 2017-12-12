@@ -1,6 +1,5 @@
 from __future__ import print_function
 
-# from keras.datasets import cifar10
 import importlib
 import numpy as np
 import pickle
@@ -160,6 +159,7 @@ class DataManager(object):
                 line_len += 1
             out_str += curr_line + '\n'
         return out_str + '\n\n'
+
 
 if __name__ == '__main__':
     pass
