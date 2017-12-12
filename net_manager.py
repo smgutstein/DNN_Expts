@@ -8,7 +8,7 @@ from keras.models import model_from_json, model_from_yaml
 import os
 import pickle
 
-class Cifar_Net(object):
+class NetManager(object):
 
     def __init__(self, data_manager,
                  expt_dir,

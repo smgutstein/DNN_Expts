@@ -49,7 +49,7 @@ class Logger(object):
 # Capture output with theano/keras & gpu info
 expt_log = Logger()
 import keras
-from cifar_net import Cifar_Net
+from net_manager import NetManager
 from data_manager import DataManager
 
 def get_cmd_line_args():
@@ -247,11 +247,11 @@ def run_expt(expt_file):
                           file_param_dict,
                           encoding_param_dict,
                           encoding_module_param_dict)
-    expt_net = Cifar_Net(expt_dm, outdir,
-                         net_param_dict,
-                         expt_param_dict,
-                         metric_param_dict,
-                         optimizer_param_dict)
+    expt_net = NetManager(expt_dm, outdir,
+                          net_param_dict,
+                          expt_param_dict,
+                          metric_param_dict,
+                          optimizer_param_dict)
     expt_log.stop_log()
     expt_net.train()
     stop_time = datetime.datetime.now()
