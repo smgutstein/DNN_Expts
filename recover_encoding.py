@@ -1,16 +1,13 @@
 from __future__ import print_function
-from datetime import datetime
-import hot_not_hot_values as hnh
 import numpy as np
 import pickle
-from random import random
 
 
 def make_encoding_dict(self, **kwargs):
 
     encoding_file = kwargs['saved_encodings']
     print("Recovering Saved Encodings from %s" % encoding_file)
-    pickled_dict = pickle.load(open(encoding_file,'r'))
+    pickled_dict = pickle.load(open(encoding_file, 'r'))
 
     self.encoding_dict = pickled_dict['encoding_dict']
     self.label_dict = pickled_dict['label_dict']
@@ -25,5 +22,4 @@ def make_encoding_dict(self, **kwargs):
     
     self.encoding_matrix = np.zeros((class_nums, nb_code_bits))
     for ctr, curr_class_num in enumerate(sorted(self.encoding_dict)):
-        self.encoding_matrix[ctr, :] = self.encoding_dict[curr_class_num] 
- 
+        self.encoding_matrix[ctr, :] = self.encoding_dict[curr_class_num]
