@@ -12,12 +12,6 @@ from data_manager_recon_cifar10 import DataManager
 
 class Cifar_Net(object):
 
-    # input image dimensions
-    img_rows, img_cols = 32, 32
-    
-    # the CIFAR10 images are RGB
-    img_channels = 3
-
     def __init__(self, data_manager,
                  expt_dir,
                  net_param_dict,
@@ -102,11 +96,13 @@ class Cifar_Net(object):
         temp = importlib.import_module(net_param_dict['arch_module'])
         build_architecture = getattr(temp, "build_architecture")
         if K.image_data_format() != 'channels_last':
-            input_shape = (self.img_channels,
-                           self.img_rows, self.img_cols)
+            input_shape = (self.data_manager.img_channels,
+                           self.data_manager.img_rows,
+                           self.data_manager.img_cols)
         else:
-            input_shape = (self.img_rows,
-                           self.img_cols, self.img_channels)
+            input_shape = (self.data_manager.img_rows,
+                           self.data_manager.img_cols,
+                           self.data_manager.img_channels)
 
         if 'saved_arch' in net_param_dict:
             # Load architecture

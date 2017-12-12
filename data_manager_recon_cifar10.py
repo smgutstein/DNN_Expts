@@ -67,6 +67,8 @@ class DataManager(object):
         (self.X_test, self.y_test) = data_load_module.load_data()
         self.X_train = self.X_train.astype('float32')
         self.X_test = self.X_test.astype('float32')
+
+        _, self.img_rows, self.img_cols, self.img_channels = self.X_train.shape
                         
         # Rescale raw data
         self.X_train /= 255.
