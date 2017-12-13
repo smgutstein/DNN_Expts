@@ -90,8 +90,11 @@ class NetManager(object):
 
     def init_model(self, net_param_dict):
         
-        # Import accuracy function
-        temp = importlib.import_module(net_param_dict['arch_module'])
+        # Import architecure
+        mod_name = net_param_dict['arch_module']
+        if mod_name[0] != '.':
+            mod_name = '.' + mod_name
+        temp = importlib.import_module(mod_name, 'net_architectures')
         build_architecture = getattr(temp, "build_architecture")
         if K.image_data_format() != 'channels_last':
             input_shape = (self.data_manager.img_channels,
