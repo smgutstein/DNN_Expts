@@ -5,6 +5,7 @@ import inspect
 from keras.preprocessing.image import ImageDataGenerator
 from keras import backend as K
 from keras.models import model_from_json, model_from_yaml
+from operator import itemgetter
 import os
 import pickle
 
@@ -20,6 +21,7 @@ class NetManager(object):
                  data_augmentation=True,
                  save_iters=True):
 
+        self.init_epoch = 0
         self.epochs = int(expt_param_dict['epochs'])
         self.data_manager = data_manager
         self.expt_dir = expt_dir
@@ -117,7 +119,27 @@ class NetManager(object):
                     self.model = model_from_yaml(yaml_str)
 
             # Load weights
-            self.model.load_weights(net_param_dict['saved_weights'])
+            if net_param_dict['saved_weights'][-4:].lower() != 'last':
+                wt_file = net_param_dict['saved_weights']
+                
+            else:
+                net_dir = self.expt_dir
+                wt_files = [(os.path.join(net_dir,x),
+                             os.stat(os.path.join(net_dir,x)).st_mtime)
+                             for x in os.listdir(net_dir)
+                                if x[-3:] == '.h5']
+                wt_files = sorted(wt_files, key = itemgetter(1))
+                wt_file = wt_files[-1][0]
+                self.init_epoch = int(wt_file.split('_')[-1].split('.')[0])
+
+                # Hacky way of ensuring that continuing training from a saved point
+                # does not result in a faux encoding change
+                dm = self.data_manager
+                dm.curr_encoding_info['encoding_dict'] = dm.encoding_dict
+                dm.curr_encoding_info['label_dict'] = dm.label_dict
+                dm.curr_encoding_info['meta_encoding_dict'] = dm.meta_encoding_dict
+            self.model.load_weights(wt_file)
+                            
         else:
             self.model = build_architecture(input_shape,
                                             self.nb_output_nodes,
@@ -130,7 +152,8 @@ class NetManager(object):
             open(model_file, "w").write(json_str)
 
             # Save initial net weights
-            self.save_net("0")
+            if self.init_epoch == 0:
+                self.save_net("0")
 
     def train(self, data_augmentation=True, batch_size=32):
 
@@ -203,14 +226,14 @@ class NetManager(object):
                                                                          rh['loss'],
                                                                          rh[va_acc_name],
                                                                          rh['val_loss'])):
-                epoch_str = 'Epoch ' + str(ctr + rec_num*self.epochs_per_recording) + ':  '
+                epoch_str = 'Epoch ' + str(ctr + self.init_epoch + rec_num*self.epochs_per_recording) + ':  '
                 results_str1 = 'Train Acc: {:5.4f}  Train Loss {:5.4f}'.format(tr_acc, tr_loss)
                 results_str2 = 'Test Acc {:5.4f}  Test Loss {:5.4f}\n'.format(te_acc, te_loss)
                 results_str = epoch_str + '  '.join([results_str1, results_str2])
                 results_file.write(results_str)
 
             if self.save_iters:
-                epoch_num = str((rec_num + 1)*self.epochs_per_recording)
+                epoch_num = str((rec_num + 1)*self.epochs_per_recording + self.init_epoch)
                 self.save_net(epoch_num)
         results_file.close()
 
@@ -229,8 +252,10 @@ class NetManager(object):
         print("Saving ", weights_file)
         self.model.save_weights(weights_file, overwrite=overwrite)
 
+        import pdb
+        pdb.set_trace()
         if (dm.encoding_dict == dm.curr_encoding_info['encoding_dict'] and
-                dm.label_dict == dm.curr_encoding_info['label_dict']):
+            dm.label_dict == dm.curr_encoding_info['label_dict']):
             print("No encoding change")
         else:
             dm.curr_encoding_info['encoding_dict'] = dm.encoding_dict

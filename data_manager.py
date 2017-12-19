@@ -38,7 +38,10 @@ class DataManager(object):
         joint_dict.update(encoding_module_param_dict)
         joint_dict['encoding_activation_fnc'] = encoding_activation_fnc
 
-        if 'saved_encodings' in file_param_dict:
+        # If recovering saved net, ensure that the encoding used for that net is recovered
+        if (('saved_encodings' in file_param_dict) and
+            ((file_param_dict['saved_encodings'] != '') and
+             (file_param_dict['saved_encodings'] != 'None'))):
             self.encoding_module = "recover_encoding"
             joint_dict['saved_encodings'] = file_param_dict['saved_encodings']
         else:
