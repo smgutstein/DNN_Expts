@@ -73,7 +73,7 @@ class Runner(object):
                                    self.file_param_dict,
                                    self.encoding_param_dict,
                                    self.encoding_module_param_dict)
-        
+
         self.expt_net = NetManager(self.expt_dm, self.outdir,
                                    self.net_param_dict,
                                    self.expt_param_dict,
@@ -122,7 +122,7 @@ class Runner(object):
     def make_outdir(self, main_dir, expt_dir):
 
         if not os.path.isdir(main_dir):
-            make_sure_outdir_exists(main_dir)
+            self.make_sure_outdir_exists(main_dir)
 
         done = False
         suffix = ''

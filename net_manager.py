@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+import errno
 import importlib
 import inspect
 from keras.preprocessing.image import ImageDataGenerator
@@ -8,6 +9,15 @@ from keras.models import model_from_json, model_from_yaml
 from operator import itemgetter
 import os
 import pickle
+import shutil
+import sys
+
+def is_int(in_str):
+    try:
+        int(in_str)
+        return True
+    except ValueError:
+        return False
 
 class NetManager(object):
 
@@ -53,7 +63,7 @@ class NetManager(object):
         print("Standard training")
         self.nb_output_nodes = data_manager.nb_code_bits
         print("Initializing data manager ...")
-        self.init_data_manager(data_manager)
+        self.data_manager = data_manager
 
         # Import accuracy function
         temp = importlib.import_module(metric_param_dict['metrics_module'])
@@ -62,9 +72,19 @@ class NetManager(object):
         if metric_fnc_args.args == ['y_encode']:
             metric_fnc = metric_fnc(self.data_manager.encoding_matrix)
         self.acc_metric = metric_param_dict['accuracy_metric']
+        metric_fnc.__name__ = 'acc' # Hacky solution to make sure
+                                    # keras output strings are unaffected
+                                    # by use of local_metrics
 
         print("Initializing architecture ...")
-        self.init_model(net_param_dict)
+        self.model = self.init_model_architecture(net_param_dict)
+        self.check_for_saved_model_weights(net_param_dict)
+
+        # Save net architecture
+        json_str = self.model.to_json()
+        model_file = os.path.join(self.expt_dir,
+                                  self.expt_prefix + "_init.json")
+        open(model_file, "w").write(json_str)
 
         # Compile model
         print("Compiling model ...")
@@ -87,73 +107,126 @@ class NetManager(object):
         self.model.summary()
         print ("\n============================================================\n")
 
-    def init_data_manager(self, data_manager):
-        self.data_manager = data_manager
+    def init_model_architecture(self, net_param_dict):
+        # Import Architecture
+        if ('arch_module' in net_param_dict and
+            len(net_param_dict['arch_module']) > 0):
 
-    def init_model(self, net_param_dict):
-        
-        # Import architecure
-        mod_name = net_param_dict['arch_module']
-        if mod_name[0] != '.':
-            mod_name = '.' + mod_name
-        temp = importlib.import_module(mod_name, 'net_architectures')
-        build_architecture = getattr(temp, "build_architecture")
-        if K.image_data_format() != 'channels_last':
-            input_shape = (self.data_manager.img_channels,
-                           self.data_manager.img_rows,
-                           self.data_manager.img_cols)
-        else:
-            input_shape = (self.data_manager.img_rows,
-                           self.data_manager.img_cols,
-                           self.data_manager.img_channels)
+            # Create net architecure from general module
+            if K.image_data_format() != 'channels_last':
+                input_shape = (self.data_manager.img_channels,
+                               self.data_manager.img_rows,
+                               self.data_manager.img_cols)
+            else:
+                input_shape = (self.data_manager.img_rows,
+                               self.data_manager.img_cols,
+                               self.data_manager.img_channels)
 
-        if 'saved_arch' in net_param_dict:
+            mod_name = net_param_dict['arch_module']
+            if mod_name[0] != '.':
+                mod_name = '.' + mod_name
+            temp = importlib.import_module(mod_name, 'net_architectures')
+            build_architecture = getattr(temp, "build_architecture")
+            return build_architecture(input_shape,
+                                      self.nb_output_nodes,
+                                      net_param_dict['output_activation'])
+
+        elif ('saved_arch' in net_param_dict and
+              len(net_param_dict['saved_arch']) > 0):
+
             # Load architecture
             if net_param_dict['saved_arch'][-4:] == 'json':
                 with open(net_param_dict['saved_arch'], 'r') as f:
                     json_str = f.read()
-                    self.model = model_from_json(json_str)
+                    return model_from_json(json_str)
             elif net_param_dict['saved_arch'][-4:] == 'yaml':
                 with open(net_param_dict['saved_arch'], 'r') as f:
                     yaml_str = f.read()
-                    self.model = model_from_yaml(yaml_str)
+                    return model_from_yaml(yaml_str)
 
-            # Load weights
-            if net_param_dict['saved_weights'][-4:].lower() != 'last':
-                wt_file = net_param_dict['saved_weights']
-                
-            else:
-                net_dir = self.expt_dir
-                wt_files = [(os.path.join(net_dir,x),
-                             os.stat(os.path.join(net_dir,x)).st_mtime)
-                             for x in os.listdir(net_dir)
-                                if x[-3:] == '.h5']
-                wt_files = sorted(wt_files, key = itemgetter(1))
-                wt_file = wt_files[-1][0]
-                self.init_epoch = int(wt_file.split('_')[-1].split('.')[0])
-
-                # Hacky way of ensuring that continuing training from a saved point
-                # does not result in a faux encoding change
-                dm = self.data_manager
-                dm.curr_encoding_info['encoding_dict'] = dm.encoding_dict
-                dm.curr_encoding_info['label_dict'] = dm.label_dict
-                dm.curr_encoding_info['meta_encoding_dict'] = dm.meta_encoding_dict
-            self.model.load_weights(wt_file)
-                            
         else:
-            self.model = build_architecture(input_shape,
-                                            self.nb_output_nodes,
-                                            net_param_dict['output_activation'])
+            # Error
+            print("No architecure was specified in config file, either by 'arch_module' or 'saved_arch'")
+            sys.exit(0)
 
-            # Save net architecture, weights and class/encoding info
-            json_str = self.model.to_json()        
-            model_file = os.path.join(self.expt_dir,
-                                      self.expt_prefix + "_init.json")
-            open(model_file, "w").write(json_str)
+    def check_for_saved_model_weights(self, net_param_dict):
 
-            # Save initial net weights
-            if self.init_epoch == 0:
-                self.save_net("0")
+        # Load weights (if necessary)
+        if ('saved_weight_dir' not in net_param_dict or
+            len(net_param_dict['saved_weight_dir']) == 0):
+
+            # No saved weights - training from scratch
+            self.init_epoch = 0
+            print("Starting with weights from epoch %d" % self.init_epoch)
+            wt_file = None
+
+        else:
+            net_dir = net_param_dict['saved_weight_dir']
+            if ('saved_weight_iter' in net_param_dict and
+                len(net_param_dict['saved_weight_iter']) > 0):
+
+                net_iter = net_param_dict['saved_weight_iter']
+                if (net_iter.lower().strip() == 'last'):
+
+                    # Load from final iteration
+                    wt_files = [(os.path.join(net_dir, x),
+                                 os.stat(os.path.join(net_dir, x)).st_mtime)
+                                 for x in os.listdir(net_dir)
+                                 if x[-3:] == '.h5']
+                    wt_files = sorted(wt_files, key=itemgetter(1))
+                    wt_file = wt_files[-1][0]
+
+                elif is_int(net_iter):
+                    # Load weights from specified iteration (or closest
+                    # iteration prior to specified iteration)
+                    start_epoch = int(net_iter)
+                    wt_files = [(os.path.join(net_dir, x),
+                                 int(x.split('_')[-1].split('.')[0]))
+                                 for x in os.listdir(net_dir)
+                                 if x[-3:] == '.h5']
+                    wt_files = sorted(wt_files, key=itemgetter(1))
+                    for curr_wt_file in wt_files:
+                        if curr_wt_file[1] > start_epoch:
+                            break
+                        elif curr_wt_file[1] == start_epoch:
+                            wt_file = curr_wt_file[0]
+                            break
+                        else:
+                            wt_file = curr_wt_file[0]
+
+            else:
+                # Load weights from specific file name
+                # Assumes that default method of naming weight files
+                # was used so thst starting epoch may be read off
+                wt_file = net_param_dict['saved_weights']
+
+            self.init_epoch = int(wt_file.split('_')[-1].split('.')[0]) 
+            print("Starting with weights from epoch %d" % self.init_epoch)
+            if wt_file is not None:
+               print("   Loading wts from %s" % wt_file)
+            self.model.load_weights(wt_file)
+
+            # Hacky way of ensuring that continuing training from a saved point
+            # does not result in a faux encoding change
+            dm = self.data_manager
+            dm.curr_encoding_info['encoding_dict'] = dm.encoding_dict
+            dm.curr_encoding_info['label_dict'] = dm.label_dict
+            dm.curr_encoding_info['meta_encoding_dict'] = dm.meta_encoding_dict
+
+            # Copy info from orig expt to current expt. dir
+            orig_expt_copy_dir = os.path.join(self.expt_dir, "seed_expt")
+            try:
+                os.makedirs(orig_expt_copy_dir)
+            except OSError as exception:
+                if exception.errno != errno.EEXIST:
+                    raise
+
+            orig_expt_files = os.listdir(net_dir)
+            dup_files = [x for x in orig_expt_files
+                         if 'h5' not in x or x == wt_file.split('/')[-1]]
+            for curr_file in dup_files:
+                shutil.copy2(os.path.join(net_dir, curr_file), orig_expt_copy_dir)
+
 
     def train(self, data_augmentation=True, batch_size=32):
 
@@ -169,8 +242,16 @@ class NetManager(object):
               (init_train_loss, init_train_acc,
                init_test_loss, init_test_acc))
 
-        for rec_num in range(self.epochs/self.epochs_per_recording):
+        # Record initial responses before any training as epoch 0
+        epoch_str = 'Epoch ' + str(self.init_epoch) + ':  '
+        results_str1 = 'Train Acc: {:5.4f}  Train Loss {:5.4f}'.format(init_train_acc, init_train_loss)
+        results_str2 = 'Test Acc {:5.4f}  Test Loss {:5.4f}\n'.format(init_test_acc, init_test_loss)
+        results_str = epoch_str + '  '.join([results_str1, results_str2])
+        results_file.write(results_str)
+        self.save_net(self.init_epoch)
+        self.init_epoch += 1
 
+        for rec_num in range(self.epochs/self.epochs_per_recording):
             # Train Model
             if not data_augmentation:
                 print('Not using data augmentation.')
@@ -233,7 +314,7 @@ class NetManager(object):
                 results_file.write(results_str)
 
             if self.save_iters:
-                epoch_num = str((rec_num + 1)*self.epochs_per_recording + self.init_epoch)
+                epoch_num = str((rec_num+1)*self.epochs_per_recording + (self.init_epoch-1))
                 self.save_net(epoch_num)
         results_file.close()
 
@@ -252,17 +333,18 @@ class NetManager(object):
         print("Saving ", weights_file)
         self.model.save_weights(weights_file, overwrite=overwrite)
 
-        import pdb
-        pdb.set_trace()
         if (dm.encoding_dict == dm.curr_encoding_info['encoding_dict'] and
             dm.label_dict == dm.curr_encoding_info['label_dict']):
+
             print("No encoding change")
+
         else:
             dm.curr_encoding_info['encoding_dict'] = dm.encoding_dict
             dm.curr_encoding_info['label_dict'] = dm.label_dict
             dm.curr_encoding_info['meta_encoding_dict'] = dm.meta_encoding_dict
+
             encodings_file_name = self.expt_prefix + '_encodings_' + \
                 str(epoch_num) + '.pkl'
             print ("Saving", encodings_file_name)
-            pickle.dump(dm.curr_encoding_info,
-                        open(os.path.join(self.expt_dir, encodings_file_name), 'w'))
+            with open(os.path.join(self.expt_dir, encodings_file_name), 'w') as f:
+                pickle.dump(dm.curr_encoding_info, f)
