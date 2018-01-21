@@ -172,8 +172,8 @@ class Runner(object):
                 changed_files = '\n'.join(changed_file_list)
                 print(changed_files + '\n')
                 changes = repo.git.diff(branch_name)
-                print("Changes:\n")
-                print(changes + '\n')
+                #print("Changes:\n")
+                #print(changes + '\n')
                 print("=======================================\n")
             else:
                 changed_files = "None\n"

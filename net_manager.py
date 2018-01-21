@@ -97,7 +97,7 @@ class NetManager(object):
 
         # Summarize            
         self.summary()
-        print (self.data_manager.get_targets_str_sign())
+        #print (self.data_manager.get_targets_str_sign())
 
     def summary(self):
         print ("\n============================================================\n")
