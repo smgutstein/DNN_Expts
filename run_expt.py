@@ -38,6 +38,8 @@ class Runner(object):
         self.file_param_dict = self.get_param_dict('ExptFiles')        
         self.net_param_dict = self.get_param_dict('NetParams')
         self.expt_param_dict = self.get_param_dict('ExptParams')
+        self.saved_param_dict = self.get_param_dict('SavedParams')
+        
         self.expt_set_dir = self.file_param_dict['expt_set_dir']
         self.expt_dir = self.file_param_dict['expt_dir']
         if not hasattr(self, 'outdir'):
@@ -52,13 +54,10 @@ class Runner(object):
         self.encoding_module_param_dict = self.get_param_dict('EncodingModuleParams')
         self.metric_param_dict = self.get_param_dict('MetricParams')
 
-        if 'saved_encodings' in self.file_param_dict:
-            self.encoding_param_dict['saved_encodings'] = self.file_param_dict['saved_encodings'] 
-        shutil.copy(self.file_param_dict['encoding_cfg'],
-                    os.path.join(self.outdir,
-                                 os.path.basename(self.file_param_dict['encoding_cfg'])))
-
-        
+        if len(self.saved_param_dict) > 0:
+            shutil.copy(self.file_param_dict['encoding_cfg'],    
+                        os.path.join(self.outdir,
+                                     os.path.basename(self.file_param_dict['encoding_cfg'])))            
 
         self.config.read(self.net_param_dict['optimizer_cfg'])
         temp = self.get_param_dict('OptimizerParams')
@@ -72,13 +71,15 @@ class Runner(object):
         self.expt_dm = DataManager(self.net_param_dict['output_activation'],
                                    self.file_param_dict,
                                    self.encoding_param_dict,
-                                   self.encoding_module_param_dict)
+                                   self.encoding_module_param_dict,
+                                   self.saved_param_dict)
 
         self.expt_net = NetManager(self.expt_dm, self.outdir,
                                    self.net_param_dict,
                                    self.expt_param_dict,
                                    self.metric_param_dict,
-                                   self.optimizer_param_dict)
+                                   self.optimizer_param_dict,
+                                   self.saved_param_dict)
         return True
 
     
@@ -104,11 +105,14 @@ class Runner(object):
             yield curr_config_file
 
     def get_param_dict(self, dict_name):
-        
-        params = self.config.items(dict_name)
+
         param_dict = {}
-        for curr_pair in params:
-            param_dict[curr_pair[0]] = curr_pair[1]
+        try:
+            params = self.config.items(dict_name)
+            for curr_pair in params:
+                param_dict[curr_pair[0]] = curr_pair[1]
+        except ConfigParser.NoSectionError: 
+            pass
         return param_dict
 
     def make_sure_outdir_exists(self, path):

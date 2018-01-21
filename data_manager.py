@@ -19,7 +19,8 @@ class DataManager(object):
     def __init__(self, encoding_activation_fnc,
                  file_param_dict,
                  encoding_param_dict,
-                 encoding_module_param_dict):
+                 encoding_module_param_dict,
+                 saved_param_dict):
 
         # Specify number of output nodes in net (i.e. number of bits in encoding)
         self.nb_code_bits = int(encoding_param_dict['nb_code_bits'])
@@ -39,11 +40,10 @@ class DataManager(object):
         joint_dict['encoding_activation_fnc'] = encoding_activation_fnc
 
         # If recovering saved net, ensure that the encoding used for that net is recovered
-        if (('saved_encodings' in file_param_dict) and
-            ((file_param_dict['saved_encodings'] != '') and
-             (file_param_dict['saved_encodings'] != 'None'))):
+        if len(saved_param_dict) > 0:
             self.encoding_module = "recover_encoding"
-            joint_dict['saved_encodings'] = file_param_dict['saved_encodings']
+            joint_dict['saved_encodings'] = os.path.join(saved_param_dict['saved_dir'],
+                                                         saved_param_dict['saved_encodings'])
         else:
             self.encoding_module = encoding_module_param_dict['encoding_module']
             

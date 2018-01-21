@@ -27,6 +27,7 @@ class NetManager(object):
                  expt_param_dict,
                  metric_param_dict,
                  optimizer_param_dict,
+                 saved_param_dict,
                  batch_size=32,
                  data_augmentation=True,
                  save_iters=True):
@@ -77,8 +78,10 @@ class NetManager(object):
                                     # by use of local_metrics
 
         print("Initializing architecture ...")
-        self.model = self.init_model_architecture(net_param_dict)
-        self.check_for_saved_model_weights(net_param_dict)
+        self.model = self.init_model_architecture(net_param_dict,
+                                                  saved_param_dict)
+        self.check_for_saved_model_weights(net_param_dict,
+                                           saved_param_dict)
 
         # Save net architecture
         json_str = self.model.to_json()
@@ -107,7 +110,7 @@ class NetManager(object):
         self.model.summary()
         print ("\n============================================================\n")
 
-    def init_model_architecture(self, net_param_dict):
+    def init_model_architecture(self, net_param_dict, saved_param_dict):
         # Import Architecture
         if ('arch_module' in net_param_dict and
             len(net_param_dict['arch_module']) > 0):
@@ -131,16 +134,19 @@ class NetManager(object):
                                       self.nb_output_nodes,
                                       net_param_dict['output_activation'])
 
-        elif ('saved_arch' in net_param_dict and
-              len(net_param_dict['saved_arch']) > 0):
+        elif (len(saved_param_dict) > 0 and
+              'saved_arch' in saved_param_dict and
+              len(saved_param_dict['saved_arch']) > 0):
 
             # Load architecture
-            if net_param_dict['saved_arch'][-4:] == 'json':
-                with open(net_param_dict['saved_arch'], 'r') as f:
+            if saved_param_dict['saved_arch'][-4:] == 'json':
+                with open(os.path.join(saved_param_dict['saved_dir'],
+                                       saved_param_dict['saved_arch']), 'r') as f:
                     json_str = f.read()
                     return model_from_json(json_str)
-            elif net_param_dict['saved_arch'][-4:] == 'yaml':
-                with open(net_param_dict['saved_arch'], 'r') as f:
+            elif saved_param_dict['saved_arch'][-4:] == 'yaml':
+                with open(os.path.join(saved_param_dict['saved_dir'],
+                                       saved_param_dict['saved_arch']), 'r') as f:
                     yaml_str = f.read()
                     return model_from_yaml(yaml_str)
 
@@ -149,11 +155,12 @@ class NetManager(object):
             print("No architecure was specified in config file, either by 'arch_module' or 'saved_arch'")
             sys.exit(0)
 
-    def check_for_saved_model_weights(self, net_param_dict):
+    def check_for_saved_model_weights(self, net_param_dict, saved_param_dict):
 
         # Load weights (if necessary)
-        if ('saved_weight_dir' not in net_param_dict or
-            len(net_param_dict['saved_weight_dir']) == 0):
+        if (len(saved_param_dict) == 0 or
+            ('saved_dir' not in saved_param_dict and
+            len(saved_param_dict['saved_dir']) == 0)):
 
             # No saved weights - training from scratch
             self.init_epoch = 0
@@ -161,11 +168,11 @@ class NetManager(object):
             wt_file = None
 
         else:
-            net_dir = net_param_dict['saved_weight_dir']
-            if ('saved_weight_iter' in net_param_dict and
-                len(net_param_dict['saved_weight_iter']) > 0):
+            net_dir = saved_param_dict['saved_dir']
+            if ('saved_weight_iter' in saved_param_dict and
+                len(saved_param_dict['saved_weight_iter']) > 0):
 
-                net_iter = net_param_dict['saved_weight_iter']
+                net_iter = saved_param_dict['saved_weight_iter']
                 if (net_iter.lower().strip() == 'last'):
 
                     # Load from final iteration
@@ -197,8 +204,9 @@ class NetManager(object):
             else:
                 # Load weights from specific file name
                 # Assumes that default method of naming weight files
-                # was used so thst starting epoch may be read off
-                wt_file = net_param_dict['saved_weights']
+                # was used so that starting epoch may be read off as
+                # number after last '_', before extension 
+                wt_file = saved_param_dict['saved_weights']
 
             self.init_epoch = int(wt_file.split('_')[-1].split('.')[0]) 
             print("Starting with weights from epoch %d" % self.init_epoch)
