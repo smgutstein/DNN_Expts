@@ -70,7 +70,13 @@ class DataManager(object):
         self.X_train = self.X_train.astype('float32')
         self.X_test = self.X_test.astype('float32')
 
-        _, self.img_rows, self.img_cols, self.img_channels = self.X_train.shape
+        _, temp1, temp2, temp3 = self.X_train.shape
+        if min(temp1, temp2, temp3) == temp3:
+            # Data channels last
+            _, self.img_rows, self.img_cols, self.img_channels = self.X_train.shape
+        elif min(temp1, temp2, temp3) == temp1:
+            # Data channels first
+            _, self.img_channels, self.img_rows, self.img_cols = self.X_train.shape
                         
         # Rescale raw data
         self.X_train /= 255.
