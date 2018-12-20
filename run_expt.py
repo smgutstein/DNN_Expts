@@ -8,6 +8,9 @@ import os
 import shutil
 import sys
 
+# Guarantee Theano backend
+os.environ["KERAS_BACKEND"] = "theano"
+
 # Capture output with theano/keras & gpu info
 expt_log = Logger()
 import keras
