@@ -6,7 +6,11 @@ import errno
 from expt_logger import Logger
 import os
 import shutil
+import socket
 import sys
+
+# Guarantee Theano backend
+os.environ["KERAS_BACKEND"] = "theano"
 
 # Capture output with theano/keras & gpu info
 expt_log = Logger()
@@ -26,6 +30,7 @@ class Runner(object):
     def __init__(self):
         self.config = ConfigParser.ConfigParser()
         self.cmd_line_args = self.get_cmd_line_args()
+        self.host_machine = socket.gethostname()
 
     def set_params(self):
         try:
@@ -41,7 +46,7 @@ class Runner(object):
         self.saved_param_dict = self.get_param_dict('SavedParams')
         
         self.expt_set_dir = self.file_param_dict['expt_set_dir']
-        self.expt_dir = self.file_param_dict['expt_dir']
+        self.expt_dir = self.host_machine + "_" + self.file_param_dict['expt_dir']
         if not hasattr(self, 'outdir'):
             self.outdir = self.make_outdir(self.expt_set_dir, self.expt_dir)
         shutil.copy(self.expt_file_name,
