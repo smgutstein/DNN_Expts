@@ -10,9 +10,9 @@ import sys
 
 # Capture output with theano/keras & gpu info
 expt_log = Logger()
-import keras
-from net_manager import NetManager
-from data_manager import DataManager
+#import keras
+#from net_manager import NetManager
+#from data_manager import DataManager
 
 def is_number(in_str):
     try:
@@ -93,7 +93,22 @@ class Runner(object):
             description="Run Keras Expt With Specified Output Encoding")
         parser.add_argument('config_files', action='store',
                             type=str, nargs='*', default='')
+        parser.add_argument('-gpu', type=str, default='cuda0',
+                            action='store', help='chosen GPU')
+
         cmd_line_args = parser.parse_args()
+        
+        # Choose specific GPU
+        theano_flags = 'mode=FAST_RUN, device=' + cmd_line_args.gpu + ', floatX=32'
+        os.environ['THEANO_FLAGS'] = theano_flags
+
+        global keras
+        global NetManager
+        global DataManager
+        import keras
+        from net_manager import NetManager
+        from data_manager import DataManager
+
 
         for curr_config_file in (cmd_line_args.config_files):
 
@@ -103,6 +118,7 @@ class Runner(object):
                 os._exit(1)
 
             yield curr_config_file
+
 
     def get_param_dict(self, dict_name):
 
@@ -146,16 +162,24 @@ class Runner(object):
     def store_git_meta_data(self):
 
         try:
-            from git import Repo
+            from git import Repo, InvalidGitRepositoryError
 
-            keras_repo = Repo(os.path.dirname(keras.__path__[0]))
-            keras_branch_name = str(keras_repo.active_branch)
-            keras_commit_num = str(keras_repo.head.commit)
+            try:
+                keras_repo = Repo(os.path.dirname(keras.__path__[0]))
+                keras_branch_name = str(keras_repo.active_branch)
+                keras_commit_num = str(keras_repo.head.commit)
+            except InvalidGitRepositoryError:
+                print("No git repository found for keras")
+                keras_branch_name = "Version: " + str(keras.__version__)
+                keras_commit_num = "N/A"
 
             backend_name = keras.backend._BACKEND
             if backend_name == 'theano':
                 temp = keras.backend.theano_backend.theano.__version__.split('-')
-                backend_version = '-'.join([temp[0], temp[1][0:8]])
+                if len(temp) > 1:
+                    backend_version = '-'.join([temp[0], temp[1][0:8]])
+                else:
+                    backend_version = temp[0]
             else:
                 backend_version = "Unknown for " + backend_name
 
