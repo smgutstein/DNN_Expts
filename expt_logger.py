@@ -11,7 +11,20 @@ class Logger(object):
     def __init__(self, filename="Expt_output.log"):
         self.filename = filename
         self.terminal = sys.stdout
-        self.log = open(filename, "a")
+        self.suffix = '_v'
+        ctr = 0
+        done = False
+        while not done:
+            self.tempname = self.filename + self.suffix + str(ctr)
+            if os.path.isfile(self.tempname):
+                ctr += 1
+            else:
+                self.log = open(self.tempname, "w")
+                done = True
+        
+        #self.log = open(filename, "a")
+
+        
         self.stdout = sys.stdout
         self.stderr = sys.stderr
         sys.stderr = sys.stdout = self
@@ -35,6 +48,6 @@ class Logger(object):
     def close_log(self, log_dir=''):
         self.log.close()
         if log_dir != '':
-            shutil.move(self.filename,
+            shutil.move(self.tempname,
                         os.path.join(log_dir, self.filename))
         print ("Saving log file to {}".format(os.path.join(log_dir, self.filename)))

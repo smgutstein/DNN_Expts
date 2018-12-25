@@ -14,9 +14,6 @@ os.environ["KERAS_BACKEND"] = "theano"
 
 # Capture output with theano/keras & gpu info
 expt_log = Logger()
-#import keras
-#from net_manager import NetManager
-#from data_manager import DataManager
 
 def is_number(in_str):
     try:
@@ -98,7 +95,7 @@ class Runner(object):
             description="Run Keras Expt With Specified Output Encoding")
         parser.add_argument('config_files', action='store',
                             type=str, nargs='*', default='')
-        parser.add_argument('-gpu', type=str, default='cuda0',
+        parser.add_argument('--gpu', '-g', type=str, default='cuda0',
                             action='store', help='chosen GPU')
 
         cmd_line_args = parser.parse_args()
@@ -253,4 +250,5 @@ if __name__ == '__main__':
     x = Runner()
     while x.set_params():
         x.run_expt()
+    print ("Closing log " + x.outdir)
     expt_log.close_log(x.outdir)
