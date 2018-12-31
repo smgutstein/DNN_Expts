@@ -37,9 +37,40 @@ def hot_not_hot_1_0(**kwargs):
 
     return hot, not_hot
 
+
 def hot_not_hot_1_neg1(**kwargs):
     hot = 1.0
     not_hot = -1.0
+
+    return hot, not_hot
+
+def hot_not_hot_95_neg95(**kwargs):
+    hot = 0.95
+    not_hot = -0.95
+
+    return hot, not_hot
+
+def hot_not_hot_90_neg90(**kwargs):
+    hot = 0.90
+    not_hot = -0.90
+
+    return hot, not_hot
+
+def hot_not_hot_85_neg85(**kwargs):
+    hot = 0.85
+    not_hot = -0.85
+
+    return hot, not_hot
+
+def hot_not_hot_87_neg87(**kwargs):
+    hot = 0.87
+    not_hot = -0.87
+
+    return hot, not_hot
+
+def hot_not_hot_5_neg5(**kwargs):
+    hot = 0.5
+    not_hot = -0.5
 
     return hot, not_hot
 
