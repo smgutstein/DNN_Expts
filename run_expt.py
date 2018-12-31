@@ -103,6 +103,7 @@ class Runner(object):
         # Choose specific GPU
         theano_flags = 'mode=FAST_RUN, device=' + cmd_line_args.gpu + ', floatX=32'
         os.environ['THEANO_FLAGS'] = theano_flags
+        self.gpu = cmd_line_args.gpu
 
         global keras
         global NetManager
@@ -149,7 +150,7 @@ class Runner(object):
         done = False
         suffix = ''
         while not done:
-            curr_output_dir = os.path.join(main_dir, expt_dir + suffix)
+            curr_output_dir = os.path.join(main_dir, expt_dir + suffix + '_' + self.gpu)
             if not os.path.isdir(curr_output_dir):
                 self.make_sure_outdir_exists(curr_output_dir)
                 done = True
