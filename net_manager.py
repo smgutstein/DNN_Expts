@@ -73,9 +73,9 @@ class NetManager(object):
         if metric_fnc_args.args == ['y_encode']:
             metric_fnc = metric_fnc(self.data_manager.encoding_matrix)
         self.acc_metric = metric_param_dict['accuracy_metric']
-        metric_fnc.__name__ = 'acc' # Hacky solution to make sure
-                                    # keras output strings are unaffected
-                                    # by use of local_metrics
+        metric_fnc.__name__ = 'acc'  # Hacky solution to make sure
+                                     # keras output strings are unaffected
+                                     # by use of local_metrics
 
         print("Initializing architecture ...")
         self.model = self.init_model_architecture(net_param_dict,
@@ -97,7 +97,7 @@ class NetManager(object):
 
         # Summarize            
         self.summary()
-        #print (self.data_manager.get_targets_str_sign())
+        # print (self.data_manager.get_targets_str_sign())
 
     def summary(self):
         print ("\n============================================================\n")
@@ -160,7 +160,7 @@ class NetManager(object):
         # Load weights (if necessary)
         if (len(saved_param_dict) == 0 or
             ('saved_dir' not in saved_param_dict and
-            len(saved_param_dict['saved_dir']) == 0)):
+             len(saved_param_dict['saved_dir']) == 0)):
 
             # No saved weights - training from scratch
             self.init_epoch = 0
@@ -173,7 +173,7 @@ class NetManager(object):
                 len(saved_param_dict['saved_weight_iter']) > 0):
 
                 net_iter = saved_param_dict['saved_weight_iter']
-                if (net_iter.lower().strip() == 'last'):
+                if net_iter.lower().strip() == 'last':
 
                     # Load from final iteration
                     wt_files = [(os.path.join(net_dir, x),
@@ -234,7 +234,6 @@ class NetManager(object):
                          if 'h5' not in x or x == wt_file.split('/')[-1]]
             for curr_file in dup_files:
                 shutil.copy2(os.path.join(net_dir, curr_file), orig_expt_copy_dir)
-
 
     def train(self, data_augmentation=True, batch_size=32):
 
