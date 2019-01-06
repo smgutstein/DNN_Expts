@@ -42,8 +42,13 @@ class DataManager(object):
         # If recovering saved net, ensure that the encoding used for that net is recovered
         if len(saved_param_dict) > 0:
             self.encoding_module = "recover_encoding"
-            joint_dict['saved_encodings'] = os.path.join(saved_param_dict['saved_dir'],
-                                                         saved_param_dict['saved_encodings'])
+            joint_dict['saved_encodings'] = \
+                os.path.join(saved_param_dict['saved_set_dir'],
+                             saved_param_dict['saved_dir'],
+                             saved_param_dict['saved_dir'] +
+                             '_encodings_' +
+                             saved_param_dict['saved_encodings_iter'] +
+                             '.pkl')
         else:
             self.encoding_module = encoding_module_param_dict['encoding_module']
             

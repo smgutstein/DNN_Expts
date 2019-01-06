@@ -135,32 +135,36 @@ class NetManager(object):
                                       net_param_dict['output_activation'])
 
         elif (len(saved_param_dict) > 0 and
-              'saved_arch' in saved_param_dict and
-              len(saved_param_dict['saved_arch']) > 0):
+              'saved_arch_format' in saved_param_dict and
+              len(saved_param_dict['saved_arch_format']) > 0):
 
             # Load architecture
-            if saved_param_dict['saved_arch'][-4:] == 'json':
-                with open(os.path.join(saved_param_dict['saved_dir'],
-                                       saved_param_dict['saved_arch']), 'r') as f:
+            with open(os.path.join(saved_param_dict['saved_set_dir'],
+                                   saved_param_dict['saved_dir'],
+                                   saved_param_dict['saved_dir'] + '.' +
+                                   saved_param_dict['saved_arch']), 'r') as f:
+
+                if saved_param_dict['saved_arch_format'][-4:] == 'json':
                     json_str = f.read()
                     return model_from_json(json_str)
-            elif saved_param_dict['saved_arch'][-4:] == 'yaml':
-                with open(os.path.join(saved_param_dict['saved_dir'],
-                                       saved_param_dict['saved_arch']), 'r') as f:
+                elif saved_param_dict['saved_arch'][-4:] == 'yaml':
                     yaml_str = f.read()
                     return model_from_yaml(yaml_str)
-
-        else:
-            # Error
-            print("No architecure was specified in config file, either by 'arch_module' or 'saved_arch'")
-            sys.exit(0)
+                else:
+                    # Error
+                    print("No architecure was specified in config file, either by 'arch_module' or 'saved_arch'")
+                    sys.exit(0)
 
     def check_for_saved_model_weights(self, net_param_dict, saved_param_dict):
 
+
+
         # Load weights (if necessary)
         if (len(saved_param_dict) == 0 or
-            ('saved_dir' not in saved_param_dict and
-             len(saved_param_dict['saved_dir']) == 0)):
+            ('saved_set_dir' not in saved_param_dict or
+             'saved_dir' not in saved_param_dict or
+             'saved_iter' not in saved_param_dict
+             )):
 
             # No saved weights - training from scratch
             self.init_epoch = 0
@@ -168,11 +172,12 @@ class NetManager(object):
             wt_file = None
 
         else:
-            net_dir = saved_param_dict['saved_dir']
-            if ('saved_weight_iter' in saved_param_dict and
-                len(saved_param_dict['saved_weight_iter']) > 0):
+            net_dir = os.path.join(saved_param_dict['saved_set_dir'],
+                                   saved_param_dict['saved_dir'])
+            net_iter = saved_param_dict['saved_iter']
 
-                net_iter = saved_param_dict['saved_weight_iter']
+            if ('saved_weights_file' not in saved_param_dict):
+
                 if net_iter.lower().strip() == 'last':
 
                     # Load from final iteration
@@ -182,33 +187,28 @@ class NetManager(object):
                                  if x[-3:] == '.h5']
                     wt_files = sorted(wt_files, key=itemgetter(1))
                     wt_file = wt_files[-1][0]
+                    self.init_epoch = int(wt_file.split('_')[-1].split('.')[0])
 
                 elif is_int(net_iter):
                     # Load weights from specified iteration (or closest
                     # iteration prior to specified iteration)
-                    start_epoch = int(net_iter)
-                    wt_files = [(os.path.join(net_dir, x),
-                                 int(x.split('_')[-1].split('.')[0]))
-                                 for x in os.listdir(net_dir)
-                                 if x[-3:] == '.h5']
-                    wt_files = sorted(wt_files, key=itemgetter(1))
-                    for curr_wt_file in wt_files:
-                        if curr_wt_file[1] > start_epoch:
-                            break
-                        elif curr_wt_file[1] == start_epoch:
-                            wt_file = curr_wt_file[0]
-                            break
-                        else:
-                            wt_file = curr_wt_file[0]
+                    self.init_epoch = int(net_iter)
+                    wt_file = os.path.join(net_dir, saved_param_dict['saved_dir'] +
+                                           '_weights_' + saved_param_dict['saved_iter'] +
+                                           '.h5')
 
-            else:
+            elif 'saved_weights_file' in saved_param_dict:
                 # Load weights from specific file name
                 # Assumes that default method of naming weight files
                 # was used so that starting epoch may be read off as
                 # number after last '_', before extension 
-                wt_file = saved_param_dict['saved_weights']
+                wt_file = os.path.join(net_dir, saved_param_dict['saved_weights'])
 
-            self.init_epoch = int(wt_file.split('_')[-1].split('.')[0]) 
+                if int(net_iter):
+                    self.init_epoch = int(net_iter)
+                else:
+                    sys.exit("Iteration number must be given when " +
+                             "a saved weight file is explicitly named")
             print("Starting with weights from epoch %d" % self.init_epoch)
             if wt_file is not None:
                print("   Loading wts from %s" % wt_file)
