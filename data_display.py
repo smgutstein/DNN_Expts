@@ -30,7 +30,7 @@ class Data_Display(object):
         
     def start_display(self):
         self.show_image()
-        plt.ion()
+        #plt.ion()
         plt.show()
 
     def show_image(self):
