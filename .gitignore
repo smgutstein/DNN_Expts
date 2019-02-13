@@ -18,3 +18,7 @@ cifar_100_expts/
 cifar_200_expts/
 cifar_400_expts/
 *h5
+Expt_output.log*
+ECOC_repo.bundle
+cfg_dir/expt_random_cifar100_i*cfg
+cfg_dir/expt_softmax_cifar100_i*cfg
