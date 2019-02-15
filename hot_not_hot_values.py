@@ -5,6 +5,7 @@ from theano import function as Tfunc
 
 
 def hot_not_hot_2nd_deriv_max(**kwargs):
+    '''
     x = T.dscalar()
     f = activations.get(kwargs['encoding_activation_fnc'])
     y = f(x)
@@ -18,6 +19,10 @@ def hot_not_hot_2nd_deriv_max(**kwargs):
     Y = Tfunc([x], y)
     hot = float(Y(hot_x))
     not_hot = float(Y(not_hot_x))
+    '''
+    hot = 0.5773502691896256
+    not_hot = -0.5773502691896256
+    print("Hot/Not_Hot optimized for tanh")
 
     return hot, not_hot
 
