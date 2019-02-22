@@ -10,7 +10,7 @@ import socket
 import sys
 
 # Guarantee Theano backend
-os.environ["KERAS_BACKEND"] = "theano"
+# os.environ["KERAS_BACKEND"] = "theano"
 
 # Capture output with theano/keras & gpu info
 expt_log = Logger()
@@ -95,19 +95,22 @@ class Runner(object):
             description="Run Keras Expt With Specified Output Encoding")
         parser.add_argument('config_files', action='store',
                             type=str, nargs='*', default='')
-        parser.add_argument('--gpu', '-g', type=str, default='cuda0',
+        parser.add_argument('--gpu', '-g', type=str, default='*',
                             action='store', help='chosen GPU')
 
         cmd_line_args = parser.parse_args()
-        
+
         # Choose specific GPU
-        theano_flags = 'mode=FAST_RUN, device=' + cmd_line_args.gpu + ', floatX=32'
-        os.environ['THEANO_FLAGS'] = theano_flags
+        os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
+        if cmd_line_args.gpu != '*':
+            os.environ['CUDA_VISIBLE_DEVICES'] = cmd_line_args.gpu
+        os.environ['THEANO_FLAGS'] = 'floatX=32, mode=FAST_RUN, device=cuda'
         self.gpu = cmd_line_args.gpu
 
         global keras
         global NetManager
         global DataManager
+
         import keras
         from net_manager import NetManager
         from data_manager import DataManager

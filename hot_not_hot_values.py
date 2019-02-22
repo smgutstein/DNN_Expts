@@ -1,7 +1,7 @@
 from keras import activations
 import scipy
-from theano import tensor as T
-from theano import function as Tfunc
+#from theano import tensor as T
+#from theano import function as Tfunc
 
 
 def hot_not_hot_2nd_deriv_max(**kwargs):
