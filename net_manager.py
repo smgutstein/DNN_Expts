@@ -5,7 +5,9 @@ import importlib
 import inspect
 from keras.preprocessing.image import ImageDataGenerator
 from keras import backend as K
+from keras.callbacks import BaseLogger, ModelCheckpoint
 from keras.models import model_from_json, model_from_yaml
+from keras_loggers import TrainingMonitor
 from operator import itemgetter
 import os
 import pickle
@@ -30,7 +32,8 @@ class NetManager(object):
                  saved_param_dict,
                  batch_size=32,
                  data_augmentation=True,
-                 save_iters=True):
+                 save_iters=True,
+                 save_best_n=5):
 
         self.init_epoch = 0
         self.epochs = int(expt_param_dict['epochs'])
@@ -44,6 +47,9 @@ class NetManager(object):
             self.epochs_per_recording = int(expt_param_dict['epochs_per_recording'])
         else:
             self.epochs_per_recording = self.epochs
+        self.tot_rec_sets = self.epochs/self.epochs_per_recording
+        self.save_best_n = save_best_n
+        self.best_n = 0
 
         # Ensure expt output dir exists
         if expt_dir is not None:
@@ -237,7 +243,13 @@ class NetManager(object):
 
     def train(self, data_augmentation=True, batch_size=32):
 
-        results_file = open(os.path.join(self.expt_dir, 'results.txt'), 'a')
+        #results_file = open(os.path.join(self.expt_dir, 'results.txt'), 'a')
+        results_path = os.path.join(self.expt_dir, 'results.txt')
+        fig_path = os.path.join(self.expt_dir, 'results.png')
+        json_path = os.path.join(self.expt_dir, 'results.json')
+        training_monitor = TrainingMonitor(fig_path, jsonPath=json_path, resultsPath = results_path)
+        callbacks = [training_monitor]
+        
         init_train_loss, init_train_acc = \
         self.model.evaluate(self.data_manager.X_train,
                             self.data_manager.Y_train)
@@ -248,17 +260,22 @@ class NetManager(object):
               "%0.5f - acc: %0.5f - val_loss: %0.5f - val_acc: %0.5f" %
               (init_train_loss, init_train_acc,
                init_test_loss, init_test_acc))
+        training_monitor.on_train_begin()
+        training_monitor.on_epoch_end(epoch=0,logs = {'loss': init_train_loss,
+                                                      'acc':  init_train_acc,
+                                                      'val_loss': init_test_loss,
+                                                      'val_acc': init_test_acc})
 
         # Record initial responses before any training as epoch 0
-        epoch_str = 'Epoch ' + str(self.init_epoch) + ':  '
-        results_str1 = 'Train Acc: {:5.4f}  Train Loss {:5.4f}'.format(init_train_acc, init_train_loss)
-        results_str2 = 'Test Acc {:5.4f}  Test Loss {:5.4f}\n'.format(init_test_acc, init_test_loss)
-        results_str = epoch_str + '  '.join([results_str1, results_str2])
-        results_file.write(results_str)
+        #epoch_str = 'Epoch ' + str(self.init_epoch) + ':  '
+        #results_str1 = 'Train Acc: {:5.4f}  Train Loss {:5.4f}'.format(init_train_acc, init_train_loss)
+        #results_str2 = 'Test Acc {:5.4f}  Test Loss {:5.4f}\n'.format(init_test_acc, init_test_loss)
+        #results_str = epoch_str + '  '.join([results_str1, results_str2])
+        #results_file.write(results_str)
         self.save_net(self.init_epoch)
         self.init_epoch += 1
 
-        for rec_num in range(self.epochs/self.epochs_per_recording):
+        for rec_num in range(self.tot_rec_sets):
             # Train Model
             if not data_augmentation:
                 print('Not using data augmentation.')
@@ -270,6 +287,7 @@ class NetManager(object):
                                          steps_per_epoch=dm.X_train.shape[0] // batch_size,
                                          validation_data=(dm.X_test,
                                                           dm.Y_test),
+                                         callbacks=callbacks,
                                          shuffle=True)
             else:
                 print('Using real-time data augmentation.')
@@ -301,29 +319,30 @@ class NetManager(object):
                                                    steps_per_epoch=(dm.X_train.shape[0] //
                                                                     self.batch_size),
                                                    epochs=self.epochs_per_recording,
+                                                   callbacks = callbacks,
                                                    validation_data=(dm.X_test, dm.Y_test))
 
             rh = results.history
 
             # Assumes only two metrics are 'loss' and name of accuracy metric
-            temp = set(self.model.metrics_names) - set(['loss'])
-            tr_acc_name = temp.pop()
-            va_acc_name = 'val_' + tr_acc_name
+            #temp = set(self.model.metrics_names) - set(['loss'])
+            #tr_acc_name = temp.pop()
+            #va_acc_name = 'val_' + tr_acc_name
             
-            for ctr, (tr_acc, tr_loss, te_acc, te_loss) in enumerate(zip(rh[tr_acc_name],
-                                                                         rh['loss'],
-                                                                         rh[va_acc_name],
-                                                                         rh['val_loss'])):
-                epoch_str = 'Epoch ' + str(ctr + self.init_epoch + rec_num*self.epochs_per_recording) + ':  '
-                results_str1 = 'Train Acc: {:5.4f}  Train Loss {:5.4f}'.format(tr_acc, tr_loss)
-                results_str2 = 'Test Acc {:5.4f}  Test Loss {:5.4f}\n'.format(te_acc, te_loss)
-                results_str = epoch_str + '  '.join([results_str1, results_str2])
-                results_file.write(results_str)
+            #for ctr, (tr_acc, tr_loss, te_acc, te_loss) in enumerate(zip(rh[tr_acc_name],
+            #                                                             rh['loss'],
+            #                                                             rh[va_acc_name],
+            #                                                             rh['val_loss'])):
+            #    epoch_str = 'Epoch ' + str(ctr + self.init_epoch + rec_num*self.epochs_per_recording) + ':  '
+            #    results_str1 = 'Train Acc: {:5.4f}  Train Loss {:5.4f}'.format(tr_acc, tr_loss)
+            #    results_str2 = 'Test Acc {:5.4f}  Test Loss {:5.4f}\n'.format(te_acc, te_loss)
+            #    results_str = epoch_str + '  '.join([results_str1, results_str2])
+            #    results_file.write(results_str)
 
             if self.save_iters:
                 epoch_num = str((rec_num+1)*self.epochs_per_recording + (self.init_epoch-1))
                 self.save_net(epoch_num)
-        results_file.close()
+        #results_file.close()
 
     def save_net(self, epoch_num):
         # Save net weights
