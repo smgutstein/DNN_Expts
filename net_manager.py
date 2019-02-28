@@ -247,8 +247,10 @@ class NetManager(object):
         results_path = os.path.join(self.expt_dir, 'results.txt')
         fig_path = os.path.join(self.expt_dir, 'results.png')
         json_path = os.path.join(self.expt_dir, 'results.json')
+        checkpoint_path = os.path.join(self,expt_dir,"checkpoint")
         training_monitor = TrainingMonitor(fig_path, jsonPath=json_path, resultsPath = results_path)
-        callbacks = [training_monitor]
+        checkpointer = ModelCheckpoint(checkpoint_path, verbose=1, data_manager=self.data_manager)
+        callbacks = [training_monitor, checkpointer]
         
         init_train_loss, init_train_acc = \
         self.model.evaluate(self.data_manager.X_train,

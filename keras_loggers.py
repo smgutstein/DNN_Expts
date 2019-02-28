@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import json
 import os
+import pickle
+import shutil
 
 
 class ModelCheckpoint(Callback):
@@ -37,17 +39,20 @@ class ModelCheckpoint(Callback):
         period: Interval (number of epochs) between checkpoints.
     """
 
-    def __init__(self, filepath, monitor='val_loss', verbose=0,
-                 save_best_only=False, save_weights_only=False,
-                 mode='auto', period=1):
+    def __init__(self, filepath, monitor='val_acc', verbose=0,
+                 save_best=True, save_most_recent=True, save_weights_only=False,
+                 mode='auto', period=1, data__manager=None):
         super(ModelCheckpoint, self).__init__()
         self.monitor = monitor
         self.verbose = verbose
         self.filepath = filepath
-        self.save_best_only = save_best_only
+        self.save_best = save_best
+        self.save_most_recent = save_most_recent
         self.save_weights_only = save_weights_only
         self.period = period
         self.epochs_since_last_save = 0
+        self.data_manager = data_manager
+        self.best_epoch = None
 
         if mode not in ['auto', 'min', 'max']:
             warnings.warn('ModelCheckpoint mode %s is unknown, '
@@ -69,7 +74,7 @@ class ModelCheckpoint(Callback):
                 self.monitor_op = np.less
                 self.best = np.Inf
 
-    def save_best(self, epoch, filepath, logs=None):
+    def save_best_model(self, epoch, logs={}):
 
         current = logs.get(self.monitor)
         if current is None:
@@ -82,55 +87,78 @@ class ModelCheckpoint(Callback):
                           ' saving model to %s'
                           % (epoch + 1, self.monitor, self.best,
                              current, filepath))
-                self.best = current
+
+                # Remove prior best model
+                curr_best_file = self.filepath + "_best_weights_" + str(self.best) + ".h5"
+                if os.path.isfile(curr_best_file):
+                    os.remove(curr_best_file)
+
+                # Remove prior best encodings and save new best encodings
+                self.save_data_manager(self.best, epoch, "_best_weights_")
+
+                # Save new best model
+                self.best = epoch
+                outfile = self.filepath + "_best_weights_" + str(self.best) + ".h5"
                 if self.save_weights_only:
-                    self.model.save_weights(filepath, overwrite=True)
+                    self.model.save_weights(outfile, overwrite=True)
                 else:
-                    self.model.save(filepath, overwrite=True)
+                    self.model.save(outfile, overwrite=True)
+
             else:
                 if self.verbose > 0:
                     print('\nEpoch %05d: %s did not improve from %0.5f' %
                           (epoch + 1, self.monitor, self.best))
 
+
+    def save_data_manager(self, old_epoch, new_epoch, save_type):
         
+
+        if (self.data_manager.encoding_dict == self.data_manager.curr_encoding_info['encoding_dict'] and
+            self.data_manager.label_dict == self.data_manager.curr_encoding_info['label_dict']):
+
+            print("No encoding change")
+
+        else:
+            self.data_manager.curr_encoding_info['encoding_dict'] = self.data_manager.encoding_dict
+            self.data_manager.curr_encoding_info['label_dict'] = self.data_manager.label_dict
+            self.data_manager.curr_encoding_info['meta_encoding_dict'] = self.data_manager.meta_encoding_dict
+
+            encodings_file_name = filepath + '_' + save_type + '_' + str(old_epoch) + '.pkl'
+            if os.path.isfile(encodings_file_name):
+                os.remove(encodings_file_name)
+
+
+            encodings_file_name = filepath + '_' + save_type + '_' + str(new_epoch) + '.pkl'
+            print ("Saving", encodings_file_name)
+            with open(outfile, 'w') as f:
+                pickle.dump(self.data_manager.curr_encoding_info, f)
+
+    def save_net(self, trgt_file):
+        
+        if self.save_weights_only:
+            self.model.save_weights(trgt_file, overwrite=True)
+        else:
+            self.model.save(trgt_file, overwrite=True)
+            
 
     def on_epoch_end(self, epoch, logs=None):
         logs = logs or {}
-        self.epochs_since_last_save += 1
-        if self.epochs_since_last_save >= self.period:
-            self.epochs_since_last_save = 0
-            filepath = self.filepath.format(epoch=epoch + 1, **logs)
-            if self.save_best_only:
-                self.save_best(epoch, filepath, logs)
-                '''
-                current = logs.get(self.monitor)
-                if current is None:
-                    warnings.warn('Can save best model only with %s available, '
-                                  'skipping.' % (self.monitor), RuntimeWarning)
-                else:
-                    if self.monitor_op(current, self.best):
-                        if self.verbose > 0:
-                            print('\nEpoch %05d: %s improved from %0.5f to %0.5f,'
-                                  ' saving model to %s'
-                                  % (epoch + 1, self.monitor, self.best,
-                                     current, filepath))
-                        self.best = current
-                        if self.save_weights_only:
-                            self.model.save_weights(filepath, overwrite=True)
-                        else:
-                            self.model.save(filepath, overwrite=True)
-                    else:
-                        if self.verbose > 0:
-                            print('\nEpoch %05d: %s did not improve from %0.5f' %
-                                  (epoch + 1, self.monitor, self.best))
-                '''
-            else:
-                if self.verbose > 0:
-                    print('\nEpoch %05d: saving model to %s' % (epoch + 1, filepath))
-                if self.save_weights_only:
-                    self.model.save_weights(filepath, overwrite=True)
-                else:
-                    self.model.save(filepath, overwrite=True)
+ 
+        curr_weights_file = self.filepath + '_weights_' + str(epoch) + '.h5'
+        old_weights_file = self.filepath + '_weights_' + str(epoch - 1) + '.h5'
+        
+        # Save this epoch/delete last epoch
+        if self.save_most_recent:
+            self.save_net(curr_weights_file)
+            if os.path.isfile(old_weights_file):
+                os.remove(old_weights_file)
+            self.save_data_manager(epoch-1, epoch, "_weights_")
+
+        # Check to see if copy to best_epoch and delete last best epoch
+        if self.save_best:
+            self.save_best_model(epoch, logs)
+
+                    
 
 # Monitor taken from PyImageSearch
 
