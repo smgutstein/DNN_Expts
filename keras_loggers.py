@@ -41,7 +41,7 @@ class ModelCheckpoint(Callback):
 
     def __init__(self, filepath, monitor='val_acc', verbose=0,
                  save_best=True, save_most_recent=True, save_weights_only=False,
-                 mode='auto', period=1, data__manager=None):
+                 mode='auto', period=1, data_manager=None):
         super(ModelCheckpoint, self).__init__()
         self.monitor = monitor
         self.verbose = verbose
@@ -82,11 +82,12 @@ class ModelCheckpoint(Callback):
                           'skipping.' % (self.monitor), RuntimeWarning)
         else:
             if self.monitor_op(current, self.best):
+                outfile = self.filepath + "_best_weights_" + str(epoch) + ".h5"
                 if self.verbose > 0:
                     print('\nEpoch %05d: %s improved from %0.5f to %0.5f,'
                           ' saving model to %s'
                           % (epoch + 1, self.monitor, self.best,
-                             current, filepath))
+                             current, outfile))
 
                 # Remove prior best model
                 curr_best_file = self.filepath + "_best_weights_" + str(self.best) + ".h5"
@@ -98,7 +99,6 @@ class ModelCheckpoint(Callback):
 
                 # Save new best model
                 self.best = epoch
-                outfile = self.filepath + "_best_weights_" + str(self.best) + ".h5"
                 if self.save_weights_only:
                     self.model.save_weights(outfile, overwrite=True)
                 else:
@@ -116,7 +116,8 @@ class ModelCheckpoint(Callback):
         if (self.data_manager.encoding_dict == self.data_manager.curr_encoding_info['encoding_dict'] and
             self.data_manager.label_dict == self.data_manager.curr_encoding_info['label_dict']):
 
-            print("No encoding change")
+            #print("No encoding change")
+            pass
 
         else:
             self.data_manager.curr_encoding_info['encoding_dict'] = self.data_manager.encoding_dict

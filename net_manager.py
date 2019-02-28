@@ -5,9 +5,9 @@ import importlib
 import inspect
 from keras.preprocessing.image import ImageDataGenerator
 from keras import backend as K
-from keras.callbacks import BaseLogger, ModelCheckpoint
+from keras.callbacks import BaseLogger
 from keras.models import model_from_json, model_from_yaml
-from keras_loggers import TrainingMonitor
+from keras_loggers import TrainingMonitor, ModelCheckpoint
 from operator import itemgetter
 import os
 import pickle
@@ -247,7 +247,7 @@ class NetManager(object):
         results_path = os.path.join(self.expt_dir, 'results.txt')
         fig_path = os.path.join(self.expt_dir, 'results.png')
         json_path = os.path.join(self.expt_dir, 'results.json')
-        checkpoint_path = os.path.join(self,expt_dir,"checkpoint")
+        checkpoint_path = os.path.join(self.expt_dir,"checkpoint")
         training_monitor = TrainingMonitor(fig_path, jsonPath=json_path, resultsPath = results_path)
         checkpointer = ModelCheckpoint(checkpoint_path, verbose=1, data_manager=self.data_manager)
         callbacks = [training_monitor, checkpointer]
