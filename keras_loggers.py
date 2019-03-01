@@ -1,4 +1,6 @@
-from keras.callbacks import BaseLogger, Callback, ModelCheckpoint
+from __future__ import print_function
+
+from keras.callbacks import BaseLogger, Callback
 import matplotlib.pyplot as plt
 import numpy as np
 import json
@@ -62,17 +64,17 @@ class ModelCheckpoint(Callback):
 
         if mode == 'min':
             self.monitor_op = np.less
-            self.best = np.Inf
+            self.best_score = np.Inf
         elif mode == 'max':
             self.monitor_op = np.greater
-            self.best = -np.Inf
+            self.best_score = -np.Inf
         else:
             if 'acc' in self.monitor or self.monitor.startswith('fmeasure'):
                 self.monitor_op = np.greater
-                self.best = -np.Inf
+                self.best_score = -np.Inf
             else:
                 self.monitor_op = np.less
-                self.best = np.Inf
+                self.best_score = np.Inf
 
     def save_best_model(self, epoch, logs={}):
 
@@ -81,24 +83,25 @@ class ModelCheckpoint(Callback):
             warnings.warn('Can save best model only with %s available, '
                           'skipping.' % (self.monitor), RuntimeWarning)
         else:
-            if self.monitor_op(current, self.best):
+            if self.monitor_op(current, self.best_score):
                 outfile = self.filepath + "_best_weights_" + str(epoch) + ".h5"
                 if self.verbose > 0:
-                    print('\nEpoch %05d: %s improved from %0.5f to %0.5f,'
+                    print('Epoch %05d: %s improved from %0.5f to %0.5f,'
                           ' saving model to %s'
-                          % (epoch + 1, self.monitor, self.best,
+                          % (epoch, self.monitor, self.best_score,
                              current, outfile))
 
                 # Remove prior best model
-                curr_best_file = self.filepath + "_best_weights_" + str(self.best) + ".h5"
+                curr_best_file = self.filepath + "_best_weights_" + str(self.best_epoch) + ".h5"
                 if os.path.isfile(curr_best_file):
                     os.remove(curr_best_file)
 
                 # Remove prior best encodings and save new best encodings
-                self.save_data_manager(self.best, epoch, "_best_weights_")
+                self.save_data_manager(self.best_epoch, epoch, "_best_weights_")
 
                 # Save new best model
-                self.best = epoch
+                self.best_score = current
+                self.best_epoch = epoch
                 if self.save_weights_only:
                     self.model.save_weights(outfile, overwrite=True)
                 else:
@@ -107,7 +110,7 @@ class ModelCheckpoint(Callback):
             else:
                 if self.verbose > 0:
                     print('\nEpoch %05d: %s did not improve from %0.5f' %
-                          (epoch + 1, self.monitor, self.best))
+                          (epoch, self.monitor, self.best_score))
 
 
     def save_data_manager(self, old_epoch, new_epoch, save_type):
@@ -115,8 +118,6 @@ class ModelCheckpoint(Callback):
 
         if (self.data_manager.encoding_dict == self.data_manager.curr_encoding_info['encoding_dict'] and
             self.data_manager.label_dict == self.data_manager.curr_encoding_info['label_dict']):
-
-            #print("No encoding change")
             pass
 
         else:
@@ -124,14 +125,14 @@ class ModelCheckpoint(Callback):
             self.data_manager.curr_encoding_info['label_dict'] = self.data_manager.label_dict
             self.data_manager.curr_encoding_info['meta_encoding_dict'] = self.data_manager.meta_encoding_dict
 
-            encodings_file_name = filepath + '_' + save_type + '_' + str(old_epoch) + '.pkl'
+            encodings_file_name = self.filepath + '_' + save_type + '_' + str(old_epoch) + '.pkl'
             if os.path.isfile(encodings_file_name):
                 os.remove(encodings_file_name)
 
 
-            encodings_file_name = filepath + '_' + save_type + '_' + str(new_epoch) + '.pkl'
+            encodings_file_name = self.filepath + '_' + save_type + '_' + str(new_epoch) + '.pkl'
             print ("Saving", encodings_file_name)
-            with open(outfile, 'w') as f:
+            with open(encodings_file_name, 'w') as f:
                 pickle.dump(self.data_manager.curr_encoding_info, f)
 
     def save_net(self, trgt_file):
@@ -143,6 +144,7 @@ class ModelCheckpoint(Callback):
             
 
     def on_epoch_end(self, epoch, logs=None):
+        epoch += 1
         logs = logs or {}
  
         curr_weights_file = self.filepath + '_weights_' + str(epoch) + '.h5'
@@ -158,6 +160,8 @@ class ModelCheckpoint(Callback):
         # Check to see if copy to best_epoch and delete last best epoch
         if self.save_best:
             self.save_best_model(epoch, logs)
+
+        print("\n========================================================================\n")
 
                     
 
