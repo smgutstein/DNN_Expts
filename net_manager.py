@@ -241,7 +241,8 @@ class NetManager(object):
     def train(self, data_augmentation=True, batch_size=32):
 
         results_path = os.path.join(self.expt_dir, 'results.txt')
-        fig_path = os.path.join(self.expt_dir, 'results.png')
+        fig_path = [os.path.join(self.expt_dir, 'results_acc.png'),
+                    os.path.join(self.expt_dir, 'results_loss.png')]
         json_path = os.path.join(self.expt_dir, 'results.json')
         checkpoint_path = os.path.join(self.expt_dir,"checkpoint")
         training_monitor = TrainingMonitor(fig_path, jsonPath=json_path, resultsPath = results_path)

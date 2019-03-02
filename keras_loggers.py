@@ -97,7 +97,7 @@ class ModelCheckpoint(Callback):
                     os.remove(curr_best_file)
 
                 # Remove prior best encodings and save new best encodings
-                self.save_data_manager(self.best_epoch, epoch, "_best_weights_")
+                self.save_data_manager(self.best_epoch, epoch, "best_weights")
 
                 # Save new best model
                 self.best_score = current
@@ -109,15 +109,18 @@ class ModelCheckpoint(Callback):
 
             else:
                 if self.verbose > 0:
-                    print('\nEpoch %05d: %s did not improve from %0.5f' %
+                    print('Epoch %05d: %s did not improve from %0.5f' %
                           (epoch, self.monitor, self.best_score))
 
 
     def save_data_manager(self, old_epoch, new_epoch, save_type):
         
-
+        old_encodings_file_name = self.filepath + '_' + save_type + '_' + str(old_epoch) + '.pkl'
+        new_encodings_file_name = self.filepath + '_' + save_type + '_' + str(new_epoch) + '.pkl'
         if (self.data_manager.encoding_dict == self.data_manager.curr_encoding_info['encoding_dict'] and
-            self.data_manager.label_dict == self.data_manager.curr_encoding_info['label_dict']):
+            self.data_manager.label_dict == self.data_manager.curr_encoding_info['label_dict'] and
+            os.path.isfile(old_encodings_file_name)):
+            os.rename(old_encodings_file_name, new_encodings_file_name)
             pass
 
         else:
@@ -125,14 +128,14 @@ class ModelCheckpoint(Callback):
             self.data_manager.curr_encoding_info['label_dict'] = self.data_manager.label_dict
             self.data_manager.curr_encoding_info['meta_encoding_dict'] = self.data_manager.meta_encoding_dict
 
-            encodings_file_name = self.filepath + '_' + save_type + '_' + str(old_epoch) + '.pkl'
-            if os.path.isfile(encodings_file_name):
-                os.remove(encodings_file_name)
+            #encodings_file_name = self.filepath + '_' + save_type + '_' + str(old_epoch) + '.pkl'
+            if os.path.isfile(old_encodings_file_name):
+                os.remove(old_encodings_file_name)
 
 
-            encodings_file_name = self.filepath + '_' + save_type + '_' + str(new_epoch) + '.pkl'
-            print ("Saving", encodings_file_name)
-            with open(encodings_file_name, 'w') as f:
+            #encodings_file_name = self.filepath + '_' + save_type + '_' + str(new_epoch) + '.pkl'
+            print ("Saving", new_encodings_file_name)
+            with open(new_encodings_file_name, 'w') as f:
                 pickle.dump(self.data_manager.curr_encoding_info, f)
 
     def save_net(self, trgt_file):
@@ -155,7 +158,7 @@ class ModelCheckpoint(Callback):
             self.save_net(curr_weights_file)
             if os.path.isfile(old_weights_file):
                 os.remove(old_weights_file)
-            self.save_data_manager(epoch-1, epoch, "_weights_")
+            self.save_data_manager(epoch-1, epoch, "weights")
 
         # Check to see if copy to best_epoch and delete last best epoch
         if self.save_best:
@@ -176,6 +179,20 @@ class TrainingMonitor(BaseLogger):
 		self.jsonPath = jsonPath
                 self.resultsPath = resultsPath
 		self.startAt = startAt
+                
+                self.acc_fig = plt.figure(1)
+                self.acc_ax = self.acc_fig.add_axes([0.1, 0.1, 0.8, 0.8])
+                self.acc_ax.set_xlabel("Epochs")
+                self.acc_ax.set_ylabel("Acc")
+                #self.acc_train_acc = self.acc_ax.plot([],[])
+                #self.acc_val_acc = self.acc_ax.plot([],[])
+                #self.acc_ax.set_title("Accuracy vs. Epochs")
+
+                self.loss_fig = plt.figure(2)
+                self.loss_ax = self.loss_fig.add_axes([0.1, 0.1, 0.8, 0.8])
+                self.loss_ax.set_xlabel("Epochs")
+                self.loss_ax.set_ylabel("Loss")
+                #self.loss_ax.set_title("Loss vs. Epochs")
 
 	def on_train_begin(self, logs={}):
             if not hasattr(self, 'H'):
@@ -223,6 +240,29 @@ class TrainingMonitor(BaseLogger):
 		# ensure at least two epochs have passed before plotting
 		# (epoch starts at zero)
 		if len(self.H["loss"]) > 1:
+                    plt.style.use("ggplot")
+                    self.acc_ax.set_title("Accuracy vs. Epochs [{}]".format(len(self.H["loss"])))
+                    self.loss_ax.set_title("Accuracy vs. Epochs [{}]".format(len(self.H["loss"])))
+                    N = np.arange(0, len(self.H["loss"]))
+                    plt.figure(1) # acc
+                    plt.cla()
+                    plt.plot(N, self.H["acc"], label="train_acc")
+                    plt.plot(N, self.H["val_acc"], label="val_acc")
+                    plt.legend()
+                    plt.savefig(self.figPath[0])
+                    
+                    plt.figure(2) # loss
+                    plt.cla()
+                    plt.plot(N, self.H["loss"], label="train_loss")
+                    plt.plot(N, self.H["val_loss"], label="val_loss")
+                    plt.legend()
+                    plt.savefig(self.figPath[1])
+
+
+
+
+                '''        
+		if len(self.H["loss"]) > 1:
 			# plot the training loss and accuracy
 			N = np.arange(0, len(self.H["loss"]))
 			plt.style.use("ggplot")
@@ -240,3 +280,4 @@ class TrainingMonitor(BaseLogger):
 			# save the figure
 			plt.savefig(self.figPath)
                         plt.close()
+                 '''
