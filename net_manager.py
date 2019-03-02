@@ -100,6 +100,15 @@ class NetManager(object):
                            optimizer=self.opt,
                            metrics=[metric_fnc])
 
+        try:
+            from keras.utils import plot_model
+            # Write the network architecture visualization graph to disk
+            model_img_file = os.path.join(self.expt_dir,
+                                      self.expt_prefix + "_image.png")
+            plot_model(self.model, to_file=model_img_file, show_shapes=True)
+        except:
+            pass
+
         # Summarize            
         self.summary()
         print (self.data_manager.get_targets_str_sign())

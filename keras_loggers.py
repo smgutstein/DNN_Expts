@@ -181,18 +181,13 @@ class TrainingMonitor(BaseLogger):
 		self.startAt = startAt
                 
                 self.acc_fig = plt.figure(1)
-                self.acc_ax = self.acc_fig.add_axes([0.1, 0.1, 0.8, 0.8])
-                self.acc_ax.set_xlabel("Epochs")
-                self.acc_ax.set_ylabel("Acc")
-                #self.acc_train_acc = self.acc_ax.plot([],[])
-                #self.acc_val_acc = self.acc_ax.plot([],[])
-                #self.acc_ax.set_title("Accuracy vs. Epochs")
-
+                plt.clf()
+                self.acc_ax = self.acc_fig.add_axes([0.15, 0.1, 0.8, 0.8])
+                
                 self.loss_fig = plt.figure(2)
-                self.loss_ax = self.loss_fig.add_axes([0.1, 0.1, 0.8, 0.8])
-                self.loss_ax.set_xlabel("Epochs")
-                self.loss_ax.set_ylabel("Loss")
-                #self.loss_ax.set_title("Loss vs. Epochs")
+                plt.clf()
+                self.loss_ax = self.loss_fig.add_axes([0.15, 0.1, 0.8, 0.8])
+                
 
 	def on_train_begin(self, logs={}):
             if not hasattr(self, 'H'):
@@ -242,22 +237,40 @@ class TrainingMonitor(BaseLogger):
 		if len(self.H["loss"]) > 1:
                     plt.style.use("ggplot")
                     self.acc_ax.set_title("Accuracy vs. Epochs [{}]".format(len(self.H["loss"])))
-                    self.loss_ax.set_title("Accuracy vs. Epochs [{}]".format(len(self.H["loss"])))
+                    self.loss_ax.set_title("Loss vs. Epochs [{}]".format(len(self.H["loss"])))
                     N = np.arange(0, len(self.H["loss"]))
-                    plt.figure(1) # acc
+                    num_epochs = len(self.H["loss"]) - 1
+                    
+                    plt.figure(1) # acc                   
                     plt.cla()
+                    self.acc_ax.set_xlabel("Epochs")
+                    self.acc_ax.set_ylabel("Acc")
                     plt.plot(N, self.H["acc"], label="train_acc")
                     plt.plot(N, self.H["val_acc"], label="val_acc")
+                    plt.title("Training Accuracy [Epoch {}]".format(num_epochs))
                     plt.legend()
                     plt.savefig(self.figPath[0])
                     
                     plt.figure(2) # loss
                     plt.cla()
+                    self.loss_ax.set_xlabel("Epochs")
+                    self.loss_ax.set_ylabel("Loss")               
                     plt.plot(N, self.H["loss"], label="train_loss")
                     plt.plot(N, self.H["val_loss"], label="val_loss")
+                    plt.title("Training Loss [Epoch {}]".format(num_epochs))
                     plt.legend()
                     plt.savefig(self.figPath[1])
 
+                    '''
+                    plt.figure(3) # acc
+                    
+                    plt.cla()
+                    plt.plot(N, self.H["acc"], label="train_acc")
+                    plt.plot(N, self.H["val_acc"], label="val_acc")
+                    plt.title("Training Accuracy [Epoch {}]".format(num_points))
+                    plt.legend()
+                    plt.savefig(self.figPath[0])
+                    '''
 
 
 
