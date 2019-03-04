@@ -38,6 +38,13 @@ def load_data(label_mode='fine'):
     y_train = np.reshape(y_train, (len(y_train), 1))
     y_test = np.reshape(y_test, (len(y_test), 1))
 
+    # Rescale raw data
+    x_train = x_train.astype('float32')
+    x_test = x_test.astype('float32')
+
+    x_train /= 255.
+    x_test /= 255.
+
     if K.image_data_format() == 'channels_last':
         x_train = x_train.transpose(0, 2, 3, 1)
         x_test = x_test.transpose(0, 2, 3, 1)

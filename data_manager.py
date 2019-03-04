@@ -33,6 +33,17 @@ class DataManager(object):
         temp = importlib.import_module(self.data_loading_module)
         self._load_data(temp)
 
+        # Load data augementer
+        if "augmenter" in file_param_dict:
+            temp = importlib.import_module(file_param_dict["augmenter"])
+            print ("Loading data augmenter")
+            self.augmenter = temp.get_augmenter()
+        else:
+            print ("No data augmentation")
+            self.augmenter = None
+
+            
+
         # Import make_encoding_dict method and dynamically make it a member function
         # of this instance of DataManager
         joint_dict = encoding_param_dict.copy()
@@ -68,6 +79,10 @@ class DataManager(object):
         with open(category_name_file, "r") as f:
             self.label_dict = pickle.load(f)
 
+    def _load_augmenter(self, augmenter_module):
+        print("Loading data augmenter")
+        self.augmenter = augmenter_module
+
     def _load_data(self, data_load_module):
         print("Loading data")
         (self.X_train, self.y_train), \
@@ -75,6 +90,8 @@ class DataManager(object):
         self.X_train = self.X_train.astype('float32')
         self.X_test = self.X_test.astype('float32')
 
+        # Get rows, cols and channels. Assume smallest dim, other than 0th
+        # is channel dim
         _, temp1, temp2, temp3 = self.X_train.shape
         if min(temp1, temp2, temp3) == temp3:
             # Data channels last
@@ -84,14 +101,14 @@ class DataManager(object):
             _, self.img_channels, self.img_rows, self.img_cols = self.X_train.shape
                         
         # Rescale raw data
-        self.X_train /= 255.
-        self.X_test /= 255.
+        #self.X_train /= 255.
+        #self.X_test /= 255.
         
         # Save copy of original datasets
-        self.X_train_orig = self.X_train
-        self.X_test_orig = self.X_test
-        self.y_train_orig = self.y_train
-        self.y_test_orig = self.y_test
+        #self.X_train_orig = self.X_train
+        #self.X_test_orig = self.X_test
+        #self.y_train_orig = self.y_train
+        #self.y_test_orig = self.y_test
 
     def encode_labels(self):
         """Convert array of class nums to arrays of encodings"""
