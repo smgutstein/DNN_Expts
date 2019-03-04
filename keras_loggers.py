@@ -128,12 +128,9 @@ class ModelCheckpoint(Callback):
             self.data_manager.curr_encoding_info['label_dict'] = self.data_manager.label_dict
             self.data_manager.curr_encoding_info['meta_encoding_dict'] = self.data_manager.meta_encoding_dict
 
-            #encodings_file_name = self.filepath + '_' + save_type + '_' + str(old_epoch) + '.pkl'
             if os.path.isfile(old_encodings_file_name):
                 os.remove(old_encodings_file_name)
 
-
-            #encodings_file_name = self.filepath + '_' + save_type + '_' + str(new_epoch) + '.pkl'
             print ("Saving", new_encodings_file_name)
             with open(new_encodings_file_name, 'w') as f:
                 pickle.dump(self.data_manager.curr_encoding_info, f)
@@ -247,7 +244,9 @@ class TrainingMonitor(BaseLogger):
                     self.acc_ax.set_ylabel("Acc")
                     plt.plot(N, self.H["acc"], label="train_acc")
                     plt.plot(N, self.H["val_acc"], label="val_acc")
-                    plt.title("Training Accuracy [Epoch {}]".format(num_epochs))
+                    plt.title("Accuracy [Epoch {} | Acc ({:5.2f}%, {:5.2f}%)]".format(num_epochs,
+                                                                              100*max(self.H['acc']),
+                                                                              100*max(self.H['val_acc'])))
                     plt.legend()
                     plt.savefig(self.figPath[0])
                     
@@ -257,40 +256,7 @@ class TrainingMonitor(BaseLogger):
                     self.loss_ax.set_ylabel("Loss")               
                     plt.plot(N, self.H["loss"], label="train_loss")
                     plt.plot(N, self.H["val_loss"], label="val_loss")
-                    plt.title("Training Loss [Epoch {}]".format(num_epochs))
+                    plt.title("Loss [Epoch {}]".format(num_epochs))
                     plt.legend()
                     plt.savefig(self.figPath[1])
 
-                    '''
-                    plt.figure(3) # acc
-                    
-                    plt.cla()
-                    plt.plot(N, self.H["acc"], label="train_acc")
-                    plt.plot(N, self.H["val_acc"], label="val_acc")
-                    plt.title("Training Accuracy [Epoch {}]".format(num_points))
-                    plt.legend()
-                    plt.savefig(self.figPath[0])
-                    '''
-
-
-
-                '''        
-		if len(self.H["loss"]) > 1:
-			# plot the training loss and accuracy
-			N = np.arange(0, len(self.H["loss"]))
-			plt.style.use("ggplot")
-			plt.figure()
-			plt.plot(N, self.H["loss"], label="train_loss")
-			plt.plot(N, self.H["val_loss"], label="val_loss")
-			plt.plot(N, self.H["acc"], label="train_acc")
-			plt.plot(N, self.H["val_acc"], label="val_acc")
-			plt.title("Training Loss and Accuracy [Epoch {}]".format(
-				len(self.H["loss"])))
-			plt.xlabel("Epoch #")
-			plt.ylabel("Loss/Accuracy")
-			plt.legend()
-
-			# save the figure
-			plt.savefig(self.figPath)
-                        plt.close()
-                 '''

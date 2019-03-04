@@ -254,8 +254,10 @@ class NetManager(object):
                     os.path.join(self.expt_dir, 'results_loss.png')]
         json_path = os.path.join(self.expt_dir, 'results.json')
         checkpoint_path = os.path.join(self.expt_dir,"checkpoint")
-        training_monitor = TrainingMonitor(fig_path, jsonPath=json_path, resultsPath = results_path)
-        checkpointer = ModelCheckpoint(checkpoint_path, verbose=1, data_manager=self.data_manager)
+        training_monitor = TrainingMonitor(fig_path, jsonPath=json_path,
+                                           resultsPath = results_path)
+        checkpointer = ModelCheckpoint(checkpoint_path, verbose=1,
+                                       data_manager=self.data_manager)
         callbacks = [training_monitor, checkpointer]
         
         init_train_loss, init_train_acc = \
