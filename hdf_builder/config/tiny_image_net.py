@@ -1,7 +1,7 @@
 # import the necessary packages
 import os
 
-ROOT_DIR = "/media/smgutstein/current_data/tiny-imagenet-200"
+ROOT_DIR = os.path.join(os.environ["HOME"],".keras/datasets/tiny-imagenet-200")
 
 # define the paths to the training and validation directories
 TRAIN_IMAGES = os.path.join(ROOT_DIR, "train")
