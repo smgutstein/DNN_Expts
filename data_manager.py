@@ -97,13 +97,17 @@ class DataManager(object):
         if self.data_generator_module:
             data_generator_module = importlib.import_module(self.data_generator_module)
             print ("Loading data generator")
-            (self.data_generator,
+            (self.train_data_generator,
+             self.test_data_generator,
              self.data_generator_info) = data_generator_module.get_generator(self.X_train,
                                                                              self.Y_train,
+                                                                             self.X_test,
+                                                                             self.Y_test,
                                                                              self.batch_size)
         else:
             print ("No data generator")
-            self.data_generator = None
+            self.train_data_generator = None
+            self.test_data_generator = None
             self.data_generator_info = "No data generator being used" 
 
             

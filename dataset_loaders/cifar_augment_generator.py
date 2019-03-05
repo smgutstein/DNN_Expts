@@ -1,6 +1,6 @@
 from keras.preprocessing.image import ImageDataGenerator
 
-def get_generator(x_train, y_train, batch_size):
+def get_generator(x_train, y_train, x_test, y_test, batch_size):
     # this will do preprocessing and realtime data augmentation
     datagen = ImageDataGenerator(
                     featurewise_center=False,  # set input mean to 0 over the dataset
@@ -18,4 +18,4 @@ def get_generator(x_train, y_train, batch_size):
     datagen.fit(x_train)
     datagen = datagen.flow(x_train, y_train, batch_size=batch_size)
 
-    return (datagen, info)
+    return (datagen, (x_test, y_test), info)

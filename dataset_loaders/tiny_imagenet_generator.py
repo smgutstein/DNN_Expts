@@ -7,7 +7,7 @@ from preprocessing import MeanPreprocessor
 from io import HDF5DatasetGenerator
 from keras.preprocessing.image import ImageDataGenerator
 
-def load_data():
+def load_data(x_train, y_train, x_test, y_test, batch_size):
     """Loads tiny imagenet
 
     # Returns
@@ -29,11 +29,7 @@ def load_data():
             preprocessors=[sp, mp, iap], classes=config.NUM_CLASSES)
     valGen = HDF5DatasetGenerator(config.VAL_HDF5, 64,
             preprocessors=[sp, mp, iap], classes=config.NUM_CLASSES)
-    '''
-   ???
-    if K.image_data_format() == 'channels_last':
-        x_train = x_train.transpose(0, 2, 3, 1)
-        x_test = x_test.transpose(0, 2, 3, 1)
-    '''
 
-    return (x_train, y_train), (x_test, y_test)
+    info = "Data generators for hdf5 data and for augmentation"
+
+    return (trainGen, valGen, info)
