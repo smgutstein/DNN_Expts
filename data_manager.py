@@ -20,7 +20,8 @@ class DataManager(object):
                  file_param_dict,
                  encoding_param_dict,
                  encoding_module_param_dict,
-                 saved_param_dict):
+                 saved_param_dict,
+                 batch_size=32):
 
         # Specify number of output nodes in net (i.e. number of bits in encoding)
         self.nb_code_bits = int(encoding_param_dict['nb_code_bits'])
@@ -30,20 +31,10 @@ class DataManager(object):
 
         # Load raw data as numpy arrays
         self.data_loading_module = file_param_dict['data_loader']
-        temp = importlib.import_module(self.data_loading_module)
-        self._load_data(temp)
-
-        # Load data augementer
-        if "augmenter" in file_param_dict:
-            temp = importlib.import_module(file_param_dict["augmenter"])
-            print ("Loading data augmenter")
-            self.augmenter = temp.get_augmenter()
-        else:
-            print ("No data augmentation")
-            self.augmenter = None
-
-            
-
+        self.data_generator_module = file_param_dict.get('data_generator', None)
+        self.batch_size=batch_size
+        self._load_data()
+                        
         # Import make_encoding_dict method and dynamically make it a member function
         # of this instance of DataManager
         joint_dict = encoding_param_dict.copy()
@@ -74,16 +65,17 @@ class DataManager(object):
         self.data_display = Data_Display(self.X_test, self.y_test,
                                          self.label_dict)
 
+        self._make_data_generator()
+
     def _init_num_name_dicts(self, category_name_file):
         # Make class_num/class_name dictionaries
         with open(category_name_file, "r") as f:
             self.label_dict = pickle.load(f)
 
-    def _load_augmenter(self, augmenter_module):
-        print("Loading data augmenter")
-        self.augmenter = augmenter_module
-
-    def _load_data(self, data_load_module):
+            
+    def _load_data(self):
+        # Load data
+        data_load_module = importlib.import_module(self.data_loading_module)
         print("Loading data")
         (self.X_train, self.y_train), \
         (self.X_test, self.y_test) = data_load_module.load_data()
@@ -99,17 +91,22 @@ class DataManager(object):
         elif min(temp1, temp2, temp3) == temp1:
             # Data channels first
             _, self.img_channels, self.img_rows, self.img_cols = self.X_train.shape
-                        
-        # Rescale raw data
-        #self.X_train /= 255.
-        #self.X_test /= 255.
-        
-        # Save copy of original datasets
-        #self.X_train_orig = self.X_train
-        #self.X_test_orig = self.X_test
-        #self.y_train_orig = self.y_train
-        #self.y_test_orig = self.y_test
 
+    def _make_data_generator(self):
+        # Load data generator - if necessary
+        if self.data_generator_module:
+            data_generator_module = importlib.import_module(self.data_generator_module)
+            print ("Loading data generator")
+            (self.data_generator,
+             self.data_generator_info) = data_generator_module.get_generator(self.X_train,
+                                                                             self.Y_train,
+                                                                             self.batch_size)
+        else:
+            print ("No data generator")
+            self.data_generator = None
+            self.data_generator_info = "No data generator being used" 
+
+            
     def encode_labels(self):
         """Convert array of class nums to arrays of encodings"""
 
