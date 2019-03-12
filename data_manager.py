@@ -9,10 +9,10 @@ from data_display import Data_Display
 
 import os
 import sys
-file_dir = os.path.join(
-    os.path.dirname(os.path.realpath(__file__)), 'dataset_loaders')
-if file_dir not in sys.path:
-    sys.path.append(file_dir)
+#file_dir = os.path.join(
+#    os.path.dirname(os.path.realpath(__file__)), 'dataset_loaders')
+#if file_dir not in sys.path:
+#    sys.path.append(file_dir)
 
 class DataManager(object):
 
@@ -29,14 +29,12 @@ class DataManager(object):
         # Init dicts that map class numbers to class names
         self._init_num_name_dicts(file_param_dict['class_names'])
 
-        # Load raw data as numpy arrays
-        self.data_loading_module = file_param_dict['data_loader']
+        # Get info to load data 
+        self.data_loading_module = file_param_dict.get('data_loader', None)
         self.data_generator_module = file_param_dict.get('data_generator', None)
         self.batch_size=batch_size
-        self._load_data()
-                        
-        # Import make_encoding_dict method and dynamically make it a member function
-        # of this instance of DataManager
+
+        # Get info to create or recover encoding dict
         joint_dict = encoding_param_dict.copy()
         joint_dict.update(encoding_module_param_dict)
         joint_dict['encoding_activation_fnc'] = encoding_activation_fnc
@@ -53,29 +51,80 @@ class DataManager(object):
                              '.pkl')
         else:
             self.encoding_module = encoding_module_param_dict['encoding_module']
-            
+
+
+        # Create encodings
         temp = importlib.import_module(self.encoding_module)
-        self.make_encoding_dict = types.MethodType(temp.make_encoding_dict,
-                                                   self)
-        self.make_encoding_dict(**joint_dict)
-        self.encode_labels()
+        self.make_encoding_dict = types.MethodType(temp.make_encoding_dict, self)
+        
+
+        if self.data_generator_module:
+            temp = importlib.import_module("dataset_loaders." + self.data_generator_module)
+            self.get_generator = types.MethodType(temp.get_generator, self)
+
+        # Load raw data and/or data generator
+        if self.data_loading_module is None and self.data_generator_module is None:
+            print("Either or both a data loading module and data generator module must be specified")
+            
+        elif self.data_loading_module:
+            print("Loading data into memory")
+            self._load_data()
+
+            # Encode labels
+            print("Encoding data")
+            self.make_encoding_dict(**joint_dict)
+            self.encode_labels()
+
+            # Might not need/want this anymore
+            self.data_display = Data_Display(self.X_test, self.y_test,
+                                             self.label_dict)
+            # Load data generator - if necessary for augmentation
+            if self.data_generator_module:
+                print ("Loading data generator for augmentation")
+                (self.train_data_generator,
+                 self.test_data_generator,
+                 self.data_generator_info) = self.get_generator()
+                
+            else:
+                print ("No data augmentation")
+                self.train_data_generator = None
+                self.test_data_generator = None
+                self.data_generator_info = "No data generator being used"
+
+        else:
+            print ("Loading data generator")
+            (self.train_data_generator,
+             self.test_data_generator,
+             self.data_generator_info,
+             (self.img_channels,
+              self.img_rows,
+              self.img_cols)) = self.get_generator()
+
+            # Get sorted list of class numbers (np.unique returns sorted list)
+            self.class_nums = self.test_data_generator.class_nums
+
+            # Encode labels
+            print("Making Encoding Dict")
+            self.make_encoding_dict(**joint_dict)
+            self.train_data_generator.set_encoding_dict(self.encoding_dict)
+            self.test_data_generator.set_encoding_dict(self.encoding_dict)
+
+
+
         self.curr_encoding_info = dict()
         self.curr_encoding_info['label_dict'] = {}
         self.curr_encoding_info['encoding_dict'] = {}
-        self.data_display = Data_Display(self.X_test, self.y_test,
-                                         self.label_dict)
 
-        self._make_data_generator()
+        #self._make_data_generator()
 
     def _init_num_name_dicts(self, category_name_file):
         # Make class_num/class_name dictionaries
         with open(category_name_file, "r") as f:
             self.label_dict = pickle.load(f)
 
-            
     def _load_data(self):
         # Load data
-        data_load_module = importlib.import_module(self.data_loading_module)
+        data_load_module = importlib.import_module("dataset_loaders." + self.data_loading_module)
         print("Loading data")
         (self.X_train, self.y_train), \
         (self.X_test, self.y_test) = data_load_module.load_data()
@@ -92,25 +141,10 @@ class DataManager(object):
             # Data channels first
             _, self.img_channels, self.img_rows, self.img_cols = self.X_train.shape
 
-    def _make_data_generator(self):
-        # Load data generator - if necessary
-        if self.data_generator_module:
-            data_generator_module = importlib.import_module(self.data_generator_module)
-            print ("Loading data generator")
-            (self.train_data_generator,
-             self.test_data_generator,
-             self.data_generator_info) = data_generator_module.get_generator(self.X_train,
-                                                                             self.Y_train,
-                                                                             self.X_test,
-                                                                             self.Y_test,
-                                                                             self.batch_size)
-        else:
-            print ("No data generator")
-            self.train_data_generator = None
-            self.test_data_generator = None
-            self.data_generator_info = "No data generator being used" 
+        # Get sorted list of class numbers (np.unique returns sorted list)
+        self.class_nums = list(np.unique(self.y_train))
 
-            
+
     def encode_labels(self):
         """Convert array of class nums to arrays of encodings"""
 

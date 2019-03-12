@@ -69,7 +69,7 @@ class MiniGoogLeNet:
 
                     
 		# define the model input and first CONV module
-		inputs = Input(shape=inputShape)
+		inputs = Input(shape=input_shape)
 		x = MiniGoogLeNet.conv_module(inputs, 96, 3, 3, (1, 1),
 			chanDim)
 
@@ -107,6 +107,5 @@ def build_architecture(input_shape,
                        nb_output_nodes,
                        output_activation):
 
-    model = MiniGoogLeNet(input_shape, nb_output_nodes, output_activation)
+    model = MiniGoogLeNet.build(input_shape, nb_output_nodes, output_activation)
     return model
-    

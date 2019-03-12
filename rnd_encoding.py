@@ -21,17 +21,14 @@ def make_encoding_dict(self, **kwargs):
     print("   Hot/Not_Hot {:6.4f} / {:6.4f}".format(hot, not_hot))
     print("   Seed: ", seed)
 
-    class_nums = list(np.unique(self.y_train))
     self.encoding_matrix = \
         np.array([ [ hot if random() <= 0.5 else not_hot
                      for x in range(self.nb_code_bits)]
-                   for y in range(len(class_nums))])
+                   for y in range(len(self.class_nums))])
 
-    # Get sorted list of class numbers (np.unique returns sorted list)
-    class_nums = list(np.unique(self.y_train))
     self.encoding_dict = {}
 
-    for ctr, curr_class_num in enumerate(class_nums):
+    for ctr, curr_class_num in enumerate(self.class_nums):
         self.encoding_dict[curr_class_num] = self.encoding_matrix[ctr, :]
 
     self.not_hot = not_hot

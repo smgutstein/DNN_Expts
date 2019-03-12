@@ -1,4 +1,3 @@
-# import the necessary packages
 import h5py
 import os
 
@@ -25,7 +24,7 @@ class HDF5DatasetWriter:
 		# along with the index into the datasets
 		self.bufSize = bufSize
 		self.buffer = {"data": [], "labels": []}
-		self.idx = 0
+   		self.idx = 0
 
 	def add(self, rows, labels):
 		# add the rows and labels to the buffer
