@@ -26,8 +26,7 @@ class HDF5DatasetIterator:
         self.class_nums = sorted(list(set(self.db['labels'])))
         self.encoding_dict = None
 
-        self.epochs = 0
-        self.passes = np.inf
+        self.curr_epoch = 0
 
     def set_encoding_dict(self, encoding_dict):
         self.encoding_dict = encoding_dict
@@ -42,15 +41,16 @@ class HDF5DatasetIterator:
         return self.next()
 
     def _get_next_batch(self):
-        if self.curr_batch == self.batch_size:
+        if self.curr_batch == self.batches_per_epoch :
             self.curr_batch = 0
-            self.epochs += 1
+            self.curr_epoch += 1
 
         offset = self.curr_batch * self.batch_size
 
         # extract the images and labels from the HDF dataset
         images = self.db["images"][offset: offset + self.batch_size]
         labels = self.db["labels"][offset: offset + self.batch_size]
+        self.curr_batch += 1
 
         return images, labels
 
