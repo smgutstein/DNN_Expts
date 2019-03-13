@@ -6,6 +6,7 @@ import errno
 import os
 import shutil
 import sys
+import tempfile
 
 class Logger(object):
     def __init__(self, filename="Expt_output.log"):
@@ -13,6 +14,9 @@ class Logger(object):
         self.terminal = sys.stdout
         self.suffix = '_v'
         ctr = 0
+        self.log = tempfile.TemporaryFile()
+
+        '''
         done = False
         while not done:
             self.tempname = self.filename + self.suffix + str(ctr)
@@ -21,7 +25,7 @@ class Logger(object):
             else:
                 self.log = open(self.tempname, "w")
                 done = True
-        
+        '''
         #self.log = open(filename, "a")
 
         
@@ -46,8 +50,14 @@ class Logger(object):
         self.terminal = open(os.devnull, 'w')
         
     def close_log(self, log_dir=''):
+        
+        shutil.copyfileobj(self.log,
+                           os.path.join(log_dir,
+                                        self.filename))
         self.log.close()
+        '''
         if log_dir != '':
             shutil.move(self.tempname,
                         os.path.join(log_dir, self.filename))
+        '''
         print ("Saving log file to {}".format(os.path.join(log_dir, self.filename)))
