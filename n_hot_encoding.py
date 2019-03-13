@@ -13,10 +13,9 @@ def make_encoding_dict(self, **kwargs):
           "hot/not_hot (%6.4f / %6.4f)" % (hot, not_hot))
 
     # Get sorted list of class numbers (np.unique returns sorted list)
-    class_nums = list(np.unique(self.y_train))
     nb_2_encoding_dict = {}
 
-    for ctr, curr_class_num in enumerate(class_nums):
+    for ctr, curr_class_num in enumerate(self.class_nums):
         # n-hot encoding
         code_word = np.ones(self.nb_code_bits) * not_hot
         code_word[ctr * nb_hot:ctr * nb_hot + nb_hot] = hot
