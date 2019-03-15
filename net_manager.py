@@ -284,7 +284,8 @@ class NetManager(object):
         training_monitor = TrainingMonitor(fig_path, jsonPath=json_path,
                                            resultsPath = results_path)
         checkpointer = ModelCheckpoint(checkpoint_path, verbose=1,
-                                       data_manager=self.data_manager)
+                                       data_manager=self.data_manager,
+                                       period=self.epochs_per_recording)
         callbacks = [training_monitor, checkpointer]
 
         (init_train_loss, init_train_acc,

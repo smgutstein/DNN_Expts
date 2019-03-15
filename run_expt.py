@@ -9,8 +9,6 @@ import shutil
 import socket
 import sys
 
-# Guarantee Theano backend
-# os.environ["KERAS_BACKEND"] = "theano"
 
 # Capture output with theano/keras & gpu info
 expt_log = Logger()
@@ -230,6 +228,7 @@ class Runner(object):
         # Run Expt
         start_time = datetime.datetime.now()
         expt_log.stop_log()
+        expt_log.switch_log_file(self.outdir)
         self.expt_net.train()
         stop_time = datetime.datetime.now()
 
