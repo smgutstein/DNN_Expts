@@ -2,11 +2,9 @@
 # python build_tiny_imagenet.py
 
 # import the necessary packages
-import sys
-sys.path.append('..')
-import os
-print(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-print(os.path.dirname(__file__))
+import os, sys
+sys.path.append(os.path.join(os.path.dirname(__file__), '..')) 
+
 from config import tiny_image_net as config
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
