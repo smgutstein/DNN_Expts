@@ -21,7 +21,7 @@ class DataManager(object):
                  encoding_param_dict,
                  encoding_module_param_dict,
                  saved_param_dict,
-                 batch_size=32):
+                 expt_param_dict):
 
         # Specify number of output nodes in net (i.e. number of bits in encoding)
         self.nb_code_bits = int(encoding_param_dict['nb_code_bits'])
@@ -32,7 +32,6 @@ class DataManager(object):
         # Get info to load data 
         self.data_loading_module = file_param_dict.get('data_loader', None)
         self.data_generator_module = file_param_dict.get('data_generator', None)
-        self.batch_size=batch_size
 
         # Get info to create or recover encoding dict
         joint_dict = encoding_param_dict.copy()
@@ -51,6 +50,13 @@ class DataManager(object):
                              '.pkl')
         else:
             self.encoding_module = encoding_module_param_dict['encoding_module']
+
+        # Get batch size for data_gnerator module
+        if 'batch_size' in expt_param_dict:
+            self.batch_size = int(expt_param_dict['batch_size'])
+        else:
+            self.batch_size = 32
+
 
 
         # Create encodings

@@ -72,7 +72,8 @@ class Runner(object):
                                    self.file_param_dict,
                                    self.encoding_param_dict,
                                    self.encoding_module_param_dict,
-                                   self.saved_param_dict)
+                                   self.saved_param_dict,
+                                   self.expt_param_dict)
 
         self.expt_net = NetManager(self.expt_dm, self.outdir,
                                    self.net_param_dict,

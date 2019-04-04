@@ -44,6 +44,7 @@ class NetManager(object):
             self.epochs_per_recording = int(expt_param_dict['epochs_per_recording'])
         else:
             self.epochs_per_recording = self.epochs
+            
         self.tot_rec_sets = self.epochs/self.epochs_per_recording
         self.save_best_n = save_best_n
         self.best_n = 0
