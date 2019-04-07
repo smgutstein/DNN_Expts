@@ -64,6 +64,15 @@ class Runner(object):
         self.optimizer_param_dict = {x:float(temp[x])
                                      if is_number(temp[x]) else temp[x]
                                      for x in temp}
+
+        for x in self.optimizer_param_dict:
+            if self.optimizer_param_dict[x] == 'None':
+                self.optimizer_param_dict[x] = None
+            elif self.optimizer_param_dict[x] == 'True':
+                self.optimizer_param_dict[x] = True
+            elif self.optimizer_param_dict[x] == 'False':
+                self.optimizer_param_dict[x] = False
+
         shutil.copy(self.net_param_dict['optimizer_cfg'],
                     os.path.join(self.outdir,
                                  os.path.basename(self.net_param_dict['optimizer_cfg'])))
