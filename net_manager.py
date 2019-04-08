@@ -64,6 +64,12 @@ class NetManager(object):
         optimizer_fnc = getattr(temp, optimizer)
         self.opt = optimizer_fnc(optimizer_param_dict)
 
+        # Get Loss Function
+        if 'loss_fnc' in net_param_dict:
+            self.loss_fnc = net_param_dict['loss_fnc']
+        else:
+            self.loss_fnc = 'mean_squared_error'
+
         # Prepare standard training
         print("Standard training")
         self.nb_output_nodes = data_manager.nb_code_bits
@@ -95,7 +101,7 @@ class NetManager(object):
 
         # Compile model
         print("Compiling model ...")
-        self.model.compile(loss='mean_squared_error',
+        self.model.compile(loss=self.loss_fnc, #'mean_squared_error',
                            optimizer=self.opt,
                            metrics=[metric_fnc])
 
