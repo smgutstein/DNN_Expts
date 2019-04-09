@@ -2,11 +2,14 @@
 # python build_tiny_imagenet.py
 
 # import the necessary packages
+import os, sys
+sys.path.append(os.path.join(os.path.dirname(__file__), '..')) 
+
 from config import tiny_image_net as config
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
-from utils import HDF5DatasetWriter
-from imutils import paths
+from external_dir.utils import HDF5DatasetWriter
+from external_dir.imutils import paths
 import numpy as np
 import progressbar
 import json

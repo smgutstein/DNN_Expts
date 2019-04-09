@@ -9,8 +9,6 @@ import shutil
 import socket
 import sys
 
-# Guarantee Theano backend
-# os.environ["KERAS_BACKEND"] = "theano"
 
 # Capture output with theano/keras & gpu info
 expt_log = Logger()
@@ -66,6 +64,15 @@ class Runner(object):
         self.optimizer_param_dict = {x:float(temp[x])
                                      if is_number(temp[x]) else temp[x]
                                      for x in temp}
+
+        for x in self.optimizer_param_dict:
+            if self.optimizer_param_dict[x] == 'None':
+                self.optimizer_param_dict[x] = None
+            elif self.optimizer_param_dict[x] == 'True':
+                self.optimizer_param_dict[x] = True
+            elif self.optimizer_param_dict[x] == 'False':
+                self.optimizer_param_dict[x] = False
+
         shutil.copy(self.net_param_dict['optimizer_cfg'],
                     os.path.join(self.outdir,
                                  os.path.basename(self.net_param_dict['optimizer_cfg'])))
@@ -74,7 +81,8 @@ class Runner(object):
                                    self.file_param_dict,
                                    self.encoding_param_dict,
                                    self.encoding_module_param_dict,
-                                   self.saved_param_dict)
+                                   self.saved_param_dict,
+                                   self.expt_param_dict)
 
         self.expt_net = NetManager(self.expt_dm, self.outdir,
                                    self.net_param_dict,
@@ -230,6 +238,7 @@ class Runner(object):
         # Run Expt
         start_time = datetime.datetime.now()
         expt_log.stop_log()
+        expt_log.switch_log_file(self.outdir)
         self.expt_net.train()
         stop_time = datetime.datetime.now()
 

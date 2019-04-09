@@ -16,22 +16,19 @@ class Logger(object):
         ctr = 0
         self.log = tempfile.TemporaryFile()
 
-        '''
-        done = False
-        while not done:
-            self.tempname = self.filename + self.suffix + str(ctr)
-            if os.path.isfile(self.tempname):
-                ctr += 1
-            else:
-                self.log = open(self.tempname, "w")
-                done = True
-        '''
-        #self.log = open(filename, "a")
 
-        
         self.stdout = sys.stdout
         self.stderr = sys.stderr
         sys.stderr = sys.stdout = self
+
+    def switch_log_file(self, log_dir=''):
+        temp = self.log
+        new_log = os.path.join(log_dir,self.filename)
+        self.log = open(new_log, 'w')
+        temp.seek(0)
+        shutil.copyfileobj(temp, self.log)
+        temp.close()
+
 
     def write(self, message):
         self.terminal.write(message)
@@ -51,13 +48,5 @@ class Logger(object):
         
     def close_log(self, log_dir=''):
         
-        shutil.copyfileobj(self.log,
-                           os.path.join(log_dir,
-                                        self.filename))
         self.log.close()
-        '''
-        if log_dir != '':
-            shutil.move(self.tempname,
-                        os.path.join(log_dir, self.filename))
-        '''
         print ("Saving log file to {}".format(os.path.join(log_dir, self.filename)))

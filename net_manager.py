@@ -44,6 +44,7 @@ class NetManager(object):
             self.epochs_per_recording = int(expt_param_dict['epochs_per_recording'])
         else:
             self.epochs_per_recording = self.epochs
+            
         self.tot_rec_sets = self.epochs/self.epochs_per_recording
         self.save_best_n = save_best_n
         self.best_n = 0
@@ -62,6 +63,12 @@ class NetManager(object):
         temp = importlib.import_module(optimizer_module)
         optimizer_fnc = getattr(temp, optimizer)
         self.opt = optimizer_fnc(optimizer_param_dict)
+
+        # Get Loss Function
+        if 'loss_fnc' in net_param_dict:
+            self.loss_fnc = net_param_dict['loss_fnc']
+        else:
+            self.loss_fnc = 'mean_squared_error'
 
         # Prepare standard training
         print("Standard training")
@@ -94,7 +101,7 @@ class NetManager(object):
 
         # Compile model
         print("Compiling model ...")
-        self.model.compile(loss='mean_squared_error',
+        self.model.compile(loss=self.loss_fnc, #'mean_squared_error',
                            optimizer=self.opt,
                            metrics=[metric_fnc])
 
@@ -284,7 +291,8 @@ class NetManager(object):
         training_monitor = TrainingMonitor(fig_path, jsonPath=json_path,
                                            resultsPath = results_path)
         checkpointer = ModelCheckpoint(checkpoint_path, verbose=1,
-                                       data_manager=self.data_manager)
+                                       data_manager=self.data_manager,
+                                       period=self.epochs_per_recording)
         callbacks = [training_monitor, checkpointer]
 
         (init_train_loss, init_train_acc,

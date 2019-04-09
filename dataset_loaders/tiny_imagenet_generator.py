@@ -1,10 +1,14 @@
 from __future__ import absolute_import
 
-from .preprocessing import ImageToArrayPreprocessor
-from .preprocessing import SimplePreprocessor
-from .preprocessing import MeanPreprocessor
-from .io import HDF5DatasetGenerator, HDF5DatasetIterator
+# import the necessary packages
+import os, sys
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
 from .config import tiny_image_net_config as config
+from external_dir.preprocessing import ImageToArrayPreprocessor
+from external_dir.preprocessing import SimplePreprocessor
+from external_dir.preprocessing import MeanPreprocessor
+from external_dir.io import HDF5DatasetGenerator, HDF5DatasetIterator
 import json
 from keras.preprocessing.image import ImageDataGenerator
 
