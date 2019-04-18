@@ -102,10 +102,10 @@ class Runner(object):
         parser = argparse.ArgumentParser(
             description="Run Keras Expt With Specified Output Encoding")
         parser.add_argument('config_files', action='store',
-                            type=str, nargs='*', default='')
+                            type=str, nargs='*', default='', help="Specify cfg files for expt")
         parser.add_argument('--gpu', '-g', type=str, default='*',
                             action='store', help='chosen GPU')
-        parser.add_argument('--dbg', action='store_true')
+        parser.add_argument('--dbg', action='store_true', help="Run Tensorflow CLI Debugger")
 
         cmd_line_args = parser.parse_args()
 
