@@ -105,6 +105,7 @@ class Runner(object):
                             type=str, nargs='*', default='')
         parser.add_argument('--gpu', '-g', type=str, default='*',
                             action='store', help='chosen GPU')
+        parser.add_argument('--dbg', action='store_true')
 
         cmd_line_args = parser.parse_args()
 
@@ -115,6 +116,8 @@ class Runner(object):
         os.environ['THEANO_FLAGS'] = 'floatX=32, mode=FAST_RUN, device=cuda'
         self.gpu = cmd_line_args.gpu
 
+        # These imports are here, so that GPU is not selected before cmd line
+        # arguments get parsed
         global keras
         global NetManager
         global DataManager
@@ -122,6 +125,16 @@ class Runner(object):
         import keras
         from net_manager import NetManager
         from data_manager import DataManager
+
+        # Enable tensorflow debugger
+        if cmd_line_args.dbg == True:
+            print ("\n==========================\n")
+            print ("DEBUG ENABLED")
+            print ("\n==========================\n")
+            import tensorflow as tf
+            from tensorflow.python import debug as tf_debug
+            import keras.backend as K
+            K.set_session(tf_debug.LocalCLIDebugWrapperSession(tf.Session()))
 
 
         for curr_config_file in (cmd_line_args.config_files):

@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+import curses
 import errno
 import importlib
 import inspect
@@ -149,9 +150,20 @@ class NetManager(object):
                 mod_name = '.' + mod_name
             temp = importlib.import_module(mod_name, 'net_architectures')
             build_architecture = getattr(temp, "build_architecture")
-            return build_architecture(input_shape,
-                                      self.nb_output_nodes,
-                                      net_param_dict['output_activation'])
+
+            try:
+                 arch = build_architecture(input_shape,
+                                           self.nb_output_nodes,
+                                           net_param_dict['output_activation'])
+            except curses.error,e:
+                print('\nError:')
+                print (e.message)
+                print ("Check to ensure you're using a POSIX enabled terminal - i.e. Works with POSIX termios calls")
+                print ('\n\n')
+                sys.exit()
+                
+            
+            return arch
 
         elif (len(saved_param_dict) > 0 and
               'saved_arch_format' in saved_param_dict and
