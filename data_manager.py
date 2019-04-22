@@ -9,10 +9,6 @@ from data_display import Data_Display
 
 import os
 import sys
-#file_dir = os.path.join(
-#    os.path.dirname(os.path.realpath(__file__)), 'dataset_loaders')
-#if file_dir not in sys.path:
-#    sys.path.append(file_dir)
 
 class DataManager(object):
 
@@ -56,8 +52,6 @@ class DataManager(object):
             self.batch_size = int(expt_param_dict['batch_size'])
         else:
             self.batch_size = 32
-
-
 
         # Create encodings
         temp = importlib.import_module(self.encoding_module)
