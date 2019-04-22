@@ -50,3 +50,8 @@ class Logger(object):
         
         self.log.close()
         print ("Saving log file to {}".format(os.path.join(log_dir, self.filename)))
+
+        # Create file indicating expt ran to completion
+        with open(os.path.join(log_dir, "EXPT.COMPLETED"), 'w') as f:
+            f.write("Done!")
+        
