@@ -47,6 +47,10 @@ class Runner(object):
         shutil.copy(self.expt_file_name,
                     os.path.join(self.outdir,
                                  os.path.basename(self.expt_file_name)))
+        if 'encoding_cfg' in self.file_param_dict:
+            shutil.copy(self.file_param_dict['encoding_cfg'],    
+                        os.path.join(self.outdir, 'encoding.cfg'))
+            
         self.store_git_meta_data()
 
         self.config.read(self.file_param_dict['encoding_cfg'])
@@ -55,9 +59,8 @@ class Runner(object):
         self.metric_param_dict = self.get_param_dict('MetricParams')
 
         if len(self.saved_param_dict) > 0:
-            shutil.copy(self.file_param_dict['encoding_cfg'],    
-                        os.path.join(self.outdir,
-                                     os.path.basename(self.file_param_dict['encoding_cfg'])))            
+            print("Encoding info now saved along with data_manager info. Check to ensure it's recovered")
+            sys.exit()
 
         self.config.read(self.net_param_dict['optimizer_cfg'])
         temp = self.get_param_dict('OptimizerParams')
