@@ -112,8 +112,16 @@ class NetManager(object):
             model_img_file = os.path.join(self.expt_dir,
                                       self.expt_prefix + "_image.png")
             plot_model(self.model, to_file=model_img_file, show_shapes=True)
-        except:
-            pass
+            print ("Saved image of architecture to", model_img_file)
+        except ImportError, e:
+            # Prob'ly need to install pydot
+            print (e.message)
+            print ("Not saving graphical image of net")
+        except OSError, e:
+            # Prob'ly need Graphviz
+            print (e.message)
+            print ("Not saving graphical image of net")
+
 
         # Summarize            
         self.summary()
