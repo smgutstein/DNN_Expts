@@ -47,6 +47,10 @@ class Runner(object):
         shutil.copy(self.expt_file_name,
                     os.path.join(self.outdir,
                                  os.path.basename(self.expt_file_name)))
+        if 'encoding_cfg' in self.file_param_dict:
+            shutil.copy(self.file_param_dict['encoding_cfg'],    
+                        os.path.join(self.outdir, 'encoding.cfg'))
+            
         self.store_git_meta_data()
 
         self.config.read(self.file_param_dict['encoding_cfg'])
@@ -55,9 +59,8 @@ class Runner(object):
         self.metric_param_dict = self.get_param_dict('MetricParams')
 
         if len(self.saved_param_dict) > 0:
-            shutil.copy(self.file_param_dict['encoding_cfg'],    
-                        os.path.join(self.outdir,
-                                     os.path.basename(self.file_param_dict['encoding_cfg'])))            
+            print("Encoding info now saved along with data_manager info. Check to ensure it's recovered")
+            sys.exit()
 
         self.config.read(self.net_param_dict['optimizer_cfg'])
         temp = self.get_param_dict('OptimizerParams')
@@ -102,9 +105,10 @@ class Runner(object):
         parser = argparse.ArgumentParser(
             description="Run Keras Expt With Specified Output Encoding")
         parser.add_argument('config_files', action='store',
-                            type=str, nargs='*', default='')
+                            type=str, nargs='*', default='', help="Specify cfg files for expt")
         parser.add_argument('--gpu', '-g', type=str, default='*',
                             action='store', help='chosen GPU')
+        parser.add_argument('--dbg', action='store_true', help="Run Tensorflow CLI Debugger")
 
         cmd_line_args = parser.parse_args()
 
@@ -115,6 +119,8 @@ class Runner(object):
         os.environ['THEANO_FLAGS'] = 'floatX=32, mode=FAST_RUN, device=cuda'
         self.gpu = cmd_line_args.gpu
 
+        # These imports are here, so that GPU is not selected before cmd line
+        # arguments get parsed
         global keras
         global NetManager
         global DataManager
@@ -122,6 +128,16 @@ class Runner(object):
         import keras
         from net_manager import NetManager
         from data_manager import DataManager
+
+        # Enable tensorflow debugger
+        if cmd_line_args.dbg == True:
+            print ("\n==========================\n")
+            print ("DEBUG ENABLED")
+            print ("\n==========================\n")
+            import tensorflow as tf
+            from tensorflow.python import debug as tf_debug
+            import keras.backend as K
+            K.set_session(tf_debug.LocalCLIDebugWrapperSession(tf.Session()))
 
 
         for curr_config_file in (cmd_line_args.config_files):

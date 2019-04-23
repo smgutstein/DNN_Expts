@@ -2,6 +2,7 @@ from __future__ import absolute_import
 from keras import backend as K
 import local_backend as LK
 from local_backend import ECOC_fast_accuracy
+from local_backend import ECOC_top_1, ECOC_top_5
 
 def binary_accuracy_local(y_true, y_pred):
     return K.mean(K.equal(y_true, K.round(y_pred)), axis=-1)
