@@ -13,7 +13,8 @@ from __future__ import print_function
 import os
 
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation, Flatten, Input
+from keras.layers import Dense, Dropout, Flatten, Input #Activation, Flatten, Input
+from net_architectures.sgActivation import Activation
 from keras.layers import Conv2D, Convolution2D, MaxPooling2D, BatchNormalization
 from keras import backend as K
 

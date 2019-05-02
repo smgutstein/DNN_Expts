@@ -1,5 +1,6 @@
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation, Flatten
+from keras.layers import Dense, Dropout, Flatten #Activation, Flatten
+from net_architectures.sgActivation import Activation
 from keras.layers import Conv2D, Convolution2D, MaxPooling2D
 
 def build_architecture(input_shape,

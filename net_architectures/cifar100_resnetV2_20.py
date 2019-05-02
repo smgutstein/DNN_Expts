@@ -12,7 +12,8 @@ https://arxiv.org/pdf/1603.05027.pdf
 
 from __future__ import print_function
 import keras
-from keras.layers import Dense, Conv2D, BatchNormalization, Activation
+from keras.layers import Dense, Conv2D, BatchNormalization#, Activation
+from net_architectures.sgActivation import Activation
 from keras.layers import AveragePooling2D, Input, Flatten
 from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint, LearningRateScheduler
@@ -189,6 +190,7 @@ def resnet_v2(input_shape, depth, num_classes, output_activation):
     y = Flatten()(x)
     outputs = Dense(num_classes,
                     activation=output_activation,
+                    name = "Dense_Output_" + output_activation,
                     kernel_initializer='he_normal')(y)
 
     # Instantiate model.
