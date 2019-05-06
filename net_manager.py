@@ -89,12 +89,18 @@ class NetManager(object):
                                      # by use of local_metrics
 
         print("Initializing architecture ...")
+        self.net_arch_file = None
         self.model = self.init_model_architecture(net_param_dict,
                                                   saved_param_dict)
         self.check_for_saved_model_weights(net_param_dict,
                                            saved_param_dict)
 
         # Save net architecture
+        import pdb
+        pdb.set_trace()
+        arch_file_name = os.path.basename(self.net_arch_file)
+        shutil.copy2(self.net_arch_file,
+                     os.path.join(self.expt_dir, arch_file_name))
         json_str = self.model.to_json()
         model_file = os.path.join(self.expt_dir,
                                   self.expt_prefix + "_init.json")
@@ -159,6 +165,13 @@ class NetManager(object):
             temp = importlib.import_module(mod_name, 'net_architectures')
             build_architecture = getattr(temp, "build_architecture")
 
+            # Get arch file to save in experimental results dir
+            self.net_arch_file = temp.__file__
+            if self.net_arch_file[-4:] == '.pyc':
+                self.net_arch_file = self.net_arch_file[:-1]
+            import pdb
+            pdb.set_trace()
+
             try:
                  arch = build_architecture(input_shape,
                                            self.nb_output_nodes,
@@ -193,6 +206,11 @@ class NetManager(object):
                     # Error
                     print("No architecure was specified in config file, either by 'arch_module' or 'saved_arch'")
                     sys.exit(0)
+
+                self.net_arch_file = os.path.join(saved_param_dict['saved_set_dir'],
+                                                  saved_param_dict['saved_dir'],
+                                                  saved_param_dict['saved_dir'] + '.' +
+                                                  saved_param_dict['saved_arch'])
 
     def check_for_saved_model_weights(self, net_param_dict, saved_param_dict):
 
