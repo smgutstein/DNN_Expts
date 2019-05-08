@@ -39,17 +39,34 @@ class Runner(object):
         self.net_param_dict = self.get_param_dict('NetParams')
         self.expt_param_dict = self.get_param_dict('ExptParams')
         self.saved_param_dict = self.get_param_dict('SavedParams')
+
+        # To allow quick testing without needing to change specified
+        # epochs in cfg files
+        if self.override_epochs > 0:
+            self.expt_param_dict['epochs'] = self.override_epochs
+
+        # Create output directory
+        self.expt_set_dir = os.path.join(self.file_param_dict['root_expt_dir'],
+                                         self.file_param_dict['expt_dir'],
+                                         self.file_param_dict['expt_subdir'])
         
-        self.expt_set_dir = self.file_param_dict['expt_set_dir']
         self.expt_dir = self.host_machine + "_" + self.file_param_dict['expt_dir']
         if not hasattr(self, 'outdir'):
             self.outdir = self.make_outdir(self.expt_set_dir, self.expt_dir)
+            
+        # Make outdir for config/metadata
+        self.metadata_dir = os.path.join(self.outdir, 'metadata')
+        self.make_sure_outdir_exists(self.metadata_dir)
+        checkpoint_dir = os.path.join(self.outdir, 'checkpoints')
+        self.make_sure_outdir_exists(checkpoint_dir) # Used by net_manager
+            
+        # Copy files with metadata (cfg files) to output dir
         shutil.copy(self.expt_file_name,
-                    os.path.join(self.outdir,
+                    os.path.join(self.metadata_dir,
                                  os.path.basename(self.expt_file_name)))
         if 'encoding_cfg' in self.file_param_dict:
             shutil.copy(self.file_param_dict['encoding_cfg'],    
-                        os.path.join(self.outdir, 'encoding.cfg'))
+                        os.path.join(self.metadata_dir, 'encoding.cfg'))
             
         self.store_git_meta_data()
 
@@ -77,7 +94,7 @@ class Runner(object):
                 self.optimizer_param_dict[x] = False
 
         shutil.copy(self.net_param_dict['optimizer_cfg'],
-                    os.path.join(self.outdir,
+                    os.path.join(self.metadata_dir,
                                  os.path.basename(self.net_param_dict['optimizer_cfg'])))
 
         self.expt_dm = DataManager(self.net_param_dict['output_activation'],
@@ -88,6 +105,7 @@ class Runner(object):
                                    self.expt_param_dict)
 
         self.expt_net = NetManager(self.expt_dm, self.outdir,
+                                   self.metadata_dir,
                                    self.net_param_dict,
                                    self.expt_param_dict,
                                    self.metric_param_dict,
@@ -109,6 +127,8 @@ class Runner(object):
         parser.add_argument('--gpu', '-g', type=str, default='*',
                             action='store', help='chosen GPU')
         parser.add_argument('--dbg', action='store_true', help="Run Tensorflow CLI Debugger")
+        parser.add_argument('--epochs', '-e', type=int, default=0,
+                            action='store', help='override epochs from cfg file')
 
         cmd_line_args = parser.parse_args()
 
@@ -139,7 +159,9 @@ class Runner(object):
             import keras.backend as K
             K.set_session(tf_debug.LocalCLIDebugWrapperSession(tf.Session()))
 
-
+        # Check if number of desired epochs different than in cfg file
+        self.override_epochs = cmd_line_args.epochs
+        
         for curr_config_file in (cmd_line_args.config_files):
 
             # Get input args from config file
@@ -148,6 +170,8 @@ class Runner(object):
                 os._exit(1)
 
             yield curr_config_file
+
+        
 
 
     def get_param_dict(self, dict_name):
@@ -233,7 +257,7 @@ class Runner(object):
                 changed_files = "None\n"
                 changes = "None\n"
 
-            with open(os.path.join(self.outdir, 'git_info.txt'), 'w') as f:
+            with open(os.path.join(self.metadata_dir, 'git_info.txt'), 'w') as f:
                 f.write("Keras Branch Name: " + keras_branch_name + '\n')
                 f.write("Keras Commit Num: " + keras_commit_num[0:8] + '\n')
                 f.write("Latent Branch Name: " + branch_name + '\n')
@@ -254,7 +278,7 @@ class Runner(object):
         # Run Expt
         start_time = datetime.datetime.now()
         expt_log.stop_log()
-        expt_log.switch_log_file(self.outdir)
+        expt_log.switch_log_file(self.metadata_dir)
         self.expt_net.train()
         stop_time = datetime.datetime.now()
 
@@ -279,5 +303,5 @@ if __name__ == '__main__':
     x = Runner()
     while x.set_params():
         x.run_expt()
-    print ("Closing log " + x.outdir)
-    expt_log.close_log(x.outdir)
+    print ("Closing log " + x.metadata_dir)
+    expt_log.close_log(x.metadata_dir)

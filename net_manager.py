@@ -25,6 +25,7 @@ class NetManager(object):
 
     def __init__(self, data_manager,
                  expt_dir,
+                 metadata_dir,
                  net_param_dict,
                  expt_param_dict,
                  metric_param_dict,
@@ -38,6 +39,7 @@ class NetManager(object):
         self.epochs = int(expt_param_dict['epochs'])
         self.data_manager = data_manager
         self.expt_dir = expt_dir
+        self.metadata_dir = metadata_dir
         self.expt_prefix = os.path.basename(expt_dir)
         self.data_augmentation = data_augmentation
         self.save_iters = save_iters
@@ -96,11 +98,9 @@ class NetManager(object):
                                            saved_param_dict)
 
         # Save net architecture
-        import pdb
-        pdb.set_trace()
         arch_file_name = os.path.basename(self.net_arch_file)
         shutil.copy2(self.net_arch_file,
-                     os.path.join(self.expt_dir, arch_file_name))
+                     os.path.join(self.metadata_dir, arch_file_name))
         json_str = self.model.to_json()
         model_file = os.path.join(self.expt_dir,
                                   self.expt_prefix + "_init.json")
@@ -115,7 +115,7 @@ class NetManager(object):
         try:
             from keras.utils import plot_model
             # Write the network architecture visualization graph to disk
-            model_img_file = os.path.join(self.expt_dir,
+            model_img_file = os.path.join(self.expt_dir,"metadata",
                                       self.expt_prefix + "_image.png")
             plot_model(self.model, to_file=model_img_file, show_shapes=True)
             print ("Saved image of architecture to", model_img_file)
@@ -169,8 +169,6 @@ class NetManager(object):
             self.net_arch_file = temp.__file__
             if self.net_arch_file[-4:] == '.pyc':
                 self.net_arch_file = self.net_arch_file[:-1]
-            import pdb
-            pdb.set_trace()
 
             try:
                  arch = build_architecture(input_shape,
@@ -321,14 +319,15 @@ class NetManager(object):
             
     def train(self, data_augmentation=True):
 
+        checkpoint_dir = os.path.join(self.expt_dir,"checkpoints","checkpoint")
         results_path = os.path.join(self.expt_dir, 'results.txt')
         fig_path = [os.path.join(self.expt_dir, 'results_acc.png'),
                     os.path.join(self.expt_dir, 'results_loss.png')]
         json_path = os.path.join(self.expt_dir, 'results.json')
-        checkpoint_path = os.path.join(self.expt_dir,"checkpoint")
+    
         training_monitor = TrainingMonitor(fig_path, jsonPath=json_path,
                                            resultsPath = results_path)
-        checkpointer = ModelCheckpoint(checkpoint_path, verbose=1,
+        checkpointer = ModelCheckpoint(checkpoint_dir, verbose=1,
                                        data_manager=self.data_manager,
                                        period=self.epochs_per_recording)
         callbacks = [training_monitor, checkpointer]
