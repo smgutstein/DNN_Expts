@@ -24,3 +24,16 @@ Expt_output.log*
 ECOC_repo.bundle
 cfg_dir/expt_random_cifar100_i*cfg
 cfg_dir/expt_softmax_cifar100_i*cfg
+cfg_dir/expt_minigooglenet_softmax.cfg
+cfg_dir/expt_minigooglenet_softmax_i1907.cfg
+cfg_dir/expt_random_cifar100_vgg_init_run.cfg
+cfg_dir/expt_softmax_cifar100_vgg_init_run.cfg
+cfg_dir/expt_vgg16b_random.cfg
+cfg_dir/expt_vgg16b_softmax.cfg
+encoding_expts_2/
+encoding_expts_3/
+net_architectures/cifar100_vgg16b.py
+net_architectures/vgg19.py
+net_architectures/vgg19_a.py
+net_architectures/vgg19_b.py
+tiny_imagenet_expts/
