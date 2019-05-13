@@ -88,7 +88,9 @@ def ECOC_top_k_accuracy(top_k):
             acc = tf.truediv(num_right_top_k, total_top_k)  
 
             return K.cast(acc, K.floatx())
+        ECOC_top_k_fnc.__name__ = "acc_top_" + str(top_k)
         return ECOC_top_k_fnc
+    
     return ECOC_top_k_wrapper
 
 ECOC_top_5 = ECOC_top_k_accuracy(5)

@@ -236,6 +236,8 @@ class TrainingMonitor(BaseLogger):
 
 		# ensure at least two epochs have passed before plotting
 		# (epoch starts at zero)
+                import pdb
+                pdb.set_trace()
 		if len(self.H["loss"]) > 1:
                     plt.style.use("ggplot")
                     self.acc_ax.set_title("Accuracy vs. Epochs [{}]".format(len(self.H["loss"])))
@@ -247,11 +249,31 @@ class TrainingMonitor(BaseLogger):
                     plt.cla()
                     self.acc_ax.set_xlabel("Epochs")
                     self.acc_ax.set_ylabel("Acc")
-                    plt.plot(N, self.H["acc"], label="train_acc")
-                    plt.plot(N, self.H["val_acc"], label="val_acc")
-                    plt.title("Accuracy [Epoch {} | Acc ({:5.2f}%, {:5.2f}%)]".format(num_epochs,
-                                                                              100*max(self.H['acc']),
-                                                                              100*max(self.H['val_acc'])))
+                    import pdb
+                    pdb.set_trace()
+                    tr_accs = sorted([x for x in self.H if 'val' not in x and 'acc' in x])
+                    for curr_plt in tr_accs:
+                        plt.plot(N, self.H[curr_plt], label=curr_plt)
+                        title_str += ", Acc ({:5.2f}%".format(100*max(self.H[curr_plt]))
+                    title_str += "]"
+                    plt.title(title_str)
+
+                    #plt.plot(N, self.H["acc"], label="train_acc")
+                    #title_str = "Accuracy [Epoch {} | Acc ({:5.2f}%".format(num_epochs,
+                    #                                                        100*max(self.H['acc']))
+                                                                             
+                    val_accs = sorted([x for x in self.H if 'val' in x and 'acc' in x])
+                    for curr_plt in val_accs:
+                        plt.plot(N, self.H[curr_plt], label=curr_plt)
+                        title_str += ", Acc ({:5.2f}%".format(100*max(self.H[curr_plt]))
+                    title_str += "]"
+                    plt.title(title_str)
+                    
+                    #plt.plot(N, self.H["val_acc"], label="val_acc")
+                    #plt.title("Accuracy [Epoch {} | Acc ({:5.2f}%, {:5.2f}%)]".format(num_epochs,
+                    #                                                          100*max(self.H['acc']),
+                    #                                                          100*max(self.H['val_acc'])))
+
                     plt.legend()
                     plt.savefig(self.figPath[0])
                     

@@ -10,10 +10,14 @@ def binary_accuracy_local(y_true, y_pred):
 def hot_bit(y_true, y_pred):
     # Equivalent to categorical accuracy function in
     # keras metrics module
+    hot_bit.__name__ = "acc_top_1"
     return K.cast(K.equal(K.argmax(y_true, axis=-1),
                           K.argmax(y_pred, axis=-1)),
                   K.floatx())
 
+def top_k_categorical_accuracy(y_true, y_pred, k=5):
+    top_k_categorical_accuracy.__name__ = "acc_top_" + str(k)
+    return K.mean(K.in_top_k(y_pred, K.argmax(y_true, axis=-1), k), axis=-1)
 
 
 

@@ -86,9 +86,6 @@ class NetManager(object):
         if metric_fnc_args.args == ['y_encode']:
             metric_fnc = metric_fnc(self.data_manager.encoding_matrix)
         self.acc_metric = metric_param_dict['accuracy_metric']
-        metric_fnc.__name__ = 'acc'  # Hacky solution to make sure
-                                     # keras output strings are unaffected
-                                     # by use of local_metrics
 
         print("Initializing architecture ...")
         self.net_arch_file = None
@@ -307,11 +304,12 @@ class NetManager(object):
                                           steps=dm.test_data_generator.batches_per_epoch
                                           )
 
-
+        train_acc_str = self.acc_metric + '_acc'
+        val_acc_str = 'val_' + train_acc_str
         print("\nInit loss and acc:                             loss: ",
-              "%0.5f - acc: %0.5f - val_loss: %0.5f - val_acc: %0.5f" %
-              (init_train_loss, init_train_acc,
-               init_test_loss, init_test_acc))
+              "%0.5f - %s: %0.5f - val_loss: %0.5f - %s: %0.5f" %
+              (init_train_loss, train_acc_str, init_train_acc,
+               init_test_loss, val_acc_str, init_test_acc))
 
         return (init_train_loss, init_train_acc,
                init_test_loss, init_test_acc)
@@ -336,10 +334,19 @@ class NetManager(object):
                init_test_loss, init_test_acc) = self.get_init_condits()
         
         training_monitor.on_train_begin()
-        training_monitor.on_epoch_end(epoch=0,logs = {'loss': init_train_loss,
-                                                      'acc':  init_train_acc,
-                                                      'val_loss': init_test_loss,
-                                                      'val_acc': init_test_acc})
+        log_dir = {'loss': init_train_loss,
+                   'val_loss': init_test_loss}
+        log_dir[self.acc_metric + '_acc'] = init_train_acc
+        log_dir['val_' + self.acc_metric + '_acc'] = init_test_acc
+        import pdb
+        pdb.set_trace()
+
+        
+        #training_monitor.on_epoch_end(epoch=0,logs = {'loss': init_train_loss,
+        #                                              'acc':  init_train_acc,
+        #                                              'val_loss': init_test_loss,
+        #                                              'val_acc': init_test_acc})
+        training_monitor.on_epoch_end(epoch=0,logs = log_dir)
 
         # Train Model
         dm = self.data_manager
