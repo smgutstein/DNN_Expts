@@ -83,9 +83,12 @@ class NetManager(object):
         temp = importlib.import_module(metric_param_dict['metrics_module'])
         metric_fnc = getattr(temp, metric_param_dict['accuracy_metric'])
         metric_fnc_args = inspect.getargspec(metric_fnc)
+        # NOTE: Need top ensure correct acc fnc is obtained whjen recovering
+        # previous encoding
         if metric_fnc_args.args == ['y_encode']:
             metric_fnc = metric_fnc(self.data_manager.encoding_matrix)
-        self.acc_metric = metric_param_dict['accuracy_metric']
+            print ("Warning: Need to ensure correct acc function is obtained with reuse of encoding")
+        self.acc_metric = metric_fnc.__name__
 
         print("Initializing architecture ...")
         self.net_arch_file = None
@@ -304,12 +307,12 @@ class NetManager(object):
                                           steps=dm.test_data_generator.batches_per_epoch
                                           )
 
-        train_acc_str = self.acc_metric + '_acc'
-        val_acc_str = 'val_' + train_acc_str
+        self.train_acc_str = self.acc_metric
+        self.val_acc_str = 'val_' + self.train_acc_str
         print("\nInit loss and acc:                             loss: ",
               "%0.5f - %s: %0.5f - val_loss: %0.5f - %s: %0.5f" %
-              (init_train_loss, train_acc_str, init_train_acc,
-               init_test_loss, val_acc_str, init_test_acc))
+              (init_train_loss, self.train_acc_str, init_train_acc,
+               init_test_loss, self.val_acc_str, init_test_acc))
 
         return (init_train_loss, init_train_acc,
                init_test_loss, init_test_acc)
@@ -323,29 +326,24 @@ class NetManager(object):
                     os.path.join(self.expt_dir, 'results_loss.png')]
         json_path = os.path.join(self.expt_dir, 'results.json')
     
+        (init_train_loss, init_train_acc,
+               init_test_loss, init_test_acc) = self.get_init_condits()
+
         training_monitor = TrainingMonitor(fig_path, jsonPath=json_path,
                                            resultsPath = results_path)
-        checkpointer = ModelCheckpoint(checkpoint_dir, verbose=1,
+        checkpointer = ModelCheckpoint(checkpoint_dir,
+                                       monitor = self.val_acc_str,
+                                       verbose=1,
                                        data_manager=self.data_manager,
                                        period=self.epochs_per_recording)
         callbacks = [training_monitor, checkpointer]
 
-        (init_train_loss, init_train_acc,
-               init_test_loss, init_test_acc) = self.get_init_condits()
         
         training_monitor.on_train_begin()
         log_dir = {'loss': init_train_loss,
                    'val_loss': init_test_loss}
-        log_dir[self.acc_metric + '_acc'] = init_train_acc
-        log_dir['val_' + self.acc_metric + '_acc'] = init_test_acc
-        import pdb
-        pdb.set_trace()
-
-        
-        #training_monitor.on_epoch_end(epoch=0,logs = {'loss': init_train_loss,
-        #                                              'acc':  init_train_acc,
-        #                                              'val_loss': init_test_loss,
-        #                                              'val_acc': init_test_acc})
+        log_dir[self.train_acc_str] = init_train_acc
+        log_dir[self.val_acc_str] = init_test_acc
         training_monitor.on_epoch_end(epoch=0,logs = log_dir)
 
         # Train Model
