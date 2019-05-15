@@ -1,6 +1,7 @@
 from keras.layers import Input
 from keras.layers import Add
-from keras.layers import Activation
+from net_architectures.sgActivation import Activation
+#from keras.layers import Activation
 from keras.layers import Dense
 from keras.layers import Dropout
 from keras.layers import Flatten
@@ -140,8 +141,8 @@ def conv3_block(input, k=1, dropout=0.0):
     m = Add()([init, x])
     return m
 
-def WideResNet(input_dim,
-               nb_output_nodes=100,
+def WideResNet(input_shape,
+               nb_output_nodes,
                output_activation):
     """
     Creates a Wide Residual Network with specified parameters
@@ -164,7 +165,7 @@ def WideResNet(input_dim,
     
     channel_axis = 1 if K.image_data_format() == "channels_first" else -1
 
-    ip = Input(shape=input_dim)
+    ip = Input(shape=input_shape)
 
     x = initial_conv(ip)
     x = expand_conv(x, 16, k)
@@ -200,8 +201,11 @@ def WideResNet(input_dim,
     x = AveragePooling2D((8, 8))(x)
     x = Flatten()(x)
 
-    x = Dense(nb_output_nodes, W_regularizer=l2(weight_decay),
-              activation=output_activation)(x)
+    #x = Dense(nb_output_nodes, W_regularizer=l2(weight_decay),
+    #          activation=output_activation)(x)
+
+    x = Dense(nb_output_nodes, W_regularizer=l2(weight_decay))(x)
+    x = Activation(output_activation)(x)
 
     model = Model(ip, x)
     return model
