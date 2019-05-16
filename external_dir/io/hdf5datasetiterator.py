@@ -60,10 +60,11 @@ class HDF5DatasetIterator:
         images, labels = self._get_next_batch()
 
         # Encode labels
-        encoded_labels = np.empty((len(labels), self.nb_code_bits))
-        for i in range(len(labels)):
-            encoded_labels[i, :] = self.encoding_dict[labels[i]]
-        labels = encoded_labels
+        if self.encoding_dict:
+            encoded_labels = np.empty((len(labels), self.nb_code_bits))
+            for i in range(len(labels)):
+                encoded_labels[i, :] = self.encoding_dict[labels[i]]
+            labels = encoded_labels
 
         # check to see if our preprocessors are not None
         if self.preprocessors is not None:
@@ -86,6 +87,7 @@ class HDF5DatasetIterator:
 
         # if the data augmenator exists, apply it
         if self.aug is not None:
+            # Note: self.aug.flow returns an iterator
             (images, labels) = next(self.aug.flow(images,
                                                   labels, batch_size=self.batch_size))
 
