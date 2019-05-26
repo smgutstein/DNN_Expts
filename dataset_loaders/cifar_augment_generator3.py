@@ -35,18 +35,18 @@ def get_generator(self):
     #iap = ImageToArrayPreprocessor() # Converts PIL to numpy
 
     # construct the image generator for data augmentation
-    zca_batches = 50
-    zca_gen = HDF5DatasetIterator(config.TRAIN_HDF5, zca_batches,
-                                   nb_code_bits=config.NUM_CODE_BITS)
+    #zca_batches = 50
+    #zca_gen = HDF5DatasetIterator(config.TRAIN_HDF5, zca_batches,
+    #                               nb_code_bits=config.NUM_CODE_BITS)
 
-    zca_tr = np.vstack(next(zca_gen)[0] for _ in range(zca_batches))
+    #zca_tr = np.vstack(next(zca_gen)[0] for _ in range(zca_batches))
     
     
     # construct the image generator for data augmentation
     aug = ImageDataGenerator(
                 samplewise_center=True,  # set each sample mean to 0
                 samplewise_std_normalization=True,  # divide each input by its std
-                zca_whitening=True,  # apply ZCA whitening
+                zca_whitening=False,  # apply ZCA whitening
                 rotation_range=0,  # randomly rotate images in the range (degrees, 0 to 180)
                 width_shift_range=0.125,  # randomly shift images horizontally (fraction of total width)
                 height_shift_range=0.125,  # randomly shift images vertically (fraction of total height)
@@ -54,7 +54,7 @@ def get_generator(self):
                 vertical_flip=False,  # randomly flip images
                 fill_mode = 'nearest')
 
-    aug.fit(zca_tr)
+    #aug.fit(zca_tr)
 
     # initialize the training and validation dataset generators
     '''
