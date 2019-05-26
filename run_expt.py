@@ -79,12 +79,14 @@ class Runner(object):
             print("Encoding info now saved along with data_manager info. Check to ensure it's recovered")
             sys.exit()
 
+        # Get optimizer params
         self.config.read(self.net_param_dict['optimizer_cfg'])
         temp = self.get_param_dict('OptimizerParams')
         self.optimizer_param_dict = {x:float(temp[x])
                                      if is_number(temp[x]) else temp[x]
                                      for x in temp}
 
+        # Convert non-numeric strings to correct variable types
         for x in self.optimizer_param_dict:
             if self.optimizer_param_dict[x] == 'None':
                 self.optimizer_param_dict[x] = None
@@ -92,6 +94,18 @@ class Runner(object):
                 self.optimizer_param_dict[x] = True
             elif self.optimizer_param_dict[x] == 'False':
                 self.optimizer_param_dict[x] = False
+
+        # Read/Create lr-schedule dictionary
+        if "lr_dict" in self.optimizer_param_dict:
+            lr_pairs =  self.optimizer_param_dict['lr_dict'].split(")")
+            lr_pairs = [x.strip(" ,()") for x in lr_pairs if len(x)>0]
+            lr_dict = dict()
+            for curr_pair in lr_pairs:
+                iter_num, lr_val = curr_pair.split(",")
+                lr_dict[int(iter_num)] = float(lr_val)
+                
+            self.optimizer_param_dict["lr_dict"] = lr_dict
+
 
         shutil.copy(self.net_param_dict['optimizer_cfg'],
                     os.path.join(self.metadata_dir,
