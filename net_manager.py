@@ -8,6 +8,7 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras import backend as K
 from keras.models import model_from_json, model_from_yaml
 from keras_loggers import TrainingMonitor, ModelCheckpoint
+#from lr_scheduler import LR_Scheduler
 from operator import itemgetter
 import os
 import pickle
@@ -66,6 +67,11 @@ class NetManager(object):
         temp = importlib.import_module(optimizer_module)
         optimizer_fnc = getattr(temp, optimizer)
         self.opt = optimizer_fnc(optimizer_param_dict)
+        if "lr_dict" in optimizer_param_dict:
+            self.lr_dict = optimizer_param_dict['lr_dict']
+        else:
+            self.lr_dict = None
+
 
         # Get Loss Function
         if 'loss_fnc' in net_param_dict:
@@ -338,7 +344,14 @@ class NetManager(object):
                                        period=self.epochs_per_recording)
         callbacks = [training_monitor, checkpointer]
 
-        
+        # Add lr scheduler
+        #if self.lr_dict:
+        #    lr_scheduler = LR_Scheduler(self.opt, self.lr_dict)
+        #    callbacks.append(lr_scheduler)
+
+
+
+        # Get results for initialized net
         training_monitor.on_train_begin()
         log_dir = {'loss': init_train_loss,
                    'val_loss': init_test_loss}
@@ -352,7 +365,7 @@ class NetManager(object):
         if not dm.train_data_generator:
             results = self.model.fit(dm.X_train,
                                      dm.Y_train,
-                                     batch_size=dm.batch_size,
+                                     batch_size=128,#dm.batch_size,
                                      epochs=self.epochs,
                                      validation_data=(dm.X_test,
                                                       dm.Y_test),
