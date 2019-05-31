@@ -66,12 +66,12 @@ class NetManager(object):
         optimizer = optimizer_param_dict.pop('optimizer')
         temp = importlib.import_module(optimizer_module)
         optimizer_fnc = getattr(temp, optimizer)
+        optimizer_param_dict['batches_per_epoch'] = self.data_manager.batches_per_epoch
         self.opt = optimizer_fnc(optimizer_param_dict)
         if "lr_dict" in optimizer_param_dict:
             self.lr_dict = optimizer_param_dict['lr_dict']
         else:
             self.lr_dict = None
-
 
         # Get Loss Function
         if 'loss_fnc' in net_param_dict:

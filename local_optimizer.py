@@ -43,7 +43,9 @@ class SGD_VAR(SGD):
     """
 
     def __init__(self, lr=0.05, momentum=0., decay=0.,
-                 nesterov=False, lr_dict = {}, **kwargs):
+                 nesterov=False, lr_dict = {},
+                 batches_per_epoch = 1562,
+                 **kwargs):
 
         super(SGD_VAR, self).__init__(lr, momentum, decay,
                                       nesterov, **kwargs)
@@ -51,6 +53,8 @@ class SGD_VAR(SGD):
             lr_dict = {0:lr}
             
         self.lr_dict = lr_dict
+        self.batches_per_epoch = batches_per_epoch
+
         with K.name_scope(self.__class__.__name__):
             self.iterations_ref = K.variable(0, dtype='int64', name='iterations_ref')
             self.new_lr = K.variable(lr, name='new_lr')
@@ -63,22 +67,31 @@ class SGD_VAR(SGD):
             ''' Wrapped python method used by tensor to determine desired learning rate'''
         
             # Change the learning rate at 2nd, 4th & 6th iteration
-            for x in [2,4,6,8]:
-                temp = tf.Variable(x, dtype=iteration.dtype)
+            for x in self.lr_dict:
+                temp = tf.Variable((x-1) * self.batches_per_epoch, dtype=iteration.dtype)
                 if tf.equal(temp, iteration):
-                    return tf.constant(x)
+                    return tf.constant(self.lr_dict[x], dtype=lr.dtype)
 
-            # Temporary code to stop run after 10 iterations
-            #temp = tf.Variable(10, dtype=iteration.dtype)
-            #if tf.equal(temp, iteration):
-            #    sys.exit()
             return lr
 
-        # Key lines to change self.lr
-        new_lr = tf.contrib.eager.py_func(func=lr_stepper, inp=[self.iterations, self.lr], Tout=tf.float32)
         # NOTE: K.update_add and K.update return tf.assign_add and tf.assign, respectively
-        self.updates = [K.update_add(self.iterations, 1), K.update(self.lr, new_lr)]
+        self.updates = [K.update_add(self.iterations, 1)]
+
+
+        # Key lines to change self.lr
+        new_lr = tf.contrib.eager.py_func(func=lr_stepper, inp=[self.iterations,
+                                                                self.lr], Tout=tf.float32)
+
+        new_iter_ref = tf.cond(tf.math.equal(self.lr,new_lr),
+                               lambda: K.update_add(self.iterations_ref, 1),
+                               lambda: K.update(self.iterations_ref, 1))
+        self.updates.append(K.update(self.lr, new_lr))
+        self.updates.append(new_iter_ref)
         
+        # Temporary code to debug output
+        self.iterations = tf.Print(self.lr,
+                 [self.iterations,self.iterations_ref, self.lr],
+                                   message="\n Debug Vals:" )
 
         grads = self.get_gradients(loss, params)
         
@@ -86,11 +99,6 @@ class SGD_VAR(SGD):
         if self.initial_decay > 0:
             lr = lr * (1. / (1. + self.decay * K.cast(self.iterations,
                                                       K.dtype(self.decay))))
-
-        # Temporary code to debug output
-        self.iterations = tf.Print(self.lr,
-                 [self.iterations, self.lr],
-                 message="\n Debug Vals:")
 
         # momentum
         shapes = [K.int_shape(p) for p in params]

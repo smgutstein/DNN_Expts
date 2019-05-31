@@ -69,6 +69,7 @@ class DataManager(object):
         elif self.data_loading_module:
             print("Loading data into memory")
             self._load_data()
+            self.batches_per_epoch = self.X_train.shape[0] // self.batch_size
 
             # Encode labels
             print("Encoding data")
@@ -102,6 +103,7 @@ class DataManager(object):
 
             # Get sorted list of class numbers (np.unique returns sorted list)
             self.class_nums = self.test_data_generator.class_nums
+            self.batches_per_epoch = self.train_data_generator.batches_per_epoch
 
             # Encode labels
             print("Making Encoding Dict")
