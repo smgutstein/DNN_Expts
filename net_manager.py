@@ -95,6 +95,8 @@ class NetManager(object):
             metric_fnc = metric_fnc(self.data_manager.encoding_matrix)
             print ("Warning: Need to ensure correct acc function is obtained with reuse of encoding")
         self.acc_metric = metric_fnc.__name__
+        self.train_acc_str = self.acc_metric
+        self.val_acc_str = 'val_' + self.train_acc_str
 
         print("Initializing architecture ...")
         self.net_arch_file = None
@@ -313,8 +315,6 @@ class NetManager(object):
                                           steps=dm.test_data_generator.batches_per_epoch
                                           )
 
-        self.train_acc_str = self.acc_metric
-        self.val_acc_str = 'val_' + self.train_acc_str
         print("\nInit loss and acc:                             loss: ",
               "%0.5f - %s: %0.5f - val_loss: %0.5f - %s: %0.5f" %
               (init_train_loss, self.train_acc_str, init_train_acc,
