@@ -89,9 +89,9 @@ class SGD_VAR(SGD):
         self.updates.append(new_iter_ref)
         
         # Temporary code to debug output
-        self.iterations = tf.Print(self.lr,
-                 [self.iterations,self.iterations_ref, self.lr],
-                                   message="\n Debug Vals:" )
+        #self.iterations = tf.Print(self.lr,
+        #         [self.iterations,self.iterations_ref, self.lr],
+        #                           message="\n Debug Vals:" )
 
         grads = self.get_gradients(loss, params)
         
