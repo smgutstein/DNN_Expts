@@ -15,9 +15,12 @@ def get_subtasks(subtasks, dataset, samps_per_class, num_classes):
 
     print("Loading training set")
     data_dict  = pickle.load(open(dataset,"rb"), encoding='latin1')
+    classes_lists = pickle.load(open('meta','rb'), encoding='latin1')
+    coarse_classes = classes_lists['coarse_label_names']
 
     # Initialze info for subset_dict
-    subset_data = np.zeros((samps_per_class*num_classes, 3072))
+    tot_images = samps_per_class*num_classes
+    subset_data = np.zeros((tot_images, 3072))
     subset_dict = dict()
     subset_dict['fine_labels'] = []
     subset_dict['coarse_labels'] = []
@@ -25,10 +28,31 @@ def get_subtasks(subtasks, dataset, samps_per_class, num_classes):
     subset_dict['batch_label'] = "Subset training batch 1 of 1 - " + str(samps_per_class*num_classes)
     subset_dict['batch_label'] += " samps per class"
 
-    for filename, batch, fine, coarse, data in zip(data_dict['filenames'], data_dict['batch_label'],
-                                                   data_dict['fine_labels'], data_dict['coarse_labels'],
-                                                   data_dict['data']):
+    # Initialize dict to track number of samples used per class
+    used_dict = defaultdict(int)
 
+    curr_candidate = 0
+    for filename, batch, fine_nums, coarse_nums, data in zip(data_dict['filenames'],
+                                                             data_dict['batch_label'],
+                                                             data_dict['fine_labels'],
+                                                             data_dict['coarse_labels'],
+                                                             data_dict['data']):
+
+        if coarse_classes[coarse_num] in subtasks:    
+            # Copy chosen sample
+            subset_dict['fine_labels'].append(train['fine_labels'][curr_candidate])
+            subset_dict['coarse_labels'].append(train['coarse_labels'][curr_candidate])
+            subset_dict['filenames'].append(train['filenames'][curr_candidate])
+            subset_data[tot_used,:] = train['data'][curr_candidate,:]
+            
+            # Update tracking variables
+            tot_used += 1
+            used_dict[curr_candidate_class] += 1
+        else:
+            pass
+
+        # Proceed to next candidate element
+        curr_candidate += 1
 
 
 
