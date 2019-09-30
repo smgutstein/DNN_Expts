@@ -49,3 +49,5 @@ if __name__ == '__main__':
     print ("Total Samples:", y_train.shape[0])
     data_display = Data_Display(X_train, y_train, label_dict)
     data_display.start_display()
+
+# e.g. python display_cifar_subsets.py cifar100_src_living_vs_notliving
