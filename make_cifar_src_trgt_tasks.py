@@ -8,6 +8,7 @@ import pickle
 import os
 from os.path import expanduser
 import shutil
+from six.moves import cPickle
 
 def make_data_dir(dir_path):
     try:
@@ -31,11 +32,11 @@ def get_subtasks(subtasks, data_path, dataset, samps_per_class):
     tot_images = samps_per_class*num_classes
     subset_data = np.zeros((tot_images, 3072))
     subset_dict = dict()
-    subset_dict['fine_labels'] = []
-    subset_dict['coarse_labels'] = []
-    subset_dict['filenames'] = [] 
-    subset_dict['batch_label'] = "Subset training batch 1 of 1 - " + str(samps_per_class*num_classes)
-    subset_dict['batch_label'] += " samps per class"
+    subset_dict['fine_labels'.encode('utf-8')] = []
+    subset_dict['coarse_labels'.encode('utf-8')] = []
+    subset_dict['filenames'.encode('utf-8')] = [] 
+    subset_dict['batch_label'.encode('utf-8')] = "Subset training batch 1 of 1 - " + str(samps_per_class*num_classes)
+    subset_dict['batch_label'.encode('utf-8')] += " samps per class"
 
     # Initialize dict to track number of samples used per class
     used_dict = defaultdict(int)
@@ -48,9 +49,9 @@ def get_subtasks(subtasks, data_path, dataset, samps_per_class):
 
         if coarse_classes[coarse_num] in subtasks:
             # Copy chosen sample
-            subset_dict['fine_labels'].append(fine_num)
-            subset_dict['coarse_labels'].append(coarse_num)
-            subset_dict['filenames'].append(filename)
+            subset_dict['fine_labels'.encode('utf-8')].append(fine_num)
+            subset_dict['coarse_labels'.encode('utf-8')].append(coarse_num)
+            subset_dict['filenames'.encode('utf-8')].append(filename)
             subset_data[tot_used,:] = data[:]
             
             # Update tracking variables
@@ -59,11 +60,12 @@ def get_subtasks(subtasks, data_path, dataset, samps_per_class):
         else:
             pass
 
+    subset_dict['data'.encode('utf-8')] = subset_data
     for curr_class in sorted(used_dict):
         print (coarse_classes[curr_class],"(",curr_class,"): ", used_dict[curr_class])
     print("\n\n")
 
-    return (subset_dict, used_dict, classes_lists)
+    return (subset_dict, classes_lists)
 
 if __name__ == '__main__':
 
@@ -105,15 +107,10 @@ if __name__ == '__main__':
 
     for tasks, out_path in zip([src_tasks, trgt_tasks],[src_path, trgt_path]):
         for set_type, spc in zip(["train", "test"], [train_spc, test_spc]):
-            (subset_dict, used_dict, meta) =  get_subtasks(tasks, data_path, set_type, spc)
-            pickle.dump(subset_dict, open(os.path.join(out_path, set_type),'wb'))
+            (sd, meta) =  get_subtasks(tasks, data_path, set_type, spc)
+            cPickle.dump(sd, open(os.path.join(out_path, set_type),'wb'))
+            zz= cPickle.load(open(os.path.join(out_path, set_type),'rb'), encoding='bytes')
         pickle.dump(meta, open(os.path.join(out_path, "meta"),'wb'))
-            
-    #(subset_dict, used_dict) =  get_subtasks(src_tasks, data_path, "train", train_spc)
-    #(subset_dict, used_dict) =  get_subtasks(trgt_tasks, data_path, "train", train_spc)
-    #(subset_dict, used_dict) =  get_subtasks(src_tasks, data_path, "test", test_spc)
-    #(subset_dict, used_dict) =  get_subtasks(trgt_tasks, data_path, "test", test_spc)
-
 
 
     '''
