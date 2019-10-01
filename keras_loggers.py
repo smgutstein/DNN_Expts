@@ -125,7 +125,7 @@ class ModelCheckpoint(Callback):
         self.data_manager.curr_encoding_info['meta_encoding_dict'] = self.data_manager.meta_encoding_dict
 
         print ("Saving", new_encodings_file_name)
-        with open(new_encodings_file_name, 'w') as f:
+        with open(new_encodings_file_name, 'wb') as f:
             pickle.dump(self.data_manager.curr_encoding_info, f)
 
 
@@ -175,109 +175,109 @@ class ModelCheckpoint(Callback):
 # Monitor taken from PyImageSearch
 
 class TrainingMonitor(BaseLogger):
-	def __init__(self, figPath, jsonPath=None, resultsPath=None, startAt=0):
-		# store the output path for the figure, the path to the JSON
-		# serialized file, and the starting epoch
-		super(TrainingMonitor, self).__init__()
-		self.figPath = figPath
-		self.jsonPath = jsonPath
-                self.resultsPath = resultsPath
-		self.startAt = startAt
+    def __init__(self, figPath, jsonPath=None, resultsPath=None, startAt=0):
+        # store the output path for the figure, the path to the JSON
+        # serialized file, and the starting epoch
+        super(TrainingMonitor, self).__init__()
+        self.figPath = figPath
+        self.jsonPath = jsonPath
+        self.resultsPath = resultsPath
+        self.startAt = startAt
                 
-                self.acc_fig = plt.figure(1)
-                plt.clf()
-                self.acc_ax = self.acc_fig.add_axes([0.15, 0.1, 0.8, 0.8])
+        self.acc_fig = plt.figure(1)
+        plt.clf()
+        self.acc_ax = self.acc_fig.add_axes([0.15, 0.1, 0.8, 0.8])
                 
-                self.loss_fig = plt.figure(2)
-                plt.clf()
-                self.loss_ax = self.loss_fig.add_axes([0.15, 0.1, 0.8, 0.8])
+        self.loss_fig = plt.figure(2)
+        plt.clf()
+        self.loss_ax = self.loss_fig.add_axes([0.15, 0.1, 0.8, 0.8])
                 
 
-	def on_train_begin(self, logs={}):
-            if not hasattr(self, 'H'):
-		# initialize the history dictionary
-		self.H = {}
+    def on_train_begin(self, logs={}):
+        if not hasattr(self, 'H'):
+            # initialize the history dictionary
+            self.H = {}
 
-		# if the JSON history path exists, load the training history
-		if self.jsonPath is not None:
-			if os.path.exists(self.jsonPath):
-				self.H = json.loads(open(self.jsonPath).read())
+        # if the JSON history path exists, load the training history
+        if self.jsonPath is not None:
+            if os.path.exists(self.jsonPath):
+                self.H = json.loads(open(self.jsonPath).read())
 
-				# check to see if a starting epoch was supplied
-				if self.startAt > 0:
-					# loop over the entries in the history log and
-					# trim any entries that are past the starting
-					# epoch
-					for k in self.H.keys():
-						self.H[k] = self.H[k][:self.startAt]
+                # check to see if a starting epoch was supplied
+                if self.startAt > 0:
+                    # loop over the entries in the history log and
+                    # trim any entries that are past the starting
+                    # epoch
+                    for k in self.H.keys():
+                        self.H[k] = self.H[k][:self.startAt]
 
-	def on_epoch_end(self, epoch, logs={}):
-		# loop over the logs and update the loss, accuracy, etc.
-		# for the entire training process
-		for (k, v) in logs.items():
-			l = self.H.get(k, [])
-			l.append(v)
-			self.H[k] = l
+    def on_epoch_end(self, epoch, logs={}):
+        # loop over the logs and update the loss, accuracy, etc.
+        # for the entire training process
+        for (k, v) in logs.items():
+            l = self.H.get(k, [])
+            l.append(v)
+            self.H[k] = l
 
-		# check to see if the training history should be serialized
-		# to file
-		if self.jsonPath is not None:
-			f = open(self.jsonPath, "w")
-			f.write(json.dumps(self.H))
-			f.close()
+        # check to see if the training history should be serialized
+        # to file
+        if self.jsonPath is not None:
+            f = open(self.jsonPath, "w")
+            f.write(json.dumps(self.H))
+            f.close()
 
-                # make human readable text file
-                if self.resultsPath is not None:
-                    epoch_num = len(self.H["loss"]) - 1
-                    out_str = 'Epoch ' + str(epoch_num) + ': '
-                    out_fields = sorted(self.H)
-                    for curr_out in out_fields:
-                        out_str += '{}: {:5.4f}  '.format(curr_out, self.H[curr_out][-1])
-                    with open(self.resultsPath, 'a') as f:
-                        f.write(out_str + '\n')
+            # make human readable text file
+            if self.resultsPath is not None:
+                epoch_num = len(self.H["loss"]) - 1
+                out_str = 'Epoch ' + str(epoch_num) + ': '
+                out_fields = sorted(self.H)
+                for curr_out in out_fields:
+                    out_str += '{}: {:5.4f}  '.format(curr_out, self.H[curr_out][-1])
+                with open(self.resultsPath, 'a') as f:
+                    f.write(out_str + '\n')
 
-		# ensure at least two epochs have passed before plotting
-		# (epoch starts at zero)
-		if len(self.H["loss"]) > 1:
-                    plt.style.use("ggplot")
-                    self.acc_ax.set_title("Accuracy vs. Epochs [{}]".format(len(self.H["loss"])))
-                    self.loss_ax.set_title("Loss vs. Epochs [{}]".format(len(self.H["loss"])))
-                    N = np.arange(0, len(self.H["loss"]))
-                    num_epochs = len(self.H["loss"]) - 1
+        # ensure at least two epochs have passed before plotting
+        # (epoch starts at zero)
+        if len(self.H["loss"]) > 1:
+            plt.style.use("ggplot")
+            self.acc_ax.set_title("Accuracy vs. Epochs [{}]".format(len(self.H["loss"])))
+            self.loss_ax.set_title("Loss vs. Epochs [{}]".format(len(self.H["loss"])))
+            N = np.arange(0, len(self.H["loss"]))
+            num_epochs = len(self.H["loss"]) - 1
                     
-                    plt.figure(1) # acc                   
-                    plt.cla()
-                    self.acc_ax.set_xlabel("Epochs")
-                    self.acc_ax.set_ylabel("Acc")
+            plt.figure(1) # acc                   
+            plt.cla()
+            self.acc_ax.set_xlabel("Epochs")
+            self.acc_ax.set_ylabel("Acc")
 
-                    tr_accs = sorted([x for x in self.H if 'val' not in x and 'acc' in x])
-                    title_str = "Accuracy [Epoch {} | Acc ({:5.2f}%".format(num_epochs,
-                                                                           100*max(self.H[tr_accs[0]]))
-                    plt.plot(N, self.H[tr_accs[0]], label=tr_accs[0])
+            tr_accs = sorted([x for x in self.H if 'val' not in x and 'acc' in x])
+            title_str = "Accuracy [Epoch {} | Acc ({:5.2f}%".format(num_epochs,
+                                                                    100*max(self.H[tr_accs[0]]))
+            plt.plot(N, self.H[tr_accs[0]], label=tr_accs[0])
                     
-                    if len(tr_accs) > 1:
-                        for curr_plt in tr_accs:
-                            plt.plot(N, self.H[curr_plt], label=curr_plt)
-                            title_str += ", {:5.2f}%".format(100*max(self.H[curr_plt]))
+            if len(tr_accs) > 1:
+                for curr_plt in tr_accs:
+                    plt.plot(N, self.H[curr_plt], label=curr_plt)
+                    title_str += ", {:5.2f}%".format(100*max(self.H[curr_plt]))
 
-                    val_accs = sorted([x for x in self.H if 'val' in x and 'acc' in x])
-                    for curr_plt in val_accs:
-                        plt.plot(N, self.H[curr_plt], label=curr_plt)
-                        title_str += ", {:5.2f}%".format(100*max(self.H[curr_plt]))
-                    title_str += ") ]"
-                    plt.title(title_str)
-                    
+            val_accs = sorted([x for x in self.H if 'val' in x and 'acc' in x])
+            for curr_plt in val_accs:
+                plt.plot(N, self.H[curr_plt], label=curr_plt)
+                title_str += ", {:5.2f}%".format(100*max(self.H[curr_plt]))
+            title_str += ") ]"
+            plt.title(title_str)
 
-                    plt.legend()
-                    plt.savefig(self.figPath[0])
-                    
-                    plt.figure(2) # loss
-                    plt.cla()
-                    self.loss_ax.set_xlabel("Epochs")
-                    self.loss_ax.set_ylabel("Loss")               
-                    plt.plot(N, self.H["loss"], label="train_loss")
-                    plt.plot(N, self.H["val_loss"], label="val_loss")
-                    plt.title("Loss [Epoch {}]".format(num_epochs))
-                    plt.legend()
-                    plt.savefig(self.figPath[1])
+
+            plt.legend()
+            plt.savefig(self.figPath[0])
+
+            plt.figure(2) # loss
+            plt.cla()
+            self.loss_ax.set_xlabel("Epochs")
+            self.loss_ax.set_ylabel("Loss")               
+            plt.plot(N, self.H["loss"], label="train_loss")
+            plt.plot(N, self.H["val_loss"], label="val_loss")
+            plt.title("Loss [Epoch {}]".format(num_epochs))
+            plt.legend()
+            plt.savefig(self.figPath[1])
 
