@@ -121,7 +121,7 @@ class DataManager(object):
 
     def _init_num_name_dicts(self, category_name_file):
         # Make class_num/class_name dictionaries
-        with open(category_name_file, "r") as f:
+        with open(category_name_file, "rb") as f:
             self.label_dict = pickle.load(f)
 
     def _load_data(self):
@@ -167,7 +167,7 @@ class DataManager(object):
 
         # Find number of output bits by looking at arbitrary
         # code word
-        temp = nb_2_encoding_dict.keys()[0]
+        temp = sorted(list(nb_2_encoding_dict.keys()))[0]
         nb_outputs = len(nb_2_encoding_dict[temp])
 
         # Turn 2D array into 1D list of class numbers    
