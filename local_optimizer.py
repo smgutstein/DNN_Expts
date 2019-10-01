@@ -43,30 +43,33 @@ class SGD_VAR(SGD):
     """
 
     def __init__(self, lr=0.05, momentum=0., decay=0.,
-                 nesterov=False, lr_dict = {},
-                 batches_per_epoch = 1562,
+                 nesterov=False,
                  **kwargs):
 
         super(SGD_VAR, self).__init__(lr, momentum, decay,
                                       nesterov, **kwargs)
-        if lr_dict == {}:
-            lr_dict = {0:lr}
+
+        # Initializing learning rate schedule dict
+        self.lr_dict = {0:lr}
             
-        self.lr_dict = lr_dict
-        self.batches_per_epoch = batches_per_epoch
 
         with K.name_scope(self.__class__.__name__):
             self.iterations_ref = K.variable(0, dtype='int64', name='iterations_ref')
             self.new_lr = K.variable(lr, name='new_lr')
 
+    def set_lr_schedule_vars(self, lr_dict, batches_per_epoch=1562):
+        self.lr_dict = lr_dict
+        self.batches_per_epoch = batches_per_epoch
+        
+
     @interfaces.legacy_get_updates_support
     def get_updates(self, loss, params):
-
+        # Adapted from SGD code, but with changes to allow adjustments in learning rate
         
         def lr_stepper(iteration, lr):
             ''' Wrapped python method used by tensor to determine desired learning rate'''
         
-            # Change the learning rate at 2nd, 4th & 6th iteration
+            # Change the learning rate where specified by lr_dict
             for x in self.lr_dict:
                 temp = tf.Variable((x-1) * self.batches_per_epoch, dtype=iteration.dtype)
                 if tf.equal(temp, iteration):
