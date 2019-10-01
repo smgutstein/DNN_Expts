@@ -1,6 +1,5 @@
 from __future__ import print_function
 import argparse
-import ConfigParser
 import datetime
 import errno
 import os
@@ -19,7 +18,7 @@ class Logger(object):
 
         self.stdout = sys.stdout
         self.stderr = sys.stderr
-        sys.stderr = sys.stdout = self
+        #sys.stderr = sys.stdout = self
 
     def switch_log_file(self, log_dir=''):
         temp = self.log
