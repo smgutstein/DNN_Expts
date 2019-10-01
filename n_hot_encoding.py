@@ -27,7 +27,7 @@ def make_encoding_dict(self, **kwargs):
     self.encoding_type = str(nb_hot) + "-hot"
 
     num_code_words = len(self.encoding_dict)
-    sample_code_word = self.encoding_dict.keys()[0]
+    sample_code_word = sorted(list(self.encoding_dict.keys()))[0]
     code_word_bits = \
     self.encoding_dict[sample_code_word].shape[0]
     self.encoding_matrix = np.zeros((num_code_words,
