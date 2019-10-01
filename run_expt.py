@@ -1,6 +1,6 @@
 from __future__ import print_function
 import argparse
-import ConfigParser
+import configparser
 import datetime
 import errno
 from expt_logger import Logger
@@ -23,13 +23,16 @@ def is_number(in_str):
 class Runner(object):
 
     def __init__(self):
-        self.config = ConfigParser.ConfigParser()
+        self.config = configparser.ConfigParser()
         self.cmd_line_args = self.get_cmd_line_args()
         self.host_machine = socket.gethostname()
 
     def set_params(self):
         try:
-            self.expt_file_name = self.cmd_line_args.next()
+            if sys.version_info < (3,0):
+                self.expt_file_name = self.cmd_line_args.next()
+            else:
+                self.expt_file_name = self.cmd_line_args.__next__()
         except StopIteration as exception:
             return False
         
@@ -195,7 +198,7 @@ class Runner(object):
             params = self.config.items(dict_name)
             for curr_pair in params:
                 param_dict[curr_pair[0]] = curr_pair[1]
-        except ConfigParser.NoSectionError: 
+        except configparser.NoSectionError: 
             pass
         return param_dict
 
