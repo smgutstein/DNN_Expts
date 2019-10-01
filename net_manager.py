@@ -66,12 +66,20 @@ class NetManager(object):
         optimizer = optimizer_param_dict.pop('optimizer')
         temp = importlib.import_module(optimizer_module)
         optimizer_fnc = getattr(temp, optimizer)
-        optimizer_param_dict['batches_per_epoch'] = self.data_manager.batches_per_epoch
+
+        #optimizer_param_dict['batches_per_epoch'] = self.data_manager.batches_per_epoch
         self.opt = optimizer_fnc(optimizer_param_dict)
-        if "lr_dict" in optimizer_param_dict:
-            self.lr_dict = optimizer_param_dict['lr_dict']
-        else:
-            self.lr_dict = None
+
+        # Check if using optimzier designed to change learning rate
+        # according to schedule - figure out why kwargs didn't work
+        if 'set_lr_schedule_vars' in dir(self.opt):
+            self.opt.set_lr_schedule_vars(optimizer_param_dict['lr_dict'],
+                                          optimizer_param_dict['batches_per_epoch'])
+                                          
+        #if "lr_dict" in optimizer_param_dict:
+        #    self.lr_dict = optimizer_param_dict['lr_dict']
+        #else:
+        #    self.lr_dict = None
 
         # Get Loss Function
         if 'loss_fnc' in net_param_dict:
@@ -127,13 +135,13 @@ class NetManager(object):
                                       self.expt_prefix + "_image.png")
             plot_model(self.model, to_file=model_img_file, show_shapes=True)
             print ("Saved image of architecture to", model_img_file)
-        except ImportError, e:
+        except ImportError as e:
             # Prob'ly need to install pydot
-            print (e.message)
+            print (e)
             print ("Not saving graphical image of net")
-        except OSError, e:
+        except OSError as e:
             # Prob'ly need Graphviz
-            print (e.message)
+            print (e)
             print ("Not saving graphical image of net")
 
 
@@ -182,7 +190,7 @@ class NetManager(object):
                  arch = build_architecture(input_shape,
                                            self.nb_output_nodes,
                                            net_param_dict['output_activation'])
-            except curses.error,e:
+            except curses.error as e:
                 print('\nError:')
                 print (e.message)
                 print ("Check to ensure you're using a POSIX enabled terminal - i.e. Works with POSIX termios calls")
