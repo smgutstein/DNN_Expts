@@ -66,15 +66,13 @@ class NetManager(object):
         optimizer = optimizer_param_dict.pop('optimizer')
         temp = importlib.import_module(optimizer_module)
         optimizer_fnc = getattr(temp, optimizer)
-
-        #optimizer_param_dict['batches_per_epoch'] = self.data_manager.batches_per_epoch
         self.opt = optimizer_fnc(optimizer_param_dict)
 
         # Check if using optimzier designed to change learning rate
         # according to schedule - figure out why kwargs didn't work
-        if 'set_lr_schedule_vars' in dir(self.opt):
-            self.opt.set_lr_schedule_vars(optimizer_param_dict['lr_dict'],
-                                          optimizer_param_dict['batches_per_epoch'])
+        #optimizer_param_dict['batches_per_epoch'] = self.data_manager.batches_per_epoch
+        if 'set_batches_per_epoch' in dir(self.opt):
+            self.opt.set_batches_per_epoch(self.data_manager.batches_per_epoch)
                                           
         #if "lr_dict" in optimizer_param_dict:
         #    self.lr_dict = optimizer_param_dict['lr_dict']

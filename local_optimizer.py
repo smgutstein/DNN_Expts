@@ -43,22 +43,23 @@ class SGD_VAR(SGD):
     """
 
     def __init__(self, lr=0.05, momentum=0., decay=0.,
-                 nesterov=False,
-                 **kwargs):
+                 nesterov=False, lr_dict= {},  **kwargs):
 
         super(SGD_VAR, self).__init__(lr, momentum, decay,
                                       nesterov, **kwargs)
 
         # Initializing learning rate schedule dict
-        self.lr_dict = {0:lr}
+        if lr_dict == {}:
+            self.lr_dict = {0:lr}
+        else:
+            self.lr_dict = lr_dict
             
 
         with K.name_scope(self.__class__.__name__):
             self.iterations_ref = K.variable(0, dtype='int64', name='iterations_ref')
             self.new_lr = K.variable(lr, name='new_lr')
 
-    def set_lr_schedule_vars(self, lr_dict, batches_per_epoch=1562):
-        self.lr_dict = lr_dict
+    def set_batches_per_epoch(self, batches_per_epoch=1562):
         self.batches_per_epoch = batches_per_epoch
         
 
