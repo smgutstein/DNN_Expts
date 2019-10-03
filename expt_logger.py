@@ -13,12 +13,14 @@ class Logger(object):
         self.terminal = sys.stdout
         self.suffix = '_v'
         ctr = 0
-        self.log = tempfile.TemporaryFile()
+        self.log = tempfile.TemporaryFile(mode='r+')
+        #print("Std err redirected to ", self.log)
 
 
         self.stdout = sys.stdout
         self.stderr = sys.stderr
-        #sys.stderr = sys.stdout = self
+        sys.stdout = self
+        sys.stderr = self
 
     def switch_log_file(self, log_dir=''):
         temp = self.log
