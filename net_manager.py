@@ -112,12 +112,14 @@ class NetManager(object):
                                            saved_param_dict)
 
         # Save net architecture
+        #  Copies module with code for net to metadata file
         arch_file_name = os.path.basename(self.net_arch_file)
         shutil.copy2(self.net_arch_file,
                      os.path.join(self.metadata_dir, arch_file_name))
+        #  Copies net architecture to json file
         json_str = self.model.to_json()
-        model_file = os.path.join(self.expt_dir,
-                                  self.expt_prefix + "_init.json")
+        model_file = os.path.join(self.expt_dir, "checkpoints",
+                                  "init_architecture.json")
         open(model_file, "w").write(json_str)
 
         # Compile model

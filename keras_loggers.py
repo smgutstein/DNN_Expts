@@ -55,6 +55,7 @@ class ModelCheckpoint(Callback):
         self.data_manager = data_manager
         self.epochs_since_last_save = 0
         self.best_epoch = None
+        self.encodings_saved = False
 
         if mode not in ['auto', 'min', 'max']:
             warnings.warn('ModelCheckpoint mode %s is unknown, '
@@ -80,8 +81,6 @@ class ModelCheckpoint(Callback):
 
         current = logs.get(self.monitor)
         if current is None:
-            import pdb
-            pdb.set_trace()
             warnings.warn('Can save best model only with %s available, '
                           'skipping.' % (self.monitor), RuntimeWarning)
         else:
@@ -94,14 +93,19 @@ class ModelCheckpoint(Callback):
                              current, outfile))
 
                 # Remove prior best model
-                curr_best_file = self.filepath + "_best_weights_" + str(self.best_epoch) 
+                curr_best_file = self.filepath + \
+                                 "_best_weights_" + str(self.best_epoch)
+                curr_data_manager_file = self.filepath + \
+                                         '_encodings_' + \
+                                         str(self.best_epoch) + '.pkl'
                 if os.path.isfile(curr_best_file + '.h5'):
                     os.remove(curr_best_file + '.h5')
 
-                # Remove prior best encodings and save new best encodings
-                if os.path.isfile(curr_best_file + '.pkl'):
-                    os.remove(curr_best_file + '.pkl')
-                self.save_data_manager(epoch, "best_weights")
+                # Save new best encodings
+                # Note: Don't remove old "best encodings" file, since it is used
+                # for saved epochs other than best
+                if not self.encodings_saved:
+                    self.save_data_manager(curr_data_manager_file)
 
                 # Save new best model
                 self.best_score = current
@@ -117,16 +121,16 @@ class ModelCheckpoint(Callback):
                           (epoch, self.monitor, self.best_score))
 
 
-    def save_data_manager(self, new_epoch, save_type):
+    def save_data_manager(self, trgt_file):
 
-        new_encodings_file_name = self.filepath + '_' + save_type + '_' + str(new_epoch) + '.pkl'
         self.data_manager.curr_encoding_info['encoding_dict'] = self.data_manager.encoding_dict
         self.data_manager.curr_encoding_info['label_dict'] = self.data_manager.label_dict
         self.data_manager.curr_encoding_info['meta_encoding_dict'] = self.data_manager.meta_encoding_dict
 
-        print ("Saving", new_encodings_file_name)
-        with open(new_encodings_file_name, 'wb') as f:
+        print ("Saving", trgt_file)
+        with open(trgt_file, 'wb') as f:
             pickle.dump(self.data_manager.curr_encoding_info, f)
+        self.encodings_saved = True
 
 
     def save_net(self, trgt_file):
@@ -143,25 +147,29 @@ class ModelCheckpoint(Callback):
  
         curr_weights_file = self.filepath + '_weights_' + str(epoch) + '.h5'
         old_weights_file = self.filepath + '_weights_' + str(epoch - 1) + '.h5'
-        old_data_manager_file = self.filepath + '_weights_' + str(epoch - 1) + '.pkl'
+        curr_data_manager_file = self.filepath + '_encodings_' + str(epoch) + '.pkl'
+        #old_data_manager_file = self.filepath + '_weights_' + str(epoch - 1) + '.pkl'
 
 
         if (epoch % self.period) == 0:
             # Save every nth epoch
             self.save_net(curr_weights_file)
-            self.save_data_manager(epoch, "weights")
+            #self.save_data_manager(epoch, "weights")
         elif self.save_most_recent:
             # Save most recent epoch
             self.save_net(curr_weights_file)
-            self.save_data_manager(epoch, "weights")
+            #self.save_data_manager(epoch, "weights")
+
+        if not self.encodings_saved:
+            self.save_data_manager(curr_data_manager_file)
 
         if ((epoch-1) % self.period) != 0:
             # Delete last "most recent" epoch, if its doesnt
             # interfere with saving every nth epoch
             if os.path.isfile(old_weights_file):
                 os.remove(old_weights_file)
-            if os.path.isfile(old_data_manager_file):
-                os.remove(old_data_manager_file)
+            #if os.path.isfile(old_data_manager_file):
+            #    os.remove(old_data_manager_file)
 
 
         # Check to see if copy to best_epoch and delete last best epoch
