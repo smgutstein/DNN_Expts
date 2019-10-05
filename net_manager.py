@@ -262,8 +262,9 @@ class NetManager(object):
                     # Load weights from specified iteration (or closest
                     # iteration prior to specified iteration)
                     self.init_epoch = int(net_iter)
-                    wt_file = os.path.join(net_dir, saved_param_dict['saved_dir'] +
-                                           '_weights_' + saved_param_dict['saved_iter'] +
+                    #wt_file = os.path.join(net_dir, saved_param_dict['saved_dir'] +
+                    wt_file = os.path.join(net_dir,
+                                           'checkpoint_weights_' + saved_param_dict['saved_iter'] +
                                            '.h5')
 
             elif 'saved_weights_file' in saved_param_dict:

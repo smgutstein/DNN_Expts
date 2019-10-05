@@ -78,9 +78,11 @@ class Runner(object):
         self.encoding_module_param_dict = self.get_param_dict('EncodingModuleParams')
         self.metric_param_dict = self.get_param_dict('MetricParams')
 
-        if len(self.saved_param_dict) > 0:
-            print("Encoding info now saved along with data_manager info. Check to ensure it's recovered")
-            sys.exit()
+        #if len(self.saved_param_dict) > 0:
+        #    print("Encoding info now saved along with data_manager info. Check to ensure it's recovered")
+        #    import pdb
+        #    pdb.set_trace()
+        #    sys.exit()
 
         # Get optimizer params
         self.config.read(self.net_param_dict['optimizer_cfg'])

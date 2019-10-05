@@ -7,7 +7,7 @@ def make_encoding_dict(self, **kwargs):
 
     encoding_file = kwargs['saved_encodings']
     print("Recovering Saved Encodings from %s" % encoding_file)
-    pickled_dict = pickle.load(open(encoding_file, 'r'))
+    pickled_dict = pickle.load(open(encoding_file, 'rb'))
 
     self.encoding_dict = pickled_dict['encoding_dict']
     self.label_dict = pickled_dict['label_dict']
@@ -17,7 +17,7 @@ def make_encoding_dict(self, **kwargs):
     self.encoding_type = self.meta_encoding_dict['encoding_type']
 
     class_nums = len(self.encoding_dict)
-    temp = self.encoding_dict[self.encoding_dict.keys()[0]]
+    temp = self.encoding_dict[sorted(list(self.encoding_dict.keys()))[0]]
     nb_code_bits = temp.shape[0]
     
     self.encoding_matrix = np.zeros((class_nums, nb_code_bits))

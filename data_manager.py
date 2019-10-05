@@ -40,8 +40,7 @@ class DataManager(object):
             joint_dict['saved_encodings'] = \
                 os.path.join(saved_param_dict['saved_set_dir'],
                              saved_param_dict['saved_dir'],
-                             saved_param_dict['saved_dir'] +
-                             '_encodings_' +
+                             'checkpoint_encodings_' +
                              saved_param_dict['saved_encodings_iter'] +
                              '.pkl')
         else:

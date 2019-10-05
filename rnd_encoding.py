@@ -38,8 +38,9 @@ def make_encoding_dict(self, **kwargs):
     self.meta_encoding_dict = dict()
     self.meta_encoding_dict['hot'] = self.hot
     self.meta_encoding_dict['not_hot'] = self.not_hot
+    self.meta_encoding_dict['encoding_type'] = self.encoding_type
     self.meta_encoding_dict['seed'] = seed
     self.meta_encoding_dict['hot_prob'] = hot_prob
-    self.meta_encoding_dict['encoding_type'] = self.encoding_type
+
 
 
