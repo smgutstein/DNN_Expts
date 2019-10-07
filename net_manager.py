@@ -32,6 +32,7 @@ class NetManager(object):
                  metric_param_dict,
                  optimizer_param_dict,
                  saved_param_dict,
+                 transfer_param_dict,
                  data_augmentation=True,
                  save_iters=True,
                  save_best_n=5):
@@ -104,12 +105,16 @@ class NetManager(object):
         self.train_acc_str = self.acc_metric
         self.val_acc_str = 'val_' + self.train_acc_str
 
+        # Create net either from scratch, continuing with
+        # a saved net, ot using a saved net for transfer
         print("Initializing architecture ...")
         self.net_arch_file = None
         self.model = self.init_model_architecture(net_param_dict,
                                                   saved_param_dict)
         self.check_for_saved_model_weights(net_param_dict,
                                            saved_param_dict)
+        self.check_for_transfer(transfer_param_dict,
+                                net_param_dict)
 
         # Save net architecture
         #  Copies module with code for net to metadata file
@@ -226,6 +231,88 @@ class NetManager(object):
                                                   saved_param_dict['saved_dir'] + '.' +
                                                   saved_param_dict['saved_arch'])
 
+    def check_for_transfer(self, transfer_param_dict,
+                           net_param_dict):
+        if len(transfer_param_dict) == 0:
+            return
+
+        import pdb
+        pdb.set_trace()
+
+        num_resets = int(transfer_param_dict['num_reset_layers'])
+        pen_ult_nodes = transfer_param_dict['penultimate_node_list']
+        pen_ult_nodes = pen_ult_nodes.split('[')[1]
+        pen_ult_nodes = pen_ult_nodes.split(']')[0].split(',')
+
+        dm = self.data_manager
+        dm.encoding_module = transfer_param_dict['encoding_cfg']
+        encoding_param_dict = transfer_param_dict['_Encoding']
+        
+
+        # Create tfer encodings
+        temp = importlib.import_module(dm.encoding_module)
+        dm.make_encoding_dict = types.MethodType(temp.make_encoding_dict, dm)
+        dm.nb_code_bits = int(encoding_param_dict['nb_code_bits'])
+
+        # Get info to create or recover encoding dict
+        # Not Certain if this is necessart, but just trying to b
+        # consistent with non-tfer data_manager set-up
+        joint_dict = encoding_param_dict.copy()
+        joint_dict.update(encoding_module_param_dict)
+        joint_dict['encoding_activation_fnc'] = encoding_activation_fnc
+
+
+        
+        if 'output_activation' in transfer_param_dict:
+            output_activation = transfer_param_dict['output_activation']
+        else:
+            output_activation = net_param_dict['output_activation']
+        
+        ctr = 0
+        
+        while ctr < num_resets:
+            #Returns layer info, but keeps layer in net
+            pop_layer = self.model.layers.pop() 
+            print("Popping ",pop_layer.name," ..... ",end=' ')
+
+            # Count layers *with* trainable weights that get popped
+            if len(pop_layer.weights) > 0:
+                ctr += 1
+            print("Popped")
+            
+            #Removes layer from net, but returns no info 
+            self.model.pop()
+
+        import pdb
+        pdb.set_trace()
+        if len(pen_ult_nodes) > 0:
+            for curr in pen_ult_nodes:
+                model.add(Dense(int(curr)))
+                model.add('Activation'('relu'))
+                model.add(Dropout(0.5))
+            else:
+                pass
+        
+
+                
+        temp=0
+        self.model.pop()
+        '''
+        model.layers.pop()
+        model.layers.pop()
+
+        model.summary(line_length=150)
+
+        new_layer = Dense(10, activation='softmax', name='my_dense')
+
+        inp = model.input
+        out = new_layer(model.layers[-1].output)
+
+        model2 = Model(inp, out)
+        model2.summary(line_length=150)
+        '''
+
+
     def check_for_saved_model_weights(self, net_param_dict, saved_param_dict):
 
         # Load weights (if necessary)
@@ -283,6 +370,9 @@ class NetManager(object):
             if wt_file is not None:
                print("   Loading wts from %s" % wt_file)
             self.model.load_weights(wt_file)
+
+            import pdb
+            pdb.set_trace()
 
             # Hacky way of ensuring that continuing training from a saved point
             # does not result in a faux encoding change

@@ -42,6 +42,7 @@ class Runner(object):
         self.net_param_dict = self.get_param_dict('NetParams')
         self.expt_param_dict = self.get_param_dict('ExptParams')
         self.saved_param_dict = self.get_param_dict('SavedParams')
+        self.transfer_param_dict = self.get_param_dict('TransferParams')
 
         # To allow quick testing without needing to change specified
         # epochs in cfg files
@@ -70,6 +71,19 @@ class Runner(object):
         if 'encoding_cfg' in self.file_param_dict:
             shutil.copy(self.file_param_dict['encoding_cfg'],    
                         os.path.join(self.metadata_dir, 'encoding.cfg'))
+            
+        if 'encoding_cfg' in self.transfer_param_dict:
+            shutil.copy(self.file_param_dict['encoding_cfg'],    
+                        os.path.join(self.metadata_dir, 'encoding.cfg'))
+
+            self.config.read(self.transfer_param_dict['encoding_cfg'])
+            self.transfer_param_dict['_Encoding'] = self.get_param_dict('Encoding')
+            self.transfer_param_dict['_EncodingModuleParams'] = self.get_param_dict('EncodingModuleParams')
+            self.transfer_param_dict['_MetricParams'] = self.get_param_dict('MetricParams')
+
+            if 'encoding_cfg' in self.file_param_dict:
+                shutil.copy(self.file_param_dict['encoding_cfg'],    
+                            os.path.join(self.metadata_dir, 'orig_encoding.cfg'))
             
         self.store_git_meta_data()
 
@@ -129,7 +143,8 @@ class Runner(object):
                                    self.expt_param_dict,
                                    self.metric_param_dict,
                                    self.optimizer_param_dict,
-                                   self.saved_param_dict)
+                                   self.saved_param_dict,
+                                   self.transfer_param_dict)
         return True
 
     
@@ -200,7 +215,8 @@ class Runner(object):
             params = self.config.items(dict_name)
             for curr_pair in params:
                 param_dict[curr_pair[0]] = curr_pair[1]
-        except configparser.NoSectionError: 
+        except configparser.NoSectionError:
+            # Return empty dict if section missing
             pass
         return param_dict
 

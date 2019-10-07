@@ -46,6 +46,7 @@ class DataManager(object):
         else:
             self.encoding_module = encoding_module_param_dict['encoding_module']
 
+
         # Get batch size for data_gnerator module
         if 'batch_size' in expt_param_dict:
             self.batch_size = int(expt_param_dict['batch_size'])
