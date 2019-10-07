@@ -17,25 +17,68 @@ class DataManager(object):
                  encoding_param_dict,
                  encoding_module_param_dict,
                  saved_param_dict,
-                 expt_param_dict):
+                 expt_param_dict,
+                 trgt_task_param_dict):
 
-        # Specify number of output nodes in net (i.e. number of bits in encoding)
-        self.nb_code_bits = int(encoding_param_dict['nb_code_bits'])
-        
-        # Init dicts that map class numbers to class names
-        self._init_num_name_dicts(file_param_dict['class_names'])
+        # Get batch size for data_generator module
+        if 'batch_size' in expt_param_dict:
+            self.batch_size = int(expt_param_dict['batch_size'])
+        else:
+            self.batch_size = 32
 
-        # Get info to load data 
-        self.data_loading_module = file_param_dict.get('data_loader', None)
-        self.data_generator_module = file_param_dict.get('data_generator', None)
+        ####################################################################################
+        fpd = file_param_dict
+        tpd = trgt_task_param_dict
+        epd = encoding_param_dict
+        empd = encoding_module_param_dict
+        eaf = encoding_activation_fnc
 
-        # Get info to create or recover encoding dict
-        joint_dict = encoding_param_dict.copy()
-        joint_dict.update(encoding_module_param_dict)
-        joint_dict['encoding_activation_fnc'] = encoding_activation_fnc
+        # Determine if data comes from src or trgt task
+        if len(trgt_task_param_dict) == 0:
+            # Get data loaders
+            self.data_loading_module = fpd.get('data_loader', None)
+            self.data_generator_module = fpd.get('data_generator', None)
+            
+            # Specify number of output nodes in net (i.e. number of bits in encoding)
+            self.nb_code_bits = int(epd['nb_code_bits'])
+            self.src_nb_code_bits = int(epd['nb_code_bits'])
+            # Init dicts that map class numbers to class names
+            self._init_num_name_dicts(fpd['class_names'])
 
+        else:
+            # Get data loaders
+            self.data_loading_module = tpd.get('data_loader', None)
+            self.data_generator_module = tpd.get('data_generator', None)
+
+            # Specify number of output nodes in net (i.e. number of bits in encoding)
+            self.nb_code_bits = int(tpd['_EncodingParamDict']['nb_code_bits'])
+            self.src_nb_code_bits = int(epd['nb_code_bits'])
+            # Init dicts that map class numbers to class names
+            self._init_num_name_dicts(tpd['class_names'])
+
+        if len(trgt_task_param_dict) == 0:
+            # Get info to create or recover encoding dict
+            joint_dict = epd.copy()
+            joint_dict.update(empd)
+            joint_dict['encoding_activation_fnc'] = eaf
+        else:
+           # Get info to create or recover encoding dict
+            epd = tpd['_EncodingParamDict']
+            empd = tpd['_EncodingModuleParamDict']
+            joint_dict = epd.copy()
+            joint_dict.update(empd)
+            joint_dict['encoding_activation_fnc'] = eaf
+            
+
+        # Set encoding module
         # If recovering saved net, ensure that the encoding used for that net is recovered
-        if len(saved_param_dict) > 0:
+        if len(trgt_task_param_dict) != 0:
+            # Encoding for target task
+            self.encoding_module = \
+                trgt_task_param_dict['_EncodingModuleParamDict']['encoding_module']
+
+        elif len(saved_param_dict) > 0:
+            # Recover encoding from saved task
             self.encoding_module = "recover_encoding"
             joint_dict['saved_encodings'] = \
                 os.path.join(saved_param_dict['saved_set_dir'],
@@ -44,19 +87,18 @@ class DataManager(object):
                              saved_param_dict['saved_encodings_iter'] +
                              '.pkl')
         else:
-            self.encoding_module = encoding_module_param_dict['encoding_module']
-
-
-        # Get batch size for data_gnerator module
-        if 'batch_size' in expt_param_dict:
-            self.batch_size = int(expt_param_dict['batch_size'])
-        else:
-            self.batch_size = 32
+            # Fresh encoding for new src task
+            self.encoding_module = \
+                encoding_module_param_dict['encoding_module']
+            
 
         # Create encodings
+        import pdb
+        pdb.set_trace()
         temp = importlib.import_module(self.encoding_module)
         self.make_encoding_dict = types.MethodType(temp.make_encoding_dict, self)
-        
+
+        #######################################################################################
 
         if self.data_generator_module:
             temp = importlib.import_module("dataset_loaders." + self.data_generator_module)

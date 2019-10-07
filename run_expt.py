@@ -42,7 +42,7 @@ class Runner(object):
         self.net_param_dict = self.get_param_dict('NetParams')
         self.expt_param_dict = self.get_param_dict('ExptParams')
         self.saved_param_dict = self.get_param_dict('SavedParams')
-        self.transfer_param_dict = self.get_param_dict('TransferParams')
+        self.trgt_task_param_dict = self.get_param_dict('TrgtTaskParams')
 
         # To allow quick testing without needing to change specified
         # epochs in cfg files
@@ -72,14 +72,14 @@ class Runner(object):
             shutil.copy(self.file_param_dict['encoding_cfg'],    
                         os.path.join(self.metadata_dir, 'encoding.cfg'))
             
-        if 'encoding_cfg' in self.transfer_param_dict:
+        if 'encoding_cfg' in self.trgt_task_param_dict:
             shutil.copy(self.file_param_dict['encoding_cfg'],    
                         os.path.join(self.metadata_dir, 'encoding.cfg'))
 
-            self.config.read(self.transfer_param_dict['encoding_cfg'])
-            self.transfer_param_dict['_Encoding'] = self.get_param_dict('Encoding')
-            self.transfer_param_dict['_EncodingModuleParams'] = self.get_param_dict('EncodingModuleParams')
-            self.transfer_param_dict['_MetricParams'] = self.get_param_dict('MetricParams')
+            self.config.read(self.trgt_task_param_dict['encoding_cfg'])
+            self.trgt_task_param_dict['_EncodingParamDict'] = self.get_param_dict('Encoding')
+            self.trgt_task_param_dict['_EncodingModuleParamDict'] = self.get_param_dict('EncodingModuleParams')
+            self.trgt_task_param_dict['_MetricParams'] = self.get_param_dict('MetricParams')
 
             if 'encoding_cfg' in self.file_param_dict:
                 shutil.copy(self.file_param_dict['encoding_cfg'],    
@@ -135,7 +135,8 @@ class Runner(object):
                                    self.encoding_param_dict,
                                    self.encoding_module_param_dict,
                                    self.saved_param_dict,
-                                   self.expt_param_dict)
+                                   self.expt_param_dict,
+                                   self.trgt_task_param_dict)
 
         self.expt_net = NetManager(self.expt_dm, self.outdir,
                                    self.metadata_dir,
@@ -144,7 +145,7 @@ class Runner(object):
                                    self.metric_param_dict,
                                    self.optimizer_param_dict,
                                    self.saved_param_dict,
-                                   self.transfer_param_dict)
+                                   self.trgt_task_param_dict)
         return True
 
     

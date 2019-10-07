@@ -5,6 +5,8 @@ import numpy as np
 
 def make_encoding_dict(self, **kwargs):
     """ Create n-hot encoding"""
+    import pdb
+    pdb.set_trace()
     nb_hot = int(kwargs['nb_hot'])
     hot_func = getattr(hnh, kwargs['hot_not_hot_fnc'])
     hot, not_hot = hot_func(**kwargs)

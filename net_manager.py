@@ -8,6 +8,10 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras import backend as K
 from keras.models import model_from_json, model_from_yaml
 from keras_loggers import TrainingMonitor, ModelCheckpoint
+from keras.models import Sequential
+from keras.layers import Dense, Dropout, Flatten 
+from net_architectures.sgActivation import Activation
+
 #from lr_scheduler import LR_Scheduler
 from operator import itemgetter
 import os
@@ -32,7 +36,7 @@ class NetManager(object):
                  metric_param_dict,
                  optimizer_param_dict,
                  saved_param_dict,
-                 transfer_param_dict,
+                 trgt_task_param_dict,
                  data_augmentation=True,
                  save_iters=True,
                  save_best_n=5):
@@ -89,6 +93,7 @@ class NetManager(object):
         # Prepare standard training
         print("Standard training")
         self.nb_output_nodes = data_manager.nb_code_bits
+        self.src_nb_output_nodes = data_manager.src_nb_code_bits
         print("Initializing data manager ...")
         self.data_manager = data_manager
 
@@ -100,7 +105,8 @@ class NetManager(object):
         # previous encoding
         if metric_fnc_args.args == ['y_encode']:
             metric_fnc = metric_fnc(self.data_manager.encoding_matrix)
-            print ("Warning: Need to ensure correct acc function is obtained with reuse of encoding")
+            print ("Warning: Need to ensure correct acc", end= ' ')
+            print ("function is obtained with reuse of encoding")
         self.acc_metric = metric_fnc.__name__
         self.train_acc_str = self.acc_metric
         self.val_acc_str = 'val_' + self.train_acc_str
@@ -113,7 +119,7 @@ class NetManager(object):
                                                   saved_param_dict)
         self.check_for_saved_model_weights(net_param_dict,
                                            saved_param_dict)
-        self.check_for_transfer(transfer_param_dict,
+        self.check_for_transfer(trgt_task_param_dict,
                                 net_param_dict)
 
         # Save net architecture
@@ -152,6 +158,8 @@ class NetManager(object):
 
         # Summarize            
         self.summary()
+        import pdb
+        pdb.set_trace()
         print (self.data_manager.get_targets_str_sign())
 
     def summary(self):
@@ -193,12 +201,13 @@ class NetManager(object):
 
             try:
                  arch = build_architecture(input_shape,
-                                           self.nb_output_nodes,
+                                           self.src_nb_output_nodes,
                                            net_param_dict['output_activation'])
             except curses.error as e:
                 print('\nError:')
                 print (e.message)
-                print ("Check to ensure you're using a POSIX enabled terminal - i.e. Works with POSIX termios calls")
+                print ("Check to ensure you're using a POSIX", end = ' ')
+                print ("enabled terminal - i.e. Works with POSIX termios calls")
                 print ('\n\n')
                 sys.exit()
                 
@@ -223,7 +232,8 @@ class NetManager(object):
                     return model_from_yaml(yaml_str)
                 else:
                     # Error
-                    print("No architecure was specified in config file, either by 'arch_module' or 'saved_arch'")
+                    print("No architecure was specified in ", end=' ')
+                    print ("config file, either by 'arch_module' or 'saved_arch'")
                     sys.exit(0)
 
                 self.net_arch_file = os.path.join(saved_param_dict['saved_set_dir'],
@@ -231,40 +241,21 @@ class NetManager(object):
                                                   saved_param_dict['saved_dir'] + '.' +
                                                   saved_param_dict['saved_arch'])
 
-    def check_for_transfer(self, transfer_param_dict,
+    def check_for_transfer(self, trgt_task_param_dict,
                            net_param_dict):
-        if len(transfer_param_dict) == 0:
+        if len(trgt_task_param_dict) == 0:
             return
 
-        import pdb
-        pdb.set_trace()
-
-        num_resets = int(transfer_param_dict['num_reset_layers'])
-        pen_ult_nodes = transfer_param_dict['penultimate_node_list']
-        pen_ult_nodes = pen_ult_nodes.split('[')[1]
-        pen_ult_nodes = pen_ult_nodes.split(']')[0].split(',')
-
-        dm = self.data_manager
-        dm.encoding_module = transfer_param_dict['encoding_cfg']
-        encoding_param_dict = transfer_param_dict['_Encoding']
-        
-
-        # Create tfer encodings
-        temp = importlib.import_module(dm.encoding_module)
-        dm.make_encoding_dict = types.MethodType(temp.make_encoding_dict, dm)
-        dm.nb_code_bits = int(encoding_param_dict['nb_code_bits'])
-
-        # Get info to create or recover encoding dict
-        # Not Certain if this is necessart, but just trying to b
-        # consistent with non-tfer data_manager set-up
-        joint_dict = encoding_param_dict.copy()
-        joint_dict.update(encoding_module_param_dict)
-        joint_dict['encoding_activation_fnc'] = encoding_activation_fnc
-
+        num_resets = int(trgt_task_param_dict['num_reset_layers'])
+        pen_ult_nodes = trgt_task_param_dict['penultimate_node_list']
+        pen_ult_nodes = pen_ult_nodes.split('[')[1].strip()
+        pen_ult_nodes = [x.strip()
+                         for x in pen_ult_nodes.split(']')[0].split(',')]
+        pen_ult_nodes = [x for x in pen_ult_nodes if x.isdigit()]
 
         
-        if 'output_activation' in transfer_param_dict:
-            output_activation = transfer_param_dict['output_activation']
+        if 'output_activation' in trgt_task_param_dict:
+            output_activation = trgt_task_param_dict['output_activation']
         else:
             output_activation = net_param_dict['output_activation']
         
@@ -283,34 +274,21 @@ class NetManager(object):
             #Removes layer from net, but returns no info 
             self.model.pop()
 
-        import pdb
-        pdb.set_trace()
+        # Add intermediate layers
         if len(pen_ult_nodes) > 0:
             for curr in pen_ult_nodes:
-                model.add(Dense(int(curr)))
-                model.add('Activation'('relu'))
-                model.add(Dropout(0.5))
+                self.model.add(Dense(int(curr)))
+                self.model.add('Activation'('relu'))
+                self.model.add(Dropout(0.5))
             else:
                 pass
-        
 
+        # Add final classification layer
+        self.model.add(Dense(self.nb_output_nodes))
+        self.model.add(Activation(output_activation,
+                                  name=output_activation + '_tfer_out'))
                 
         temp=0
-        self.model.pop()
-        '''
-        model.layers.pop()
-        model.layers.pop()
-
-        model.summary(line_length=150)
-
-        new_layer = Dense(10, activation='softmax', name='my_dense')
-
-        inp = model.input
-        out = new_layer(model.layers[-1].output)
-
-        model2 = Model(inp, out)
-        model2.summary(line_length=150)
-        '''
 
 
     def check_for_saved_model_weights(self, net_param_dict, saved_param_dict):
@@ -351,7 +329,8 @@ class NetManager(object):
                     self.init_epoch = int(net_iter)
                     #wt_file = os.path.join(net_dir, saved_param_dict['saved_dir'] +
                     wt_file = os.path.join(net_dir,
-                                           'checkpoint_weights_' + saved_param_dict['saved_iter'] +
+                                           'checkpoint_weights_' +
+                                           saved_param_dict['saved_iter'] +
                                            '.h5')
 
             elif 'saved_weights_file' in saved_param_dict:
@@ -370,9 +349,6 @@ class NetManager(object):
             if wt_file is not None:
                print("   Loading wts from %s" % wt_file)
             self.model.load_weights(wt_file)
-
-            import pdb
-            pdb.set_trace()
 
             # Hacky way of ensuring that continuing training from a saved point
             # does not result in a faux encoding change
@@ -474,9 +450,11 @@ class NetManager(object):
         else:
             # fit the model on the batches generated by datagen.flow()
             results = self.model.fit_generator(dm.train_data_generator,
-                                               steps_per_epoch=dm.train_data_generator.batches_per_epoch,
+                                               steps_per_epoch=\
+                                                   dm.train_data_generator.batches_per_epoch,
                                                epochs=self.epochs,
                                                validation_data=dm.test_data_generator,
-                                               validation_steps=dm.test_data_generator.batches_per_epoch,
+                                               validation_steps=\
+                                                   dm.test_data_generator.batches_per_epoch,
                                                callbacks = callbacks,
                                                shuffle=True)
