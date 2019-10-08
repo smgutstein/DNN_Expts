@@ -158,8 +158,6 @@ class NetManager(object):
 
         # Summarize            
         self.summary()
-        import pdb
-        pdb.set_trace()
         print (self.data_manager.get_targets_str_sign())
 
     def summary(self):

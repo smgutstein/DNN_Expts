@@ -93,8 +93,6 @@ class DataManager(object):
             
 
         # Create encodings
-        import pdb
-        pdb.set_trace()
         temp = importlib.import_module(self.encoding_module)
         self.make_encoding_dict = types.MethodType(temp.make_encoding_dict, self)
 
