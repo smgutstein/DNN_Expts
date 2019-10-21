@@ -159,7 +159,7 @@ class Runner(object):
             description="Run Keras Expt With Specified Output Encoding")
         parser.add_argument('config_files', action='store',
                             type=str, nargs='*', default='', help="Specify cfg files for expt")
-        parser.add_argument('--gpu', '-g', type=str, default='*',
+        parser.add_argument('--gpu', '-g', type=str, default='',
                             action='store', help='specify GPU')
         parser.add_argument('--dbg', action='store_true', help="Run Tensorflow CLI Debugger")
         parser.add_argument('--epochs', '-e', type=int, default=0,
@@ -169,7 +169,7 @@ class Runner(object):
 
         # Choose specific GPU
         os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
-        if cmd_line_args.gpu != '*':
+        if cmd_line_args.gpu != '':
             os.environ['CUDA_VISIBLE_DEVICES'] = cmd_line_args.gpu
         os.environ['THEANO_FLAGS'] = 'floatX=32, mode=FAST_RUN, device=cuda'
         self.gpu = cmd_line_args.gpu
@@ -235,14 +235,14 @@ class Runner(object):
             self.make_sure_outdir_exists(main_dir)
 
         done = False
-        suffix = ''
+        suffix = '_v0'
         while not done:
-            curr_output_dir = os.path.join(main_dir, expt_dir + suffix + '_' + self.gpu)
+            curr_output_dir = os.path.join(main_dir, expt_dir + suffix) # + '_' + self.gpu)
             if not os.path.isdir(curr_output_dir):
                 self.make_sure_outdir_exists(curr_output_dir)
                 done = True
-            elif suffix == '':
-                suffix = '_v1'
+            #elif suffix == '':
+            #    suffix = '_v1'
             else:
                 version = int(suffix[2:]) + 1
                 suffix = '_v' + str(version)
