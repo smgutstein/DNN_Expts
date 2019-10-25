@@ -8,13 +8,23 @@ import os
 from os.path import expanduser
 import shutil
 
-num_classes = 100
 
+
+def convert(data):
+    # Converts strings of form b'my_string' to 'my_string'
+    # (i.e. converts bytes to str)
+    if isinstance(data, bytes):  return data.decode()
+    if isinstance(data, dict):   return dict(map(convert, data.items()))
+    if isinstance(data, tuple):  return tuple(map(convert, data))
+    if isinstance(data, list):   return list(map(convert, data))
+    return data
 
 def get_subset(samps_per_class):
 
     print("Loading training set")
-    train  = pickle.load(open(os.path.join(src_path,"train"),'r'))
+    train  = pickle.load(open(os.path.join(src_path,"train"),'rb'))
+    train = convert(train)
+    num_classes = len(set(train['fine_labels']))
     
     # Initialze info for subset_dict
     subset_data = np.zeros((samps_per_class*num_classes, 3072))
@@ -31,7 +41,10 @@ def get_subset(samps_per_class):
     # Init vars to track how many samples have been gathered 
     # and which element from train dict is about to be considered for the subset
     tot_used = 0
-    curr_candidate = 0
+
+    # Randomize image selection
+    candidate_list = list(np.random.permutation(len(train['fine_labels'])))
+    curr_candidate = candidate_list.pop()
     
     # Loop until have required samples per class for each class
     while tot_used < samps_per_class*num_classes:
@@ -53,7 +66,7 @@ def get_subset(samps_per_class):
             pass
         
         # Proceed to next candidate element
-        curr_candidate += 1
+        curr_candidate = candidate_list.pop()
         
     subset_dict['data'] = subset_data
     print ("tot_used =", tot_used)
@@ -66,16 +79,23 @@ if __name__ == '__main__':
     ap = argparse.ArgumentParser()
     ap.add_argument("spc", type = int,
                     help="samples per class")
+    ap.add_argument("--src_dir", type = str,
+                    default = 'cifar-100-python',
+                    help="source directory")
+    ap.add_argument("--suffix", type = str,
+                    default = "")
     args = ap.parse_args()
 
     # Get source dir for cifar 100 data
     home = expanduser("~")
     dataset_dir = '.keras/datasets/'
-    src_dir = 'cifar-100-python'
+    src_dir = args.src_dir #'cifar-100-python'
     src_path = os.path.join(home, dataset_dir, src_dir)
 
     # Make target dir and copy info from src dir
-    trgt_dir = 'cifar-100-python' + "_" + str(args.spc)
+    trgt_dir = src_dir + "_" + str(args.spc)
+    if len(args.suffix) > 0:
+        trgt_dir += '_' + args.suffix
     trgt_path = os.path.join(home, dataset_dir, trgt_dir)
 
     # Note: shutil.copytree calls os.makedirs and will fail if trgt_path exists
@@ -84,4 +104,5 @@ if __name__ == '__main__':
     # Save training subset
     sd = get_subset(args.spc)
     pickle.dump(sd, open(os.path.join(trgt_path, 'train'),'wb'))
+    print ("Saved to ", trgt_path)
     print("Done")
