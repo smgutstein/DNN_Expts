@@ -430,7 +430,10 @@ class NetManager(object):
                    'val_loss': init_test_loss}
         log_dir[self.train_acc_str] = init_train_acc
         log_dir[self.val_acc_str] = init_test_acc
+        
         training_monitor.on_epoch_end(epoch=0,logs = log_dir)
+        checkpointer.set_model(self.model)
+        checkpointer.on_epoch_end(epoch=-1,logs = log_dir)
 
         # Train Model
         dm = self.data_manager
