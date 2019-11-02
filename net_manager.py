@@ -321,6 +321,10 @@ class NetManager(object):
                     wt_file = wt_files[-1][0]
                     self.init_epoch = int(wt_file.split('_')[-1].split('.')[0])
 
+                elif net_iter.lower().strip() == 'best':
+                    best_file = [x for x in os.listdir(net_dir) if 'best' in x]
+                    wt_file = os.path.join(net_dir, best_file)
+
                 elif is_int(net_iter):
                     # Load weights from specified iteration (or closest
                     # iteration prior to specified iteration)
