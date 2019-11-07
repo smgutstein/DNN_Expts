@@ -53,6 +53,20 @@ class Runner(object):
         self.expt_set_dir = os.path.join(self.file_param_dict['root_expt_dir'],
                                          self.file_param_dict['expt_dir'],
                                          self.file_param_dict['expt_subdir'])
+
+        # Possibly a bad idea, but I'm going to have output dir for tfer expts
+        # automatically record which src task iteration was used, instead of
+        # assigning that feature of the sub-dir name i a cfg file
+        if 'saved_iter' in self.saved_param_dict:
+             self.expt_set_dir = os.path.join(self.expt_set_dir,
+                                              self.saved_param_dict['saved_iter'])
+             net_dir = os.path.join(self.saved_param_dict['saved_set_dir'],
+                                    self.saved_param_dict['saved_dir'])
+             if self.saved_param_dict['saved_iter'] == 'best':
+                 best_file = [x for x in os.listdir(net_dir) if 'best' in x][0]
+                 best_iter = best_file.split('_')[-1].split('.')[0]
+                 self.expt_set_dir =  '_'.join([self.expt_set_dir,
+                                                best_iter])
         
         self.expt_dir = self.host_machine + "_" + self.file_param_dict['expt_dir']
         if not hasattr(self, 'outdir'):

@@ -322,7 +322,7 @@ class NetManager(object):
                     self.init_epoch = int(wt_file.split('_')[-1].split('.')[0])
 
                 elif net_iter.lower().strip() == 'best':
-                    best_file = [x for x in os.listdir(net_dir) if 'best' in x]
+                    best_file = [x for x in os.listdir(net_dir) if 'best' in x][0]
                     wt_file = os.path.join(net_dir, best_file)
 
                 elif is_int(net_iter):
