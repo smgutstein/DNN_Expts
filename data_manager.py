@@ -124,7 +124,8 @@ class DataManager(object):
                 print ("Loading data generator for augmentation")
                 (self.train_data_generator,
                  self.test_data_generator,
-                 self.data_generator_info) = self.get_generator()
+                 self.data_generator_info,
+                 (self.img_channels, self.img_rows, self.img_cols)) = self.get_generator()
                 
             else:
                 print ("No data augmentation")
