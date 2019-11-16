@@ -37,3 +37,8 @@ net_architectures/vgg19.py
 net_architectures/vgg19_a.py
 net_architectures/vgg19_b.py
 tiny_imagenet_expts/
+dataset_loaders/
+cfg_dir2/
+execute_expts/
+*pdf
+opt_tfer_series_temp/

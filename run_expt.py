@@ -43,6 +43,8 @@ class Runner(object):
         self.expt_param_dict = self.get_param_dict('ExptParams')
         self.saved_param_dict = self.get_param_dict('SavedParams')
         self.trgt_task_param_dict = self.get_param_dict('TrgtTaskParams')
+        self.preprocess_param_dict = self.get_param_dict('DataPreProcess')
+        self.augment_param_dict = self.get_param_dict('DataAugment')
 
         # To allow quick testing without needing to change specified
         # epochs in cfg files
@@ -114,19 +116,7 @@ class Runner(object):
 
         # Get optimizer params
         self.config.read(self.net_param_dict['optimizer_cfg'])
-        temp = self.get_param_dict('OptimizerParams')
-        self.optimizer_param_dict = {x:float(temp[x])
-                                     if is_number(temp[x]) else temp[x]
-                                     for x in temp}
-
-        # Convert non-numeric strings to correct variable types
-        for x in self.optimizer_param_dict:
-            if self.optimizer_param_dict[x] == 'None':
-                self.optimizer_param_dict[x] = None
-            elif self.optimizer_param_dict[x] == 'True':
-                self.optimizer_param_dict[x] = True
-            elif self.optimizer_param_dict[x] == 'False':
-                self.optimizer_param_dict[x] = False
+        self.optimizer_param_dict = self.get_param_dict('OptimizerParams')
 
         # Read/Create lr-schedule dictionary
         if "lr_dict" in self.optimizer_param_dict:
@@ -159,7 +149,9 @@ class Runner(object):
                                    self.metric_param_dict,
                                    self.optimizer_param_dict,
                                    self.saved_param_dict,
-                                   self.trgt_task_param_dict)
+                                   self.trgt_task_param_dict,
+                                   self.preprocess_param_dict,
+                                   self.augment_param_dict)
         return True
 
     
@@ -220,9 +212,6 @@ class Runner(object):
 
             yield curr_config_file
 
-        
-
-
     def get_param_dict(self, dict_name):
 
         param_dict = {}
@@ -230,6 +219,22 @@ class Runner(object):
             params = self.config.items(dict_name)
             for curr_pair in params:
                 param_dict[curr_pair[0]] = curr_pair[1]
+
+            # Convert numeric strings to float
+            param_dict = {x:float(param_dict[x])
+                               if is_number(param_dict[x])
+                                 else param_dict[x]
+                               for x in param_dict}
+
+            # Convert non-numeric strings to correct variable types
+            for x in param_dict:
+                if param_dict[x] == 'None':
+                    param_dict[x] = None
+                elif param_dict[x] == 'True':
+                    param_dict[x] = True
+                elif param_dict[x] == 'False':
+                    param_dict[x] = False
+
         except configparser.NoSectionError:
             # Return empty dict if section missing
             pass

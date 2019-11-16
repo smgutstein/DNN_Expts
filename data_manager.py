@@ -19,6 +19,7 @@ class DataManager(object):
                  saved_param_dict,
                  expt_param_dict,
                  trgt_task_param_dict):
+         
 
         # Get batch size for data_generator module
         if 'batch_size' in expt_param_dict:
@@ -32,6 +33,7 @@ class DataManager(object):
         epd = encoding_param_dict
         empd = encoding_module_param_dict
         eaf = encoding_activation_fnc
+        
 
         # Determine if data comes from src or trgt task
         if len(trgt_task_param_dict) == 0:
@@ -120,37 +122,38 @@ class DataManager(object):
             self.data_display = Data_Display(self.X_test, self.y_test,
                                              self.label_dict)
             # Load data generator - if necessary for augmentation
-            if self.data_generator_module:
-                print ("Loading data generator for augmentation")
-                (self.train_data_generator,
-                 self.test_data_generator,
-                 self.data_generator_info,
-                 (self.img_channels, self.img_rows, self.img_cols)) = self.get_generator()
-                
-            else:
-                print ("No data augmentation")
-                self.train_data_generator = None
-                self.test_data_generator = None
-                self.data_generator_info = "No data generator being used"
+            #if self.data_generator_module:
+            #    print ("Loading data generator for augmentation")
+            #    (self.train_data_generator,
+            #     self.test_data_generator,
+            #     self.data_generator_info,
+            #    (self.img_channels, self.img_rows, self.img_cols)) = self.get_generator()
+            #    
+            #else:
+            #    print ("No data augmentation")
+            #    self.train_data_generator = None
+            #    self.test_data_generator = None
+            #    self.data_generator_info = "No data generator being used"
 
         else:
-            print ("Loading data generator")
-            (self.train_data_generator,
-             self.test_data_generator,
-             self.data_generator_info,
-             (self.img_channels,
-              self.img_rows,
-              self.img_cols)) = self.get_generator()
+            pass
+            #print ("Loading data generator")
+            #(self.train_data_generator,
+            # self.test_data_generator,
+            # self.data_generator_info,
+            # (self.img_channels,
+            #  self.img_rows,
+            #  self.img_cols)) = self.get_generator()
 
             # Get sorted list of class numbers (np.unique returns sorted list)
-            self.class_nums = self.test_data_generator.class_nums
-            self.batches_per_epoch = self.train_data_generator.batches_per_epoch
+            #self.class_nums = self.test_data_generator.class_nums
+            #self.batches_per_epoch = self.train_data_generator.batches_per_epoch
 
             # Encode labels
-            print("Making Encoding Dict")
-            self.make_encoding_dict(**joint_dict)
-            self.train_data_generator.set_encoding_dict(self.encoding_dict)
-            self.test_data_generator.set_encoding_dict(self.encoding_dict)
+            #print("Making Encoding Dict")
+            #self.make_encoding_dict(**joint_dict)
+            #self.train_data_generator.set_encoding_dict(self.encoding_dict)
+            #self.test_data_generator.set_encoding_dict(self.encoding_dict)
 
 
 
