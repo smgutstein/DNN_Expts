@@ -4,6 +4,7 @@ import configparser
 import datetime
 import errno
 from expt_logger import Logger
+from operator import itemgetter
 import os
 import shutil
 import socket
@@ -118,16 +119,23 @@ class Runner(object):
         self.config.read(self.net_param_dict['optimizer_cfg'])
         self.optimizer_param_dict = self.get_param_dict('OptimizerParams')
 
-        # Read/Create lr-schedule dictionary
-        if "lr_dict" in self.optimizer_param_dict:
-            lr_pairs =  self.optimizer_param_dict['lr_dict'].split(")")
+        # Read/Create lr-schedule 
+        if "lr_schedule" in self.optimizer_param_dict:
+            #import pdb
+            #pdb.set_trace()
+            # Read lr schedule and convert to list of 2-tuples (epoch, lr)
+            lr_pairs =  self.optimizer_param_dict['lr_schedule'].split(")")
             lr_pairs = [x.strip(" ,()") for x in lr_pairs if len(x)>0]
-            lr_dict = dict()
-            for curr_pair in lr_pairs:
-                iter_num, lr_val = curr_pair.split(",")
-                lr_dict[int(iter_num)] = float(lr_val)
+            lr_schedule = [(int(y.split(",")[0]),
+                            float(y.split(",")[1])) for y in lr_pairs]
+
+            # Sort list and ensure initial lr is defined
+            lr_schedule.sort(key=itemgetter(0))
+            if lr_schedule[0][0] != 0:
+               lr_schedule[0][0] = 0 # Ensures setting of initial lr
                 
-            self.optimizer_param_dict["lr_dict"] = lr_dict
+            self.optimizer_param_dict["lr_schedule"] = lr_schedule
+            self.optimizer_param_dict["lr"] = lr_schedule[0][1]
 
 
         shutil.copy(self.net_param_dict['optimizer_cfg'],

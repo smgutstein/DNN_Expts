@@ -14,6 +14,15 @@ def sgd(sgd_params):
     # e.g. SGD(lr=0.05, decay=1e-6, momentum=0.9, nesterov=True)
     return optimizers.SGD(**sgd_params)
 
+def sgd_schedule(sgd_params):
+    # Stochastic gradient descent
+    # e.g. SGD(lr=0.05, decay=1e-6, momentum=0.9, nesterov=True)
+    if "lr_schedule" in sgd_params:
+        temp_params = {x:sgd_params[x] for x in sgd_params
+                       if x != "lr_schedule"}
+
+    return optimizers.SGD(**temp_params)
+
 def sgd_var(sgd_params):
     # Stochastic gradient descent
     # e.g. SGD(lr=0.05, decay=1e-6, momentum=0.9, nesterov=True)

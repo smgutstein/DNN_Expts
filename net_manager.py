@@ -12,7 +12,7 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten 
 from net_architectures.sgActivation import Activation
 
-#from lr_scheduler import LR_Scheduler
+from lr_scheduler import StepLearningRateScheduler
 from operator import itemgetter
 import os
 import pickle
@@ -71,6 +71,14 @@ class NetManager(object):
                     raise
                 
         # Make optimizer
+        if "lr_schedule" in optimizer_param_dict:
+            self.lr_schedule = optimizer_param_dict['lr_schedule']
+            self.lr_schedule.sort(key=itemgetter(0))
+            lr_init = self.lr_schedule[0][1]
+            optimizer_param_dict['lr'] = lr_init
+        else:
+            self.lr_schedule = None
+
         optimizer_module = optimizer_param_dict.pop('optimizer_module')
         optimizer = optimizer_param_dict.pop('optimizer')
         temp = importlib.import_module(optimizer_module)
@@ -82,11 +90,6 @@ class NetManager(object):
         #optimizer_param_dict['batches_per_epoch'] = self.data_manager.batches_per_epoch
         if 'set_batches_per_epoch' in dir(self.opt):
             self.opt.set_batches_per_epoch(self.data_manager.batches_per_epoch)
-                                          
-        #if "lr_dict" in optimizer_param_dict:
-        #    self.lr_dict = optimizer_param_dict['lr_dict']
-        #else:
-        #    self.lr_dict = None
 
         # Get Loss Function
         if 'loss_fnc' in net_param_dict:
@@ -455,9 +458,9 @@ class NetManager(object):
         callbacks = [training_monitor, checkpointer]
 
         # Add lr scheduler
-        #if self.lr_dict:
-        #    lr_scheduler = LR_Scheduler(self.opt, self.lr_dict)
-        #    callbacks.append(lr_scheduler)
+        if self.lr_schedule:
+            lr_scheduler = StepLearningRateScheduler(self.lr_schedule)
+            callbacks.append(lr_scheduler)
 
 
 
