@@ -79,8 +79,7 @@ if __name__ == '__main__':
     ap = argparse.ArgumentParser()
     ap.add_argument("spc", type = int,
                     help="samples per class")
-    ap.add_argument("--src_dir", type = str,
-                    default = 'cifar-100-python',
+    ap.add_argument("src_dir", type = str,
                     help="source directory")
     ap.add_argument("--suffix", type = str,
                     default = "")
@@ -88,7 +87,7 @@ if __name__ == '__main__':
 
     # Get source dir for cifar 100 data
     home = expanduser("~")
-    dataset_dir = '.keras/datasets/'
+    dataset_dir = '.keras/datasets/cifar-100-python'
     src_dir = args.src_dir #'cifar-100-python'
     src_path = os.path.join(home, dataset_dir, src_dir)
 
