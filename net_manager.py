@@ -166,6 +166,7 @@ class NetManager(object):
         # Summarize            
         self.summary()
         print (self.data_manager.get_targets_str_sign())
+        print (self.data_manager.get_data_classes_summary_str())
 
     def summary(self):
         print ("\n============================================================\n")
@@ -317,7 +318,7 @@ class NetManager(object):
 
             if ('saved_weights_file' not in saved_param_dict):
 
-                if net_iter.lower().strip() == 'last':
+                if str(net_iter).lower().strip() == 'last':
 
                     # Load from final iteration
                     wt_files = [(os.path.join(net_dir, x),
@@ -328,7 +329,7 @@ class NetManager(object):
                     wt_file = wt_files[-1][0]
                     self.init_epoch = int(wt_file.split('_')[-1].split('.')[0])
 
-                elif net_iter.lower().strip() == 'best':
+                elif str(net_iter).lower().strip() == 'best':
                     best_file = [x for x in os.listdir(net_dir) if 'best' in x][0]
                     wt_file = os.path.join(net_dir, best_file)
 
@@ -339,7 +340,7 @@ class NetManager(object):
                     #wt_file = os.path.join(net_dir, saved_param_dict['saved_dir'] +
                     wt_file = os.path.join(net_dir,
                                            'checkpoint_weights_' +
-                                           saved_param_dict['saved_iter'] +
+                                           str(int(saved_param_dict['saved_iter'])) +
                                            '.h5')
 
             elif 'saved_weights_file' in saved_param_dict:
@@ -347,7 +348,7 @@ class NetManager(object):
                 # Assumes that default method of naming weight files
                 # was used so that starting epoch may be read off as
                 # number after last '_', before extension 
-                wt_file = os.path.join(net_dir, saved_param_dict['saved_weights'])
+                wt_file = os.path.join(net_dir, saved_param_dict['saved_weights_file'])
 
                 if int(net_iter):
                     self.init_epoch = int(net_iter)
@@ -517,3 +518,7 @@ class NetManager(object):
                                            dummy_datagen.batches_per_epoch,
                                        callbacks = callbacks,
                                        shuffle=True)
+
+        self.best_score = checkpointer.best_score
+        self.best_epoch = checkpointer.best_epoch
+        
