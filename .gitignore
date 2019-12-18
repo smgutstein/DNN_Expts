@@ -11,6 +11,7 @@ test_data_manager_recon_cifar10.py
 .idea*
 *ipynb
 safety_dir*
+*safety*
 expt1/
 expt2/
 *expts_results*/
@@ -19,6 +20,7 @@ cifar_75_expts/
 cifar_100_expts/
 cifar_200_expts/
 cifar_400_expts/
+benchmark_expts/*
 *h5
 Expt_output.log*
 ECOC_repo.bundle
@@ -32,10 +34,18 @@ cfg_dir/expt_vgg16b_random.cfg
 cfg_dir/expt_vgg16b_softmax.cfg
 encoding_expts_2/
 encoding_expts_3/
+.ipynb_checkpoints/
+local_optimizer2.py
+local_optimizer3.py
+local_optimizer_epoch_update.py
+local_optimizer_old.py
 net_architectures/cifar100_vgg16b.py
 net_architectures/vgg19.py
 net_architectures/vgg19_a.py
 net_architectures/vgg19_b.py
+net_architectures/milani_inception2.py
+net_architectures/tiny_imagenet_milani_inception_v3.py
+net_architectures/vgg16.py
 tiny_imagenet_expts/
 dataset_loaders/
 cfg_dir2/
