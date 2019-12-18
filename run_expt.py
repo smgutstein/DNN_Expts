@@ -61,15 +61,22 @@ class Runner(object):
         # automatically record which src task iteration was used, instead of
         # assigning that feature of the sub-dir name i a cfg file
         if 'saved_iter' in self.saved_param_dict:
-             self.expt_set_dir = os.path.join(self.expt_set_dir,
-                                              self.saved_param_dict['saved_iter'])
+             #self.expt_set_dir = os.path.join(self.expt_set_dir,
+             #                                 str(int(self.saved_param_dict['saved_iter'])))
              net_dir = os.path.join(self.saved_param_dict['saved_set_dir'],
                                     self.saved_param_dict['saved_dir'])
+
+             
              if self.saved_param_dict['saved_iter'] == 'best':
+                 self.expt_set_dir = os.path.join(self.expt_set_dir,'best')
                  best_file = [x for x in os.listdir(net_dir) if 'best' in x][0]
                  best_iter = best_file.split('_')[-1].split('.')[0]
                  self.expt_set_dir =  '_'.join([self.expt_set_dir,
                                                 best_iter])
+             else:
+                 self.expt_set_dir = os.path.join(self.expt_set_dir,
+                                              str(int(self.saved_param_dict['saved_iter'])))
+
         
         self.expt_dir = self.host_machine + "_" + self.file_param_dict['expt_dir']
         if not hasattr(self, 'outdir'):
@@ -180,6 +187,11 @@ class Runner(object):
                             action='store', help='override epochs from cfg file')
 
         cmd_line_args = parser.parse_args()
+        print ("CMD LINE ARGS:")
+        temp = vars(cmd_line_args)
+        for temp_arg in temp:
+            print(temp_arg,":",temp[temp_arg])
+
 
         # Choose specific GPU
         os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
@@ -355,7 +367,12 @@ class Runner(object):
         tot_str = "Run Time  : {:d}:{:02d}:{:02d}".format(hours, minutes, seconds)
         timing_info = '\n'.join([start_str, stop_str, tot_str])
         print (timing_info)
-        expt_log.write(timing_info)
+        expt_log.write(timing_info + '\n')
+        score_str = "{:5.2f}%".format(self.expt_net.best_score*100).strip()
+        epoch_str = "{:4d}".format(self.expt_net.best_epoch).strip()
+        result_str = "Peak Accuracy: " + score_str + " at epoch " + epoch_str + '\n'
+        print(result_str)
+        expt_log.write(result_str)
         #expt_log.close_log(self.outdir)
 
         return 
