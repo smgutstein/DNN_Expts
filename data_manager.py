@@ -272,6 +272,20 @@ class DataManager(object):
             out_str += curr_line + '\n'
         return out_str + '\n\n'
 
+    def get_data_classes_summary_str(self):
+        names_per_row = 5
+        out_str = "\n\nTotal Classes: " + str(len(self.class_nums)) + "\n"
+
+        for ctr, class_ctr in enumerate(range(len(self.class_nums))):
+            if ctr % names_per_row == 0:
+                out_str += "\n"
+            curr_class = self.class_nums[class_ctr]
+            out_str += str(curr_class) +  ":" + self.label_dict[curr_class] + " -- "
+        out_str += "\n"
+        return out_str
+
+        
+
 
 if __name__ == '__main__':
     pass
