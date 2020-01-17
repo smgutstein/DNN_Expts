@@ -43,7 +43,7 @@ class ModelCheckpoint(Callback):
 
     def __init__(self, filepath, monitor, verbose=0,
                  save_best=True, save_most_recent=True, save_weights_only=False,
-                 mode='auto', period=1, data_manager=None):
+                 mode='auto', period=1, data_manager=None, nocheckpoint=False):
         super(ModelCheckpoint, self).__init__()
         self.monitor = monitor
         self.verbose = verbose
@@ -56,6 +56,7 @@ class ModelCheckpoint(Callback):
         self.epochs_since_last_save = 0
         self.best_epoch = None
         self.encodings_saved = False
+        self.nocheckpoint = nocheckpoint
 
         if mode not in ['auto', 'min', 'max']:
             warnings.warn('ModelCheckpoint mode %s is unknown, '
@@ -110,7 +111,9 @@ class ModelCheckpoint(Callback):
                 # Save new best model
                 self.best_score = current
                 self.best_epoch = epoch
-                if self.save_weights_only:
+                if self.nocheckpoint:
+                    return
+                elif self.save_weights_only:
                     self.model.save_weights(outfile, overwrite=True)
                 else:
                     self.model.save(outfile, overwrite=True)
@@ -134,6 +137,9 @@ class ModelCheckpoint(Callback):
 
 
     def save_net(self, trgt_file):
+
+        if self.nocheckpoint:
+            return
         
         if self.save_weights_only:
             self.model.save_weights(trgt_file, overwrite=True)
