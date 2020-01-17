@@ -1,6 +1,7 @@
 from __future__ import print_function
 import argparse
 import configparser
+import ctypes
 import datetime
 import errno
 from expt_logger import Logger
@@ -9,6 +10,16 @@ import os
 import shutil
 import socket
 import sys
+
+# Hmmm....think this might not be needed
+try:
+    from io import StringIO
+except:
+    from io import StringIO
+
+# Hmmm....think this might not be needed
+libc = ctypes.CDLL(None)
+c_stdout = ctypes.c_void_p.in_dll(libc, 'stdout')
 
 
 # Capture output with theano/keras & gpu info
@@ -20,6 +31,7 @@ def is_number(in_str):
         return True
     except ValueError:
         return False
+
 
 class Runner(object):
 
@@ -61,8 +73,6 @@ class Runner(object):
         # automatically record which src task iteration was used, instead of
         # assigning that feature of the sub-dir name i a cfg file
         if 'saved_iter' in self.saved_param_dict:
-             #self.expt_set_dir = os.path.join(self.expt_set_dir,
-             #                                 str(int(self.saved_param_dict['saved_iter'])))
              net_dir = os.path.join(self.saved_param_dict['saved_set_dir'],
                                     self.saved_param_dict['saved_dir'])
 
@@ -75,7 +85,7 @@ class Runner(object):
                                                 best_iter])
              else:
                  self.expt_set_dir = os.path.join(self.expt_set_dir,
-                                              str(int(self.saved_param_dict['saved_iter'])))
+                                              str(self.saved_param_dict['saved_iter']))
 
         
         self.expt_dir = self.host_machine + "_" + self.file_param_dict['expt_dir']
@@ -116,20 +126,12 @@ class Runner(object):
         self.encoding_module_param_dict = self.get_param_dict('EncodingModuleParams')
         self.metric_param_dict = self.get_param_dict('MetricParams')
 
-        #if len(self.saved_param_dict) > 0:
-        #    print("Encoding info now saved along with data_manager info. Check to ensure it's recovered")
-        #    import pdb
-        #    pdb.set_trace()
-        #    sys.exit()
-
         # Get optimizer params
         self.config.read(self.net_param_dict['optimizer_cfg'])
         self.optimizer_param_dict = self.get_param_dict('OptimizerParams')
 
         # Read/Create lr-schedule 
         if "lr_schedule" in self.optimizer_param_dict:
-            #import pdb
-            #pdb.set_trace()
             # Read lr schedule and convert to list of 2-tuples (epoch, lr)
             lr_pairs =  self.optimizer_param_dict['lr_schedule'].split(")")
             lr_pairs = [x.strip(" ,()") for x in lr_pairs if len(x)>0]
@@ -166,7 +168,8 @@ class Runner(object):
                                    self.saved_param_dict,
                                    self.trgt_task_param_dict,
                                    self.preprocess_param_dict,
-                                   self.augment_param_dict)
+                                   self.augment_param_dict,
+                                   self.nocheckpoint)
         return True
 
     
@@ -185,8 +188,19 @@ class Runner(object):
         parser.add_argument('--dbg', action='store_true', help="Run Tensorflow CLI Debugger")
         parser.add_argument('--epochs', '-e', type=int, default=0,
                             action='store', help='override epochs from cfg file')
+        parser.add_argument('--silent', '-s', action='store_true',
+                            help="reduce diagnostic output - e.g. gitinfo and info printed to screen")
+        parser.add_argument('--nocheckpoint', '-n', action='store_true',
+                            help="don't save trained nets")
 
         cmd_line_args = parser.parse_args()
+        self.nocheckpoint = cmd_line_args.nocheckpoint
+
+        # Turn off printing if requested (i.e. for batch jobs)
+        if cmd_line_args.silent:
+            sys.stdout = open(os.devnull,'w')
+            
+
         print ("CMD LINE ARGS:")
         temp = vars(cmd_line_args)
         for temp_arg in temp:
@@ -222,9 +236,8 @@ class Runner(object):
 
         # Check if number of desired epochs different than in cfg file
         self.override_epochs = cmd_line_args.epochs
-        
-        for curr_config_file in (cmd_line_args.config_files):
 
+        for curr_config_file in (cmd_line_args.config_files):
             # Get input args from config file
             if not os.path.isfile(cmd_line_args.config_files[0]):
                 print("Can't find %s. Is it a file?" % cmd_line_args.config_files)
@@ -325,8 +338,7 @@ class Runner(object):
                 changed_files = '\n'.join(changed_file_list)
                 print(changed_files + '\n')
                 changes = repo.git.diff(branch_name)
-                #print("Changes:\n")
-                #print(changes + '\n')
+
                 print("=======================================\n")
             else:
                 changed_files = "None\n"
@@ -385,3 +397,4 @@ if __name__ == '__main__':
         x.run_expt()
     print ("Closing log " + x.metadata_dir)
     expt_log.close_log(x.metadata_dir)
+    sys.stdout = sys.__stdout__
