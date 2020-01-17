@@ -39,6 +39,7 @@ class NetManager(object):
                  trgt_task_param_dict,
                  preprocess_param_dict,
                  augment_param_dict,
+                 nocheckpoint,
                  data_augmentation=True,
                  save_iters=True,
                  save_best_n=5):
@@ -52,6 +53,7 @@ class NetManager(object):
         self.data_augmentation = data_augmentation
         self.preprocess_param_dict = preprocess_param_dict
         self.augment_param_dict = augment_param_dict
+        self.nocheckpoint = nocheckpoint
         self.save_iters = save_iters
         if self.save_iters:
             self.epochs_per_recording = int(expt_param_dict['epochs_per_recording'])
@@ -315,10 +317,11 @@ class NetManager(object):
             net_dir = os.path.join(saved_param_dict['saved_set_dir'],
                                    saved_param_dict['saved_dir'])
             net_iter = saved_param_dict['saved_iter']
+            
 
             if ('saved_weights_file' not in saved_param_dict):
 
-                if str(net_iter).lower().strip() == 'last':
+                if 'last' in str(net_iter).lower().strip():
 
                     # Load from final iteration
                     wt_files = [(os.path.join(net_dir, x),
@@ -329,18 +332,18 @@ class NetManager(object):
                     wt_file = wt_files[-1][0]
                     self.init_epoch = int(wt_file.split('_')[-1].split('.')[0])
 
-                elif str(net_iter).lower().strip() == 'best':
+                elif 'best' in str(net_iter).lower().strip():
                     best_file = [x for x in os.listdir(net_dir) if 'best' in x][0]
                     wt_file = os.path.join(net_dir, best_file)
 
-                elif is_int(net_iter):
+                elif is_int(net_iter.split('_')[0]):
                     # Load weights from specified iteration (or closest
                     # iteration prior to specified iteration)
-                    self.init_epoch = int(net_iter)
+                    self.init_epoch = int(net_iter.split('_')[0])
                     #wt_file = os.path.join(net_dir, saved_param_dict['saved_dir'] +
                     wt_file = os.path.join(net_dir,
                                            'checkpoint_weights_' +
-                                           str(int(saved_param_dict['saved_iter'])) +
+                                           str(self.init_epoch) +
                                            '.h5')
 
             elif 'saved_weights_file' in saved_param_dict:
@@ -350,8 +353,8 @@ class NetManager(object):
                 # number after last '_', before extension 
                 wt_file = os.path.join(net_dir, saved_param_dict['saved_weights_file'])
 
-                if int(net_iter):
-                    self.init_epoch = int(net_iter)
+                if int(net_iter.split('_')[0]):
+                    self.init_epoch = int(net_iter.split('_')[0])
                 else:
                     sys.exit("Iteration number must be given when " +
                              "a saved weight file is explicitly named")
@@ -379,7 +382,15 @@ class NetManager(object):
             dup_files = [x for x in orig_expt_files
                          if 'h5' not in x or x == wt_file.split('/')[-1]]
             for curr_file in dup_files:
-                shutil.copy2(os.path.join(net_dir, curr_file), orig_expt_copy_dir)
+                # If nocheckpoint is True, don't save copy of source net
+                # (i.e. init condits for trgt net)
+                if curr_file[-3:] != '.h5' or not self.nocheckpoint:
+                    shutil.copy2(os.path.join(net_dir, curr_file), orig_expt_copy_dir)
+                elif  curr_file[-3:] == '.h5' and self.nocheckpoint:
+                    # Create soft link to original src file
+                    curr_src = os.path.abspath(os.path.join(net_dir, curr_file))
+                    curr_trgt = os.path.join(orig_expt_copy_dir, curr_file)
+                    os.symlink(curr_src, curr_trgt)
 
     def get_init_condits(self, train_data_generator,
                          test_data_generator):
@@ -451,12 +462,15 @@ class NetManager(object):
 
         training_monitor = TrainingMonitor(fig_path, jsonPath=json_path,
                                            resultsPath = results_path)
+        callbacks = [training_monitor]
+        
         checkpointer = ModelCheckpoint(checkpoint_dir,
                                        monitor = self.val_acc_str,
                                        verbose=1,
                                        data_manager=self.data_manager,
-                                       period=self.epochs_per_recording)
-        callbacks = [training_monitor, checkpointer]
+                                       period=self.epochs_per_recording,
+                                       nocheckpoint = self.nocheckpoint)
+        callbacks.append(checkpointer)
 
         # Add lr scheduler
         if self.lr_schedule:
