@@ -3,51 +3,10 @@ import itertools
 import os
 import sys
 
-'''
-src_net_root_dir = './opt_tfer_expt_series/cifar_100_expts/keras_cifar_net/src_tasks'
-trgt_cfg_root_dir = './cfg_dir2/expt_cfg/tfer_expts/opt_tfer_series_prelim_2'
-
-expt_subdir_base = "keras_cifar_net/trgt_tasks_batch_prelim_2/" # Specify SPC
-saved_dir_base = 'balin_cifar_100_expts_v' # Specify 0/checkpoints'
-saved_iter_base = '_Src_Epochs' # Specify Source Epoch Training Iters
-data_loader_base = 'cifar100_trgt_living_vs_notliving_subset_' # Specify SPC sndTrgt Train Set
-    
-file_name_prefix = 'cifar100_nonliving'
-file_name_midfix = '_src_epoch_'
-file_name_suffix = '.cfg'
-
-
-src_net_list = ['7', '8']
-spc_list = ['10', '25', '50']
-#src_epoch_list = ['0',
-#                  '20', '40', '60', '80', '100',
-#                  '120', '140', '160', '180', '200',
-#                  '225', '250', '275', '300',
-#                  '350', '400',
-#                  '450', '500',
-#                  'best']
-#src_epoch_list = ['0',
-#                  '25', '50', '75', '100',
-#                  '125', '150', '175', '200',
-#                  '220', '240', '260', '280', '300',
-#                  '320', '340', '360', '380', '400'
-#                  '420', '440', '460', '480', '500'
-#                  'best']
-src_epoch_list = ['400', '420', 
-                  '500', 'best']
-
-trgt_train_id_list = ['a', 'b', 'c', 'd', 'e']
-tot_list = [src_net_list, spc_list, src_epoch_list, trgt_train_id_list]
-'''
-
-def is_int(in_str):
-    try:
-        int(in_str)
-        return True
-    except ValueError:
-        return False
 
 def make_config():
+    # Create base configparser used
+    # to create cfg files for each expt  
     config = configparser.ConfigParser()
 
     config.add_section('ExptFiles')
@@ -90,7 +49,9 @@ def make_config():
 
 
 def write_cfg_files(config_infile, config_outfile):
+    # Write cfg files used for all expts in batch
 
+    # Initialize/Get file structure data
     src_net_root_dir =  config_infile['RootDirs']['src_net_root_dir']
     trgt_cfg_root_dir = config_infile['RootDirs']['trgt_cfg_root_dir']
 
@@ -103,11 +64,11 @@ def write_cfg_files(config_infile, config_outfile):
     file_name_midfix = config_infile['CfgFileSubstrings']['file_name_midfix']
     file_name_suffix = config_infile['CfgFileSubstrings']['file_name_suffix']
 
+    # Create lists of varying params
     src_net_list = config_infile['ExptParams']['src_net_list'].split(',')
     spc_list = config_infile['ExptParams']['spc_list'].split(',')
     src_epoch_list = config_infile['ExptParams']['src_epoch_list'].split(',')
     trgt_train_id_list = config_infile['ExptParams']['trgt_train_id_list'].split(',')
-
 
     src_net_list = [x.strip('[] ') for x in src_net_list] 
     spc_list = [x.strip('[] ') for x in spc_list]
@@ -116,7 +77,7 @@ def write_cfg_files(config_infile, config_outfile):
     param_lists = [src_net_list, spc_list, src_epoch_list, trgt_train_id_list]
 
 
-    
+    # Write all cfg files
     for curr_SRC_NET, curr_SPC, curr_SRC_EPOCH, curr_TR_ID in list(itertools.product(*param_lists)):
         file_name = file_name_prefix + file_name_midfix + curr_SRC_EPOCH + '_' + curr_TR_ID + file_name_suffix
         cfg_dir_path = os.path.join(trgt_cfg_root_dir, 
@@ -136,22 +97,29 @@ def write_cfg_files(config_infile, config_outfile):
         print(cfg_file_path)
 
 def write_shell_scripts(config_infile):
+    # Write nested shell scripts used to run full batch of expts
 
+    # Get data for shell script dir
     exec_sh_root_dir = config_infile['ExecParams']['exec_sh_root_dir']
     exec_sh_spc_dir = config_infile['ExecParams']['exec_sh_spc_dir']
     exec_sh_file_prefix = config_infile['ExecParams']['exec_sh_file_prefix']
     exec_sh_file_suffix = config_infile['ExecParams']['exec_sh_file_suffix']
+    
+    # If necessary make shell script dir
     os.makedirs(exec_sh_root_dir, exist_ok=True)
 
+    # Create cmd strings to be exectued by shell scripts
     sh_str = "#!  /bin/bash \n\n"
     cmd_str_root = "python run_expt.py "
     cmd_str_suffix = " > /dev/null 2>&1"
 
+    # Create arguments for cmd strings (i.e. arguments for run_expt.py
     arg_root_dir = os.path.join(config_infile['RootDirs']['trgt_cfg_root_dir'], "src_net_")
     arg_file_pre_str = config_infile['CfgFileSubstrings']['file_name_prefix'] + \
                        config_infile['CfgFileSubstrings']['file_name_midfix']
     arg_file_end_str = '.cfg --nocheckpoint'
 
+    # Create root shell script file
     full_batch_name = 'tfer_net_batch.sh'
     full_batch_path = os.path.join(exec_sh_root_dir, full_batch_name)
     full_batch_file = open(full_batch_path, 'w')
@@ -159,6 +127,7 @@ def write_shell_scripts(config_infile):
     echo_str = "echo 'time " + full_batch_path +"' `date` \n"
     full_batch_file.write(echo_str)
 
+    # Get list of params over which expts vary
     src_net_list = config_infile['ExptParams']['src_net_list'].split(',')
     spc_list = config_infile['ExptParams']['spc_list'].split(',')
     src_epoch_list = config_infile['ExptParams']['src_epoch_list'].split(',')
@@ -169,7 +138,9 @@ def write_shell_scripts(config_infile):
     src_epoch_list = [x.strip('[] ') for x in src_epoch_list]
     trgt_train_id_list = [x.strip('[] ') for x in trgt_train_id_list]
 
+    # Build shell scripts
     for curr_SRC_NET in src_net_list:
+        # Create shell scripts for given source net
         curr_src_dir = os.path.join(exec_sh_root_dir, "src_net_" + curr_SRC_NET)
         os.makedirs(curr_src_dir, exist_ok=True)
 
@@ -182,6 +153,7 @@ def write_shell_scripts(config_infile):
         src_batch_file.write(echo_str)
 
         for curr_SPC in spc_list:
+            # Create shell scripts for give (source net, samples per class)
             curr_spc_dir = os.path.join(curr_src_dir, curr_SPC + 'spc')
             os.makedirs(curr_spc_dir, exist_ok=True)
 
@@ -194,6 +166,7 @@ def write_shell_scripts(config_infile):
             spc_batch_file.write(echo_str)
 
             for curr_SRC_EPOCH in src_epoch_list:
+                # Create shell scripts for give (source net, samples per class, source task training epochs)
                 curr_src_epoch_dir = os.path.join(curr_spc_dir, 'src_epoch_' + curr_SRC_EPOCH)
                 os.makedirs(curr_src_epoch_dir, exist_ok=True)
 
@@ -210,6 +183,10 @@ def write_shell_scripts(config_infile):
                                               curr_SPC + 'spc')
 
                 for curr_TR_ID  in trgt_train_id_list:
+                    # Create shell scripts for give (source net, samples per class,
+                    #                                source task training epochs,
+                    #                                target task training set)
+                    # NOTE: This innermost loop generates cmds for leaf shell script
                     echo_str = "echo '          src_net" + curr_SRC_NET 
                     echo_str += "_" + curr_SPC + 'spc_epoch_' + curr_SRC_EPOCH + curr_TR_ID +"'  `date` \n"
                     src_epoch_batch_file.write(echo_str)
@@ -247,4 +224,4 @@ if __name__ == "__main__":
     write_cfg_files(config_infile, config_outfile)
     write_shell_scripts(config_infile)
     
-    #python make_cfg_files.py opt_tfer_prelim2.cfg
+    #python make_cfg_and_sh_files.py opt_tfer_prelim2.cfg
