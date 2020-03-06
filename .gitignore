@@ -49,6 +49,5 @@ net_architectures/vgg16.py
 tiny_imagenet_expts/
 dataset_loaders/
 cfg_dir2/
-execute_expts/
 *pdf
 opt_tfer_series_temp/
