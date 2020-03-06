@@ -1,9 +1,10 @@
+import argparse
 import configparser
 import itertools
 import os
 import sys
 
-
+'''
 def make_config():
     # Create base configparser used
     # to create cfg files for each expt  
@@ -17,14 +18,14 @@ def make_config():
 
     config['ExptFiles']["data_loader"] = "cifar100_src_living_vs_notliving"
     config['ExptFiles']["class_names"] = "dataset_info/cifar100_dicts_all.pkl"
-    config['ExptFiles']["encoding_cfg"] = "cfg_dir2/enc_cfg/softmax_encoding_65.cfg"
+    config['ExptFiles']["encoding_cfg"] = "cfg_dir/enc_cfg/softmax_encoding_65.cfg"
     config['ExptFiles']["root_expt_dir"] = "opt_tfer_expt_series_prelim_2"
     config['ExptFiles']["expt_dir"] = "cifar_100_expts"
     config['ExptFiles']["expt_subdir"] = "" # Specify SPC
 
     config['NetParams']["arch_module"] = "cifar100_keras_net"
     config['NetParams']["output_activation"] = "softmax"
-    config['NetParams']["optimizer_cfg"] = "cfg_dir2/opt_cfg/optimizer_tfer_cifar_src_1.cfg"
+    config['NetParams']["optimizer_cfg"] = "cfg_dir/opt_cfg/optimizer_tfer_cifar_src_1.cfg"
     config['NetParams']["loss_fnc"] = "categorical_crossentropy"
 
     config['ExptParams']['epochs'] = '500'
@@ -43,9 +44,10 @@ def make_config():
     config['TrgtTaskParams']['data_loader'] = '' # Specify Trgt Train Set
 
     config['TrgtTaskParams']['class_names'] = 'dataset_info/cifar100_dicts_all.pkl'
-    config['TrgtTaskParams']['encoding_cfg'] = 'cfg_dir2/enc_cfg/softmax_encoding_35.cfg'
+    config['TrgtTaskParams']['encoding_cfg'] = 'cfg_dir/enc_cfg/softmax_encoding_35.cfg'
 
     return config
+'''
 
 
 def write_cfg_files(config_infile, config_outfile):
@@ -214,14 +216,40 @@ def write_shell_scripts(config_infile):
            
 
 if __name__ == "__main__":
-    config_root_dir = "./cfg_dir2/gen_cfg/"
-    config_infile_name = sys.argv[1]
+    config_root_dir = "./cfg_dir/gen_cfg/"
+    parser = argparse.ArgumentParser()
+    parser.add_argument("SkeletonCfg", help="skeleton cfg file for series of expts")
+    parser.add_argument("NonSkeletonCfg",
+               help="information for constructing cfg files for expts, not in skeleton")
+    parser.add_argument("--Major", type=str, default = "opt_tfer_expts",
+               help="Directory for all expts in series")
+    parser.add_argument("--Data", type=str, default = "cifar_100_living_notliving_expts",
+               help="Directory for all expts using given datasets")
+    parser.add_argument("--Arch", type=str, default = "prelim_arch",
+               help="Directory for all expts using given net architecture")
     
-    config_infile = configparser.ConfigParser()
-    config_infile.read(os.path.join(config_root_dir, config_infile_name))
+    args = parser.parse_args()
+    non_skeleton_cfg = args.NonSkeletonCfg
+    skeleton_cfg = args.SkeletonCfg
+    major_expts = args.Major
+    dataset = args.Data
+    arch = args.Arch
 
-    config_outfile = make_config()
-    write_cfg_files(config_infile, config_outfile)
-    write_shell_scripts(config_infile)
+    skeleton_cfg_file = os.path.join(config_root_dir, major_expts,
+                                 dataset, arch, skeleton_cfg)
+    non_skeleton_cfg_file = os.path.join(config_root_dir, major_expts,
+                                 dataset, arch, non_skeleton_cfg)
+
+    import pdb
+    pdb.set_trace()
+    skel_config = configparser.ConfigParser()
+    non_skel_config = configparser.ConfigParser()
+    skel_config.read(skeleton_cfg_file)
+    non_skel_config.read(non_skeleton_cfg_file)
+
+
+    #config_outfile = make_config()
+    # write_cfg_files(non_skeleton_cfg_file, skeleton_cfg_file)
+    write_shell_scripts(non_skel_config)
     
     #python make_cfg_and_sh_files.py opt_tfer_prelim2.cfg
