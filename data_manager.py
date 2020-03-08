@@ -5,7 +5,7 @@ import numpy as np
 import pickle
 import types
 
-from data_display import Data_Display
+from display_data.data_display import Data_Display
 
 import os
 import sys
