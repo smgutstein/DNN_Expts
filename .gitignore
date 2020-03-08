@@ -51,3 +51,4 @@ dataset_loaders/
 cfg_dir2/
 *pdf
 opt_tfer_series_temp/
+results/
