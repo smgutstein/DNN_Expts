@@ -66,7 +66,7 @@ if __name__ == '__main__':
     args = ap.parse_args()
     suffix = args.suffix 
     outstr = head_str + " + \'" + args.suffix +"\'" + tail_str
-    outpath  = './dataset_loaders/'
+    outpath  = '../dataset_loaders/'
     outfile = 'cifar100_trgt_living_vs_notliving_subset_' + suffix + '.py'
     with open(os.path.join(outpath,outfile), 'w') as f:
         f.write(outstr)
