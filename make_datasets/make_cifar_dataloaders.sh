@@ -1,23 +1,24 @@
-python generate_cifar100_trgt_subset_dataloaders.py 125_a
-python generate_cifar100_trgt_subset_dataloaders.py 125_b
-python generate_cifar100_trgt_subset_dataloaders.py 125_c
-python generate_cifar100_trgt_subset_dataloaders.py 125_d
-python generate_cifar100_trgt_subset_dataloaders.py 125_e
+#python generate_cifar100_trgt_subset_dataloaders.py 125_a
+#python generate_cifar100_trgt_subset_dataloaders.py 125_b
+#python generate_cifar100_trgt_subset_dataloaders.py 125_c
+#python generate_cifar100_trgt_subset_dataloaders.py 125_d
+#python generate_cifar100_trgt_subset_dataloaders.py 125_e
 
-python generate_cifar100_trgt_subset_dataloaders.py 175_a
-python generate_cifar100_trgt_subset_dataloaders.py 175_b
-python generate_cifar100_trgt_subset_dataloaders.py 175_c
-python generate_cifar100_trgt_subset_dataloaders.py 175_d
-python generate_cifar100_trgt_subset_dataloaders.py 175_e
+#python generate_cifar100_trgt_subset_dataloaders.py 175_a
+#python generate_cifar100_trgt_subset_dataloaders.py 175_b
+#python generate_cifar100_trgt_subset_dataloaders.py 175_c
+#python generate_cifar100_trgt_subset_dataloaders.py 175_d
+#python generate_cifar100_trgt_subset_dataloaders.py 175_e
 
 #python generate_cifar100_trgt_subset_dataloaders.py 25_b
 #python generate_cifar100_trgt_subset_dataloaders.py 25_c
 #python generate_cifar100_trgt_subset_dataloaders.py 25_d
 #python generate_cifar100_trgt_subset_dataloaders.py 25_e
 
+#python generate_cifar100_trgt_subset_dataloaders.py 50_a
 #python generate_cifar100_trgt_subset_dataloaders.py 50_b
 #python generate_cifar100_trgt_subset_dataloaders.py 50_c
-#python generate_cifar100_trgt_subset_dataloaders.py 50_d
+python generate_cifar100_trgt_subset_dataloaders.py 50_d
 #python generate_cifar100_trgt_subset_dataloaders.py 50_e
 
 #python generate_cifar100_trgt_subset_dataloaders.py 75_b

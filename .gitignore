@@ -52,3 +52,4 @@ cfg_dir2/
 *pdf
 opt_tfer_series_temp/
 results/
+make_datasets/make_cifar_dataloaders.sh
