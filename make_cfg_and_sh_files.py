@@ -4,6 +4,7 @@ import itertools
 import os
 import sys
 
+
 '''
 def make_config():
     # Create base configparser used
@@ -47,6 +48,64 @@ def make_config():
     config['TrgtTaskParams']['encoding_cfg'] = 'cfg_dir/enc_cfg/softmax_encoding_35.cfg'
 
     return config
+'''
+
+head_str = '''
+from __future__ import absolute_import
+import os
+import sys
+file_dir = os.path.dirname(os.path.realpath(__file__))
+if file_dir not in sys.path:
+    sys.path.append(file_dir)
+from cifar import load_batch
+from keras.utils.data_utils import get_file
+from keras import backend as K
+import numpy as np
+from os.path import expanduser
+home = expanduser("~")
+
+
+def load_data(label_mode='fine'):
+    \"\"\"Loads trgt tasks for CIFAR100 living_vs_notliving datasets.
+
+    # Arguments
+        label_mode: one of \"fine\", \"coarse\".
+
+    # Returns
+        Tuple of Numpy arrays: `(x_train, y_train), (x_test, y_test)`.
+
+    # Raises
+        ValueError: in case of invalid `label_mode`.
+    \"\"\"
+    if label_mode not in [\'fine\', \'coarse\']:
+        raise ValueError(\'`label_mode` must be one of `\"fine\"`, `\"coarse\"`.')
+
+    path = os.path.join(home,\'.keras/datasets/\', \'cifar-100-python\',
+                        \'Living_vs_Not_Living\', \'trgt_tasks_\' '''
+
+tail_str = ''' ) 
+
+    fpath = os.path.join(path, \'train\')
+    x_train, y_train = load_batch(fpath, label_key=label_mode + \'_labels\')
+
+    fpath = os.path.join(path, 'test')
+    x_test, y_test = load_batch(fpath, label_key=label_mode + \'_labels\')
+
+    y_train = np.reshape(y_train, (len(y_train), 1))
+    y_test = np.reshape(y_test, (len(y_test), 1))
+
+    # Rescale raw data
+    x_train = x_train.astype('float32')
+    x_test = x_test.astype('float32')
+
+    x_train /= 255.
+    x_test /= 255.
+
+    if K.image_data_format() == \'channels_last\':
+        x_train = x_train.transpose(0, 2, 3, 1)
+        x_test = x_test.transpose(0, 2, 3, 1)
+
+    return (x_train, y_train), (x_test, y_test)
 '''
 
 
@@ -213,7 +272,27 @@ def write_shell_scripts(config_infile):
     full_batch_file.close()
     os.chmod(full_batch_path, 0o755)
 
-           
+def write_dataloaders(config_infile):
+    # Crate dataloaders by Calling module that creates dataloader
+
+    # Create lists of varying params for different datasets
+    spc_list = config_infile['ExptParams']['spc_list'].split(',')
+    trgt_train_id_list = config_infile['ExptParams']['trgt_train_id_list'].split(',')
+
+    #cmd_str = 'python ./make_datasets/generate_cifar100_trgt_subset_dataloaders.py'
+    outpath  = './dataset_loaders/'
+    for trgt_dataset in list(itertools.product(spc_list, trgt_train_id_list)):
+        #print(trgt_dataset)
+        curr_spc = trgt_dataset[0].strip()
+        curr_dataset = trgt_dataset[1].strip()
+        suffix = "_".join([curr_spc, curr_dataset])
+        #print (" ".join([cmd_str, arg_str]))
+        outstr = head_str + " + \'" + suffix +"\'" + tail_str
+        outfile = 'cifar100_trgt_living_vs_notliving_subset_' + suffix + '.py'
+        with open(os.path.join(outpath,outfile), 'w') as f:
+            f.write(outstr)
+            print("Wrote ",os.path.join(outpath,outfile))
+    
 
 if __name__ == "__main__":
     config_root_dir = "./cfg_dir/gen_cfg/"
@@ -256,5 +335,6 @@ if __name__ == "__main__":
 
     write_cfg_files(non_skel_config, skel_config)
     write_shell_scripts(non_skel_config)
+    write_dataloaders(non_skel_config)
     
     #python make_cfg_and_sh_files.py base.cfg prelim_series.cfg
