@@ -217,6 +217,7 @@ def write_shell_scripts(config_infile):
 
 if __name__ == "__main__":
     config_root_dir = "./cfg_dir/gen_cfg/"
+    
     parser = argparse.ArgumentParser()
     parser.add_argument("SkeletonCfg", help="skeleton cfg file for series of expts")
     parser.add_argument("NonSkeletonCfg",
@@ -227,6 +228,8 @@ if __name__ == "__main__":
                help="Directory for all expts using given datasets")
     parser.add_argument("--Arch", type=str, default = "prelim_arch",
                help="Directory for all expts using given net architecture")
+    parser.add_argument("--Src", action="store_true",
+               help="Directory for all expts using given net architecture")
     
     args = parser.parse_args()
     non_skeleton_cfg = args.NonSkeletonCfg
@@ -234,22 +237,24 @@ if __name__ == "__main__":
     major_expts = args.Major
     dataset = args.Data
     arch = args.Arch
+    src_nets = args.Src
+    if src_nets:
+       config_leaf_dir = "src_nets"
+    else:
+       config_leaf_dir = "tfer_nets"
 
     skeleton_cfg_file = os.path.join(config_root_dir, major_expts,
-                                 dataset, arch, skeleton_cfg)
+                                 dataset, arch, config_leaf_dir, skeleton_cfg)
     non_skeleton_cfg_file = os.path.join(config_root_dir, major_expts,
-                                 dataset, arch, non_skeleton_cfg)
+                                 dataset, arch, config_leaf_dir, non_skeleton_cfg)
 
-    import pdb
-    pdb.set_trace()
     skel_config = configparser.ConfigParser()
     non_skel_config = configparser.ConfigParser()
+    
     skel_config.read(skeleton_cfg_file)
     non_skel_config.read(non_skeleton_cfg_file)
 
-
-    #config_outfile = make_config()
-    # write_cfg_files(non_skeleton_cfg_file, skeleton_cfg_file)
+    write_cfg_files(non_skel_config, skel_config)
     write_shell_scripts(non_skel_config)
     
-    #python make_cfg_and_sh_files.py opt_tfer_prelim2.cfg
+    #python make_cfg_and_sh_files.py base.cfg prelim_series.cfg
