@@ -114,17 +114,5 @@ if __name__ == '__main__':
 
 
     '''
-    # Make target dir and copy info from src dir
-    trgt_dir = 'cifar-100-python' + "_" + str(args.spc)
-    trgt_path = os.path.join(home, dataset_dir, trgt_dir)
-
-    # Note: shutil.copytree calls os.makedirs and will fail if trgt_path exists
-    shutil.copytree(src_path, trgt_path, symlinks=False, ignore=None)
-
-    # Save training subset
-    sd = get_subset(args.spc)
-    pickle.dump(sd, open(os.path.join(trgt_path, 'train'),'wb'))
-    print("Done")
-
-    python make_cifar_src_trgt_tasks.py ./dataset_info/cifar100_src_trgt_v1.cfg
+    python make_cifar_src_trgt_tasks.py ../dataset_info/cifar100_src_trgt_v1.cfg
     '''
