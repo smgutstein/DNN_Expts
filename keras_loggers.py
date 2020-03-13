@@ -237,7 +237,14 @@ class TrainingMonitor(BaseLogger):
         # to file
         if self.jsonPath is not None:
             f = open(self.jsonPath, "w")
-            f.write(json.dumps(self.H))
+            try:
+                f.write(json.dumps(self.H))
+            except:
+                # Float32 numbers aren't JSON serializable, 
+                # though float64 are (!?)
+                self.H = {key:[np.float64(x) for x in val] 
+                          for (key,val) in self.H.items()}
+                f.write(json.dumps(self.H))
             f.close()
 
             # make human readable text file
