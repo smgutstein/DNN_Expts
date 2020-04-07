@@ -89,7 +89,6 @@ class NetManager(object):
 
         # Check if using optimzier designed to change learning rate
         # according to schedule - figure out why kwargs didn't work
-        #optimizer_param_dict['batches_per_epoch'] = self.data_manager.batches_per_epoch
         if 'set_batches_per_epoch' in dir(self.opt):
             self.opt.set_batches_per_epoch(self.data_manager.batches_per_epoch)
 
@@ -98,6 +97,20 @@ class NetManager(object):
             self.loss_fnc = net_param_dict['loss_fnc']
         else:
             self.loss_fnc = 'mean_squared_error'
+
+        # Get Loss Function Regularizer
+        if net_param_dict['RegularizerParams'] != None:
+          reg_param_dict = net_param_dict['RegularizerParams']
+          reg_module = reg_param_dict['regularizer_module']
+          reg_fnc_name = reg_param_dict['regularizer_fnc']
+          reg_args = {k:v for k,v in reg_param_dict.items()
+                      if k != "regularizer_module" and  k != "regularizer_fnc"}
+          temp = importlib.import_module(reg_module)
+          reg_fnc = getattr(temp, reg_fnc_name)
+          net_param_dict['regularizer'] = reg_fnc(**reg_args)
+        else:
+          net_param_dict['regularizer'] = None  
+          
 
         # Prepare standard training
         print("Standard training")
@@ -210,7 +223,8 @@ class NetManager(object):
             try:
                  arch = build_architecture(input_shape,
                                            self.src_nb_output_nodes,
-                                           net_param_dict['output_activation'])
+                                           net_param_dict['output_activation'],
+                                           regularizer=net_param_dict['regularizer'])
             except curses.error as e:
                 print('\nError:')
                 print (e.message)
