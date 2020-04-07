@@ -58,6 +58,15 @@ class Runner(object):
         self.trgt_task_param_dict = self.get_param_dict('TrgtTaskParams')
         self.preprocess_param_dict = self.get_param_dict('DataPreProcess')
         self.augment_param_dict = self.get_param_dict('DataAugment')
+        self.regularizer_param_dict = self.get_param_dict('RegularizerParams')
+
+        # ConfigParser doesn't allow for subsections, so this just seemed an
+        # easier, though kludgy, way to add a new param dict to be used
+        # in net_manager.py
+        if len(self.regularizer_param_dict) != 0:
+            self.net_param_dict['RegularizerParams'] = self.regularizer_param_dict
+        else:
+            self.net_param_dict['RegularizerParams'] = None
 
         # To allow quick testing without needing to change specified
         # epochs in cfg files
