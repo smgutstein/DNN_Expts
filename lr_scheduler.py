@@ -66,20 +66,22 @@ class LR_Scheduler(Callback):
 '''
 
 
-
 class LRScheduleFunction(Callback):
-    def __init__(self, sched_function,
-                 on_batch=False, on_epoch=False,):
-        self.sched_function = sched_function
+    def __init__(self, sched_function, on_batch,
+                 on_epoch, kwargs):
         self.epoch = 0
         self.batch = 0
         self.on_batch = on_batch
         self.on_epoch = on_epoch
+        self.sched_function = sched_function
+        self.kwargs = kwargs
 
     def on_batch_begin(self, batch, logs=None):
         self.batch += 1
         if self.on_batch:
-          lr = self.sched_function(self.batch, self.epoch)
+          self.kwargs["batch"] = self.batch
+          self.kwargs["epoch"] = self.epoch
+          lr = self.sched_function(self.kwargs)
           K.set_value(self.model.optimizer.lr, lr)
         
     def on_epoch_begin(self, epoch, logs=None):
