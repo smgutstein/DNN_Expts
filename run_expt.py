@@ -139,6 +139,8 @@ class Runner(object):
         self.config.read(self.net_param_dict['optimizer_cfg'])
         self.optimizer_param_dict = self.get_param_dict('OptimizerParams')
 
+        '''
+        ## lr_schedule IS NOW IMPLEMENTED DIFFERENTLY -- DELETE THIS CODE ##
         # Read/Create lr-schedule 
         if "lr_schedule" in self.optimizer_param_dict:
             # Read lr schedule and convert to list of 2-tuples (epoch, lr)
@@ -154,7 +156,7 @@ class Runner(object):
                 
             self.optimizer_param_dict["lr_schedule"] = lr_schedule
             self.optimizer_param_dict["lr"] = lr_schedule[0][1]
-
+        '''
 
         shutil.copy(self.net_param_dict['optimizer_cfg'],
                     os.path.join(self.metadata_dir,
