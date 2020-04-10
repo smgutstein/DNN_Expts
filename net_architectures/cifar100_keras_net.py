@@ -5,7 +5,8 @@ from keras.layers import Conv2D, Convolution2D, MaxPooling2D
 
 def build_architecture(input_shape,
                        nb_output_nodes,
-                       output_activation):
+                       output_activation,
+                       **kwargs):
 
     # Note: input_shape = (channels, rows, cols)
     
