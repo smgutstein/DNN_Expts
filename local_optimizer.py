@@ -2,7 +2,7 @@ from __future__ import print_function
 
 from keras import backend as K
 from keras import optimizers
-from keras.optimizers import SGD, RMSprop, Adam
+from keras.optimizers import SGD, RMSprop, Adam, Optimizer
 from keras.legacy import interfaces
 import sys
 import tensorflow as tf
@@ -34,7 +34,9 @@ def adam(adam_params):
     #             epsilon=None, decay=0., amsgrad=False)
     return optimizers.Adam(**adam_params)
 
-
+def rms_prop(rms_params):
+    # RMS Prop
+    return EffNet_RMSprop(**rms_params)
 
 class SGD_VAR(SGD):
     """Stochastic gradient descent optimizer.
@@ -167,7 +169,7 @@ class EffNet_RMSprop(Optimizer):
                  momentum, rho, lr_decay_steps, lr_decay=1, 
                  warmup_epochs=0, epsilon=None,
                  **kwargs):        
-        super(RMSprop, self).__init__(**kwargs)
+        super(EffNet_RMSprop, self).__init__(**kwargs)
         
         with K.name_scope(self.__class__.__name__):
             # From efficientnet main.py line 387
@@ -201,7 +203,7 @@ class EffNet_RMSprop(Optimizer):
         # updates as a function of batch, not epoch.
         #Copying graph node that stores original value of learning rate
         lr = self.lr 
-
+        
         # Checking whether learning rate schedule is to be used
         if self.initial_lr_decay > 0:
             # this decay mimics exponential decay from 
@@ -221,6 +223,7 @@ class EffNet_RMSprop(Optimizer):
             # and graph node containing original learning rate.
             lr = lr * decay_factor
 
+            '''
             # Get product of two numbers to calculate number of batches processed
             # in warmup period
             num_warmup_batches = self.steps_per_epoch_num * self.warmup_epochs
@@ -232,7 +235,8 @@ class EffNet_RMSprop(Optimizer):
                 # by a node, and then dividing by a number
                 lr = (self.initial_lr  *
                       K.cast(self.iterations, K.floatx()) / curr_batch)
-
+            '''
+        
         '''    
         # Old Code - To Be Deleted
         lr = self.lr
@@ -272,8 +276,8 @@ class EffNet_RMSprop(Optimizer):
                 new_p = p.constraint(new_p)
 
             # RMS_Prop Updates
-            self.updates.append(K.update(ms, mean_sq_accs))
-            self.updates.append(K.update(ma, mom_accs))
+            self.updates.append(K.update(ms, new_ms))
+            self.updates.append(K.update(ma, new_mom))
             self.updates.append(K.update(p, new_p))
         
         return self.updates
@@ -290,5 +294,5 @@ class EffNet_RMSprop(Optimizer):
                   'initial_lr_decay': float(self.initial_lr_decay),
                   'lr_decay_steps': float(self.lr_decay_steps),
                   'epsilon': self.epsilon}
-        base_config = super(RMSprop, self).get_config()
+        base_config = super(EffNet_RMSprop, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))
