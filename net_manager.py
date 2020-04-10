@@ -13,11 +13,13 @@ from keras.layers import Dense, Dropout, Flatten
 from net_architectures.sgActivation import Activation
 
 from lr_scheduler import StepLearningRateScheduler
+from lr_scheduler import LRScheduleFunction
 from operator import itemgetter
 import os
 import pickle
 import shutil
 import sys
+import types
 
 def is_int(in_str):
     try:
@@ -74,10 +76,27 @@ class NetManager(object):
                 
         # Make optimizer
         if "lr_schedule" in optimizer_param_dict:
-            self.lr_schedule = optimizer_param_dict['lr_schedule']
-            self.lr_schedule.sort(key=itemgetter(0))
-            lr_init = self.lr_schedule[0][1]
-            optimizer_param_dict['lr'] = lr_init
+            lr_sched_module = optimizer_param_dict.pop('lr_schedule')
+            # Hacky way of getting relative import to work in importlib
+            import lr_sched_fncs
+            temp = importlib.import_module('lr_sched_fncs.' + lr_sched_module)
+            lr_sched_fnc = getattr(temp, "lr_sched_func")
+            on_batch = getattr(temp, "on_batch")
+            on_epoch = getattr(temp, "on_epoch")
+            
+            # Some optimizers scale lr as a function of batch size, so
+            # larger training batches take larger lr others depend on
+            # both number of epochs and batches. Need better way of
+            # handling this requirement.
+
+            sched_param_dict = {}
+            sched_param_dict['train_batch_size'] = self.data_manager.batch_size
+            sched_param_dict['steps_per_epoch'] = self.data_manager.batches_per_epoch
+
+            self.lr_schedule = LRScheduleFunction(lr_sched_fnc,
+                                                  on_batch, on_epoch,
+                                                  sched_param_dict)
+            
         else:
             self.lr_schedule = None
 
@@ -89,8 +108,8 @@ class NetManager(object):
 
         # Check if using optimzier designed to change learning rate
         # according to schedule - figure out why kwargs didn't work
-        if 'set_batches_per_epoch' in dir(self.opt):
-            self.opt.set_batches_per_epoch(self.data_manager.batches_per_epoch)
+        # if 'set_batches_per_epoch' in dir(self.opt):
+        #    self.opt.set_batches_per_epoch(self.data_manager.batches_per_epoch)
 
         # Get Loss Function
         if 'loss_fnc' in net_param_dict:
@@ -488,8 +507,7 @@ class NetManager(object):
 
         # Add lr scheduler
         if self.lr_schedule:
-            lr_scheduler = StepLearningRateScheduler(self.lr_schedule)
-            callbacks.append(lr_scheduler)
+            callbacks.append(self.lr_schedule)
 
 
 
