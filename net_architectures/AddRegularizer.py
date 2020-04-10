@@ -39,7 +39,7 @@ import string
 
 ####################################################
 
-def Add_Regularizers(inputs, x, regularizer)
+def add_regularizer(inputs, x, regularizer):
     # Map out net and identify layers to which regularizer
     # will be added
     layer_dict = map_network(inputs, x)
@@ -52,7 +52,7 @@ def Add_Regularizers(inputs, x, regularizer)
            regularizer_layers[k] = reg_layer_list
 
     for curr_layer in regularizer_layers:
-        for curr_node in curr_layer:
+        for curr_node in regularizer_layers[curr_layer]:
             if 'kernel_regularizer' in curr_node.__dict__:
                 curr_node.kernel_initializer = regularizer
             if 'bias_regularizer' in curr_node.__dict__:
