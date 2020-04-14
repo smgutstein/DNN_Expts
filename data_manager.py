@@ -34,9 +34,9 @@ class DataManager(object):
                  encoding_module_param_dict,
                  saved_param_dict,
                  expt_param_dict,
+                 trgt_task_param_dict,
                  preprocess_param_dict,
-                 augment_param_dict,
-                 trgt_task_param_dict):
+                 augment_param_dict):
          
 
         # Get batch size for data_generator module
