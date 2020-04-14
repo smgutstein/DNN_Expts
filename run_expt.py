@@ -159,8 +159,6 @@ class Runner(object):
                                    self.optimizer_param_dict,
                                    self.saved_param_dict,
                                    self.trgt_task_param_dict,
-                                   self.preprocess_param_dict,
-                                   self.augment_param_dict,
                                    self.nocheckpoint)
         return True
         
