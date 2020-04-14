@@ -12,10 +12,8 @@ import socket
 import sys
 
 # Hmmm....think this might not be needed
-try:
-    from io import StringIO
-except:
-    from io import StringIO
+from io import StringIO
+
 
 # Hmmm....think this might not be needed
 libc = ctypes.CDLL(None)
@@ -48,16 +46,16 @@ class Runner(object):
                 self.expt_file_name = self.cmd_line_args.__next__()
         except StopIteration as exception:
             return False
-        
+
+        # Get dicts of configuration parameters
         self.config.read(self.expt_file_name)
-        
         self.file_param_dict = self.get_param_dict('ExptFiles')        
         self.net_param_dict = self.get_param_dict('NetParams')
         self.expt_param_dict = self.get_param_dict('ExptParams')
         self.saved_param_dict = self.get_param_dict('SavedParams')
         self.trgt_task_param_dict = self.get_param_dict('TrgtTaskParams')
-        self.preprocess_param_dict = self.get_param_dict('DataPreProcess')
-        self.augment_param_dict = self.get_param_dict('DataAugment')
+        self.preprocess_param_dict = self.get_param_dict('DataPreprocessParams')
+        self.augment_param_dict = self.get_param_dict('DataAugmentParams')
         self.regularizer_param_dict = self.get_param_dict('RegularizerParams')
 
         # ConfigParser doesn't allow for subsections, so this just seemed an
@@ -80,7 +78,7 @@ class Runner(object):
 
         # Possibly a bad idea, but I'm going to have output dir for tfer expts
         # automatically record which src task iteration was used, instead of
-        # assigning that feature of the sub-dir name i a cfg file
+        # assigning that feature of the sub-dir name in a cfg file
         if 'saved_iter' in self.saved_param_dict:
              net_dir = os.path.join(self.saved_param_dict['saved_set_dir'],
                                     self.saved_param_dict['saved_dir'])
@@ -96,7 +94,7 @@ class Runner(object):
                  self.expt_set_dir = os.path.join(self.expt_set_dir,
                                               str(self.saved_param_dict['saved_iter']))
 
-        
+        # Make output_dir, if necessary
         self.expt_dir = self.host_machine + "_" + self.file_param_dict['expt_dir']
         if not hasattr(self, 'outdir'):
             self.outdir = self.make_outdir(self.expt_set_dir, self.expt_dir)
@@ -139,25 +137,6 @@ class Runner(object):
         self.config.read(self.net_param_dict['optimizer_cfg'])
         self.optimizer_param_dict = self.get_param_dict('OptimizerParams')
 
-        '''
-        ## lr_schedule IS NOW IMPLEMENTED DIFFERENTLY -- DELETE THIS CODE ##
-        # Read/Create lr-schedule 
-        if "lr_schedule" in self.optimizer_param_dict:
-            # Read lr schedule and convert to list of 2-tuples (epoch, lr)
-            lr_pairs =  self.optimizer_param_dict['lr_schedule'].split(")")
-            lr_pairs = [x.strip(" ,()") for x in lr_pairs if len(x)>0]
-            lr_schedule = [(int(y.split(",")[0]),
-                            float(y.split(",")[1])) for y in lr_pairs]
-
-            # Sort list and ensure initial lr is defined
-            lr_schedule.sort(key=itemgetter(0))
-            if lr_schedule[0][0] != 0:
-               lr_schedule[0][0] = 0 # Ensures setting of initial lr
-                
-            self.optimizer_param_dict["lr_schedule"] = lr_schedule
-            self.optimizer_param_dict["lr"] = lr_schedule[0][1]
-        '''
-
         shutil.copy(self.net_param_dict['optimizer_cfg'],
                     os.path.join(self.metadata_dir,
                                  os.path.basename(self.net_param_dict['optimizer_cfg'])))
@@ -182,10 +161,6 @@ class Runner(object):
                                    self.augment_param_dict,
                                    self.nocheckpoint)
         return True
-
-    
-
-
         
     def get_cmd_line_args(self):
 
@@ -211,12 +186,10 @@ class Runner(object):
         if cmd_line_args.silent:
             sys.stdout = open(os.devnull,'w')
             
-
         print ("CMD LINE ARGS:")
         temp = vars(cmd_line_args)
         for temp_arg in temp:
             print(temp_arg,":",temp[temp_arg])
-
 
         # Choose specific GPU
         os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
@@ -272,11 +245,11 @@ class Runner(object):
 
             # Convert non-numeric strings to correct variable types
             for x in param_dict:
-                if param_dict[x] == 'None':
+                if str(param_dict[x]).lower() == 'none':
                     param_dict[x] = None
-                elif param_dict[x] == 'True':
+                elif str(param_dict[x]).lower() == 'true':
                     param_dict[x] = True
-                elif param_dict[x] == 'False':
+                elif str(param_dict[x]).lower() == 'false':
                     param_dict[x] = False
 
         except configparser.NoSectionError:
@@ -304,8 +277,6 @@ class Runner(object):
             if not os.path.isdir(curr_output_dir):
                 self.make_sure_outdir_exists(curr_output_dir)
                 done = True
-            #elif suffix == '':
-            #    suffix = '_v1'
             else:
                 version = int(suffix[2:]) + 1
                 suffix = '_v' + str(version)
@@ -399,7 +370,6 @@ class Runner(object):
         #expt_log.close_log(self.outdir)
 
         return 
-
 
 if __name__ == '__main__':
 
