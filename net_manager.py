@@ -417,12 +417,17 @@ class NetManager(object):
     def get_init_condits(self, train_data_generator,
                          test_data_generator):
         dm = self.data_manager
+        train_dg = train_data_generator.flow(dm.X_train, dm.Y_train,
+                                         batch_size=dm.batch_size)
         init_train_loss, init_train_acc = \
-        self.model.evaluate(dm.X_train,
-                            dm.Y_train)
+        self.model.evaluate_generator(train_dg,
+                                      steps=dm.train_batches_per_epoch)
+
+        test_dg = test_data_generator.flow(dm.X_test, dm.Y_test,
+                                         batch_size=dm.batch_size)
         init_test_loss, init_test_acc = \
-        self.model.evaluate(dm.X_test,
-                            dm.Y_test)
+        self.model.evaluate_generator(test_dg,
+                                      steps=dm.train_batches_per_epoch)
 
         print("\nInit loss and acc:                             loss: ",
               "%0.5f - %s: %0.5f - val_loss: %0.5f - %s: %0.5f" %
@@ -448,7 +453,8 @@ class NetManager(object):
             print ("No data augmentation")
             
         (init_train_loss, init_train_acc,
-               init_test_loss, init_test_acc) = self.get_init_condits(None, None)
+               init_test_loss, init_test_acc) = self.get_init_condits(dm.train_data_gen,
+                                                                      dm.test_data_gen)
 
         # Assemble Callbacks
         training_monitor = TrainingMonitor(fig_path, jsonPath=json_path,
