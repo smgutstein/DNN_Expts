@@ -417,16 +417,12 @@ class NetManager(object):
     def get_init_condits(self, train_data_generator,
                          test_data_generator):
         dm = self.data_manager
-        train_dg = train_data_generator.flow(dm.X_train, dm.Y_train,
-                                         batch_size=dm.batch_size)
         init_train_loss, init_train_acc = \
-        self.model.evaluate_generator(train_dg,
+        self.model.evaluate_generator(dm.train_data_gen,
                                       steps=dm.train_batches_per_epoch)
 
-        test_dg = test_data_generator.flow(dm.X_test, dm.Y_test,
-                                         batch_size=dm.batch_size)
         init_test_loss, init_test_acc = \
-        self.model.evaluate_generator(test_dg,
+        self.model.evaluate_generator(dm.test_data_gen,
                                       steps=dm.train_batches_per_epoch)
 
         print("\nInit loss and acc:                             loss: ",
@@ -484,15 +480,14 @@ class NetManager(object):
 
         # Train Model
         dm = self.data_manager
-        results = self.model.fit(dm.X_train,
-                                 dm.Y_train,
-                                 batch_size=128,#dm.batch_size,
-                                 epochs=self.epochs,
-                                 validation_data=(dm.X_test,
-                                                  dm.Y_test),
-                                 callbacks=callbacks,
-                                 shuffle=True)
-
+        results = self.model.fit_generator(dm.train_data_gen,
+                                           steps_per_epoch = dm.train_batches_per_epoch,
+                                           epochs=self.epochs,
+                                           validation_data=dm.test_data_gen,
+                                           validation_steps=\
+                                                 dm.test_batches_per_epoch,
+                                           callbacks = callbacks,
+                                           shuffle=True)
         self.best_score = checkpointer.best_score
         self.best_epoch = checkpointer.best_epoch
         

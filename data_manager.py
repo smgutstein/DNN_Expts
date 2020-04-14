@@ -101,7 +101,7 @@ class DataManager(object):
             # Fresh encoding for new src task
             self.encoding_module = empd['encoding_module']
             
-        # Load data and build generator for preprocessing & augmentation
+        # Load data 
         self.preprocess_param_dict = preprocess_param_dict
         self.augment_param_dict = augment_param_dict
         self._load_data()
@@ -112,6 +112,9 @@ class DataManager(object):
         self.make_encoding_dict = types.MethodType(temp.make_encoding_dict, self)
         self.make_encoding_dict(**joint_dict)
         self.encode_labels()
+
+        # Build generator for preprocessing & augmentation
+        self._make_data_generators()
 
         self.curr_encoding_info = dict()
         self.curr_encoding_info['label_dict'] = {}
@@ -152,6 +155,7 @@ class DataManager(object):
         # Get sorted list of class numbers (np.unique returns sorted list)
         self.class_nums = list(np.unique(self.y_train))
 
+    def _make_data_generators(self):
         # Overwrite default args for ImageDataGenerator with those from cfg files
         # (This might just be a little silly - could just combine dicts created from
         # cfg files and not explicitly state default values, but for now helps me keep
@@ -162,11 +166,18 @@ class DataManager(object):
             ImageDataGen_args[x] = self.augment_param_dict[x]
 
         print("Preprocessing Images")
-        self.train_data_gen = ImageDataGenerator(**ImageDataGen_args)
-        self.train_data_gen.fit(self.X_train)
+        self.train_image_gen = ImageDataGenerator(**ImageDataGen_args)
+        self.train_image_gen.fit(self.X_train)
+        self.train_data_gen = self.train_image_gen.flow(self.X_train,
+                                                        self.Y_train,
+                                                        self.batch_size)
         
-        self.test_data_gen = ImageDataGenerator(**ImageDataGen_args)
-        self.test_data_gen.fit(self.X_test)
+        self.test_image_gen = ImageDataGenerator(**ImageDataGen_args)
+        self.test_image_gen.fit(self.X_test)
+        self.test_data_gen = self.test_image_gen.flow(self.X_test,
+                                                      self.Y_test,
+                                                      self.batch_size)
+        
 
     def encode_labels(self):
         """Convert array of class nums to arrays of encodings"""
