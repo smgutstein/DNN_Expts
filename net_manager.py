@@ -337,7 +337,8 @@ class NetManager(object):
         else:
             net_dir = os.path.join(saved_param_dict['saved_set_dir'],
                                    saved_param_dict['saved_dir'])
-            net_iter = saved_param_dict['saved_iter']            
+            net_iter = saved_param_dict['saved_iter']
+            
 
             if ('saved_weights_file' not in saved_param_dict):
 
@@ -386,6 +387,7 @@ class NetManager(object):
             # Hacky way of ensuring that continuing training from a saved point
             # does not result in a faux encoding change
             dm = self.data_manager
+
             dm.curr_encoding_info['encoding_dict'] = dm.encoding_dict
             dm.curr_encoding_info['label_dict'] = dm.label_dict
             dm.curr_encoding_info['meta_encoding_dict'] = dm.meta_encoding_dict
@@ -444,7 +446,7 @@ class NetManager(object):
         if not dm.augment_param_dict:
             # No data generator used
             print ("No data augmentation")
-
+            
         (init_train_loss, init_train_acc,
                init_test_loss, init_test_acc) = self.get_init_condits(None, None)
 

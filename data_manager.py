@@ -37,7 +37,6 @@ class DataManager(object):
                  trgt_task_param_dict,
                  preprocess_param_dict,
                  augment_param_dict):        
-
          
         # Get batch size for data_generator module
         if 'batch_size' in expt_param_dict:
@@ -74,7 +73,7 @@ class DataManager(object):
             self._init_num_name_dicts(tpd['class_names'])
 
         # Get info to create or recover encoding dict
-        if len(trgt_task_param_dict) != 0:
+        if len(trgt_task_param_dict) != 0:            
             epd = tpd['_EncodingParamDict']
             empd = tpd['_EncodingModuleParamDict']
         joint_dict = epd.copy()
