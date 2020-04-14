@@ -1,14 +1,30 @@
 from __future__ import print_function
-
 import importlib
 import numpy as np
+import os
 import pickle
+import sys
 import types
 
 from display_data.data_display import Data_Display
+from keras.preprocessing.image import ImageDataGenerator
 
-import os
-import sys
+ImageDataGen_args = {'featurewise_center': False, 'samplewise_center': False,
+                     'featurewise_std_normalization': False,
+                     'samplewise_std_normalization': False,
+                     'zca_epsilon': 1e-6, 'zca_whitening': False,
+                     'rotation_range': 0,
+                     'width_shift_range': 0, 'height_shift_range': 0,
+                     'brightness_range': None,
+                     'shear_range': 0.0, 'zoom_range': 0.0,
+                     'channel_shift_range': 0.0,
+                     'fill_mode': 'nearest',
+                     'cval': 0,
+                     'horizontal_flip': False, 'vertical_flip': False,
+                     'rescale': None,
+                     'preprocessing_function': None,
+                     'validation_split': 0,
+                     'dtype': 'float32'}
 
 class DataManager(object):
 
@@ -18,6 +34,8 @@ class DataManager(object):
                  encoding_module_param_dict,
                  saved_param_dict,
                  expt_param_dict,
+                 preprocess_param_dict,
+                 augment_param_dict,
                  trgt_task_param_dict):
          
 
@@ -118,51 +136,16 @@ class DataManager(object):
             self.make_encoding_dict(**joint_dict)
             self.encode_labels()
 
-            # Might not need/want this anymore
-            self.data_display = Data_Display(self.X_test, self.y_test,
-                                             self.label_dict)
-            # Load data generator - if necessary for augmentation
-            #if self.data_generator_module:
-            #    print ("Loading data generator for augmentation")
-            #    (self.train_data_generator,
-            #     self.test_data_generator,
-            #     self.data_generator_info,
-            #    (self.img_channels, self.img_rows, self.img_cols)) = self.get_generator()
-            #    
-            #else:
-            #    print ("No data augmentation")
-            #    self.train_data_generator = None
-            #    self.test_data_generator = None
-            #    self.data_generator_info = "No data generator being used"
-
-        else:
-            pass
-            #print ("Loading data generator")
-            #(self.train_data_generator,
-            # self.test_data_generator,
-            # self.data_generator_info,
-            # (self.img_channels,
-            #  self.img_rows,
-            #  self.img_cols)) = self.get_generator()
-
-            # Get sorted list of class numbers (np.unique returns sorted list)
-            #self.class_nums = self.test_data_generator.class_nums
-            #self.batches_per_epoch = self.train_data_generator.batches_per_epoch
-
-            # Encode labels
-            #print("Making Encoding Dict")
-            #self.make_encoding_dict(**joint_dict)
-            #self.train_data_generator.set_encoding_dict(self.encoding_dict)
-            #self.test_data_generator.set_encoding_dict(self.encoding_dict)
-
-
 
         self.curr_encoding_info = dict()
         self.curr_encoding_info['label_dict'] = {}
         self.curr_encoding_info['encoding_dict'] = {}
-
-        #self._make_data_generator()
-
+        #######################################################################################
+        
+        # Might not need/want this anymore
+        self.data_display = Data_Display(self.X_test, self.y_test,
+                                         self.label_dict)
+        
     def _init_num_name_dicts(self, category_name_file):
         # Make class_num/class_name dictionaries
         with open(category_name_file, "rb") as f:
@@ -225,7 +208,6 @@ class DataManager(object):
         return Y
 
     def display(self):
-            
         self.data_display.start_display()
 
     def get_targets_str(self):

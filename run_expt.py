@@ -147,6 +147,8 @@ class Runner(object):
                                    self.encoding_module_param_dict,
                                    self.saved_param_dict,
                                    self.expt_param_dict,
+                                   self.preprocess_param_dict,
+                                   self.augment_param_dict,
                                    self.trgt_task_param_dict)
 
         self.expt_net = NetManager(self.expt_dm, self.outdir,
