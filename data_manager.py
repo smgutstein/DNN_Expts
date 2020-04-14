@@ -59,11 +59,6 @@ class DataManager(object):
 
         # Determine if data comes from src or trgt task
         if len(trgt_task_param_dict) == 0:
-            # Get data loaders
-            self.data_loading_module = fpd.get('data_loader', None)
-            self.data_generator_module = fpd.get('data_generator', None)
-            
-        if len(trgt_task_param_dict) == 0:
             # Specify number of output nodes in net (i.e. number of bits in encoding)
             self.nb_code_bits = int(epd['nb_code_bits'])
             self.src_nb_code_bits = int(epd['nb_code_bits'])
@@ -109,32 +104,17 @@ class DataManager(object):
         # Load data and build generator for preprocessing & augmentation
         self.preprocess_param_dict = preprocess_param_dict
         self.augment_param_dict = augment_param_dict
+        self._load_data()
 
         # Create encodings
         print("Encoding data")
         temp = importlib.import_module(self.encoding_module)
         self.make_encoding_dict = types.MethodType(temp.make_encoding_dict, self)
 
-        #######################################################################################
+        self.batches_per_epoch = self.y_train.shape[0] // self.batch_size
 
-        if self.data_generator_module:
-            temp = importlib.import_module("dataset_loaders." + self.data_generator_module)
-            self.get_generator = types.MethodType(temp.get_generator, self)
-
-        # Load raw data and/or data generator
-        if self.data_loading_module is None and self.data_generator_module is None:
-            print("Either or both a data loading module and data generator module must be specified")
-            
-        elif self.data_loading_module:
-            print("Loading data into memory")
-            self._load_data()
-            self.batches_per_epoch = self.X_train.shape[0] // self.batch_size
-
-            # Encode labels
-            print("Encoding data")
-            self.make_encoding_dict(**joint_dict)
-            self.encode_labels()
-
+        self.make_encoding_dict(**joint_dict)
+        self.encode_labels()
 
         self.curr_encoding_info = dict()
         self.curr_encoding_info['label_dict'] = {}
@@ -157,8 +137,6 @@ class DataManager(object):
         print("Loading data")
         (self.X_train, self.y_train), \
         (self.X_test, self.y_test) = data_load_module.load_data()
-        self.X_train = self.X_train.astype('float32')
-        self.X_test = self.X_test.astype('float32')
 
         # Get rows, cols and channels. Assume smallest dim, other than 0th
         # is channel dim
