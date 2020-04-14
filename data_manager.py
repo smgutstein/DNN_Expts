@@ -152,6 +152,21 @@ class DataManager(object):
         # Get sorted list of class numbers (np.unique returns sorted list)
         self.class_nums = list(np.unique(self.y_train))
 
+        # Overwrite default args for ImageDataGenerator with those from cfg files
+        # (This might just be a little silly - could just combine dicts created from
+        # cfg files and not explicitly state default values, but for now helps me keep
+        # track of what default values are)
+        for x in self.preprocess_param_dict:
+            ImageDataGen_args[x] = self.preprocess_param_dict[x]
+        for x in self.augment_param_dict:
+            ImageDataGen_args[x] = self.augment_param_dict[x]
+
+        print("Preprocessing Images")
+        self.train_data_gen = ImageDataGenerator(**ImageDataGen_args)
+        self.train_data_gen.fit(self.X_train)
+        
+        self.test_data_gen = ImageDataGenerator(**ImageDataGen_args)
+        self.test_data_gen.fit(self.X_test)
 
     def encode_labels(self):
         """Convert array of class nums to arrays of encodings"""
