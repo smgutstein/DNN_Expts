@@ -36,7 +36,8 @@ class DataManager(object):
                  expt_param_dict,
                  trgt_task_param_dict,
                  preprocess_param_dict,
-                 augment_param_dict):
+                 augment_param_dict):        
+
          
         # Get batch size for data_generator module
         if 'batch_size' in expt_param_dict:
@@ -58,7 +59,7 @@ class DataManager(object):
             sys.exit()
 
         # Determine if data comes from src or trgt task
-        if len(trgt_task_param_dict) == 0:
+        if len(trgt_task_param_dict) == 0:            
             # Specify number of output nodes in net (i.e. number of bits in encoding)
             self.nb_code_bits = int(epd['nb_code_bits'])
             self.src_nb_code_bits = int(epd['nb_code_bits'])
@@ -110,9 +111,6 @@ class DataManager(object):
         print("Encoding data")
         temp = importlib.import_module(self.encoding_module)
         self.make_encoding_dict = types.MethodType(temp.make_encoding_dict, self)
-
-        self.batches_per_epoch = self.y_train.shape[0] // self.batch_size
-
         self.make_encoding_dict(**joint_dict)
         self.encode_labels()
 
@@ -138,6 +136,10 @@ class DataManager(object):
         (self.X_train, self.y_train), \
         (self.X_test, self.y_test) = data_load_module.load_data()
 
+        # Set batches (i.e. steps) per epoch
+        self.train_batches_per_epoch = self.y_train.shape[0] // self.batch_size
+        self.test_batches_per_epoch = self.y_test.shape[0] // self.batch_size
+        
         # Get rows, cols and channels. Assume smallest dim, other than 0th
         # is channel dim
         _, temp1, temp2, temp3 = self.X_train.shape

@@ -292,7 +292,7 @@ class NetManager(object):
         else:
             output_activation = net_param_dict['output_activation']
         
-        ctr = 0
+        ctr = 0        
         while ctr < num_resets:
             #Returns layer info, but keeps layer in net
             pop_layer = self.model.layers.pop() 
@@ -337,7 +337,8 @@ class NetManager(object):
         else:
             net_dir = os.path.join(saved_param_dict['saved_set_dir'],
                                    saved_param_dict['saved_dir'])
-            net_iter = saved_param_dict['saved_iter']            
+            net_iter = saved_param_dict['saved_iter']
+            
 
             if ('saved_weights_file' not in saved_param_dict):
 
