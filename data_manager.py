@@ -38,7 +38,6 @@ class DataManager(object):
                  preprocess_param_dict,
                  augment_param_dict):
          
-
         # Get batch size for data_generator module
         if 'batch_size' in expt_param_dict:
             self.batch_size = int(expt_param_dict['batch_size'])
@@ -52,6 +51,11 @@ class DataManager(object):
         empd = encoding_module_param_dict
         eaf = encoding_activation_fnc
         
+        # Get data loader
+        self.data_loading_module = fpd.get('data_loader', None)
+        if self.data_loading_module is None:
+            print("Data loading module needs to be specified")
+            sys.exit()
 
         # Determine if data comes from src or trgt task
         if len(trgt_task_param_dict) == 0:
@@ -59,6 +63,7 @@ class DataManager(object):
             self.data_loading_module = fpd.get('data_loader', None)
             self.data_generator_module = fpd.get('data_generator', None)
             
+        if len(trgt_task_param_dict) == 0:
             # Specify number of output nodes in net (i.e. number of bits in encoding)
             self.nb_code_bits = int(epd['nb_code_bits'])
             self.src_nb_code_bits = int(epd['nb_code_bits'])
@@ -66,28 +71,19 @@ class DataManager(object):
             self._init_num_name_dicts(fpd['class_names'])
 
         else:
-            # Get data loaders
-            self.data_loading_module = tpd.get('data_loader', None)
-            self.data_generator_module = tpd.get('data_generator', None)
-
             # Specify number of output nodes in net (i.e. number of bits in encoding)
             self.nb_code_bits = int(tpd['_EncodingParamDict']['nb_code_bits'])
             self.src_nb_code_bits = int(epd['nb_code_bits'])
             # Init dicts that map class numbers to class names
             self._init_num_name_dicts(tpd['class_names'])
 
-        if len(trgt_task_param_dict) == 0:
-            # Get info to create or recover encoding dict
-            joint_dict = epd.copy()
-            joint_dict.update(empd)
-            joint_dict['encoding_activation_fnc'] = eaf
-        else:
-           # Get info to create or recover encoding dict
+        # Get info to create or recover encoding dict
+        if len(trgt_task_param_dict) != 0:
             epd = tpd['_EncodingParamDict']
             empd = tpd['_EncodingModuleParamDict']
-            joint_dict = epd.copy()
-            joint_dict.update(empd)
-            joint_dict['encoding_activation_fnc'] = eaf
+        joint_dict = epd.copy()
+        joint_dict.update(empd)
+        joint_dict['encoding_activation_fnc'] = eaf
             
 
         # Set encoding module
@@ -108,11 +104,14 @@ class DataManager(object):
                              '.pkl')
         else:
             # Fresh encoding for new src task
-            self.encoding_module = \
-                encoding_module_param_dict['encoding_module']
+            self.encoding_module = empd['encoding_module']
             
+        # Load data and build generator for preprocessing & augmentation
+        self.preprocess_param_dict = preprocess_param_dict
+        self.augment_param_dict = augment_param_dict
 
         # Create encodings
+        print("Encoding data")
         temp = importlib.import_module(self.encoding_module)
         self.make_encoding_dict = types.MethodType(temp.make_encoding_dict, self)
 
@@ -143,7 +142,8 @@ class DataManager(object):
         #######################################################################################
         
         # Might not need/want this anymore
-        self.data_display = Data_Display(self.X_test, self.y_test,
+        self.data_display = Data_Display(self.X_test,
+                                         self.y_test,
                                          self.label_dict)
         
     def _init_num_name_dicts(self, category_name_file):

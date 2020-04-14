@@ -14,7 +14,6 @@ import sys
 # Hmmm....think this might not be needed
 from io import StringIO
 
-
 # Hmmm....think this might not be needed
 libc = ctypes.CDLL(None)
 c_stdout = ctypes.c_void_p.in_dll(libc, 'stdout')

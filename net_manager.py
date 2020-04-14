@@ -51,7 +51,6 @@ class NetManager(object):
         self.metadata_dir = metadata_dir
         self.expt_prefix = os.path.basename(expt_dir)
         self.data_augmentation = data_augmentation
-
         self.nocheckpoint = nocheckpoint
         self.save_iters = save_iters
         if self.save_iters:
@@ -257,11 +256,11 @@ class NetManager(object):
               len(saved_param_dict['saved_arch_format']) > 0):
 
             # Load architecture
-            with open(os.path.join(saved_param_dict['saved_set_dir'],
-                                   saved_param_dict['saved_dir'],
-                                   saved_param_dict['saved_dir'] + '.' +
-                                   saved_param_dict['saved_arch']), 'r') as f:
-
+            self.net_arch_file = os.path.join(saved_param_dict['saved_set_dir'],
+                                              saved_param_dict['saved_dir'],
+                                              saved_param_dict['saved_dir'] + '.' +
+                                              saved_param_dict['saved_arch'])
+            with open(self.net_arch_file, 'r') as f:
                 if saved_param_dict['saved_arch_format'][-4:] == 'json':
                     json_str = f.read()
                     return model_from_json(json_str)
@@ -274,10 +273,6 @@ class NetManager(object):
                     print ("config file, either by 'arch_module' or 'saved_arch'")
                     sys.exit(0)
 
-                self.net_arch_file = os.path.join(saved_param_dict['saved_set_dir'],
-                                                  saved_param_dict['saved_dir'],
-                                                  saved_param_dict['saved_dir'] + '.' +
-                                                  saved_param_dict['saved_arch'])
 
     def check_for_transfer(self, trgt_task_param_dict,
                            net_param_dict):
