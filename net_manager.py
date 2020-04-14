@@ -337,8 +337,7 @@ class NetManager(object):
         else:
             net_dir = os.path.join(saved_param_dict['saved_set_dir'],
                                    saved_param_dict['saved_dir'])
-            net_iter = saved_param_dict['saved_iter']
-            
+            net_iter = saved_param_dict['saved_iter']            
 
             if ('saved_weights_file' not in saved_param_dict):
 
