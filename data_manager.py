@@ -123,7 +123,7 @@ class DataManager(object):
         
         # Might not need/want this anymore
         self.data_display = Data_Display(self.X_test,
-                                         self.y_test,
+                                         self.y_test_classnum,
                                          self.label_dict)
         
     def _init_num_name_dicts(self, category_name_file):
@@ -135,12 +135,12 @@ class DataManager(object):
         # Load data
         data_load_module = importlib.import_module("dataset_loaders." + self.data_loading_module)
         print("Loading data")
-        (self.X_train, self.y_train), \
-        (self.X_test, self.y_test) = data_load_module.load_data()
+        (self.X_train, self.y_train_classnum), \
+        (self.X_test, self.y_test_classnum) = data_load_module.load_data()
 
         # Set batches (i.e. steps) per epoch
-        self.train_batches_per_epoch = self.y_train.shape[0] // self.batch_size
-        self.test_batches_per_epoch = self.y_test.shape[0] // self.batch_size
+        self.train_batches_per_epoch = self.y_train_classnum.shape[0] // self.batch_size
+        self.test_batches_per_epoch = self.y_test_classnum.shape[0] // self.batch_size
         
         # Get rows, cols and channels. Assume smallest dim, other than 0th
         # is channel dim
@@ -153,7 +153,7 @@ class DataManager(object):
             _, self.img_channels, self.img_rows, self.img_cols = self.X_train.shape
 
         # Get sorted list of class numbers (np.unique returns sorted list)
-        self.class_nums = list(np.unique(self.y_train))
+        self.class_nums = list(np.unique(self.y_train_classnum))
 
     def _make_data_generators(self):
         # Overwrite default args for ImageDataGenerator with those from cfg files
@@ -169,13 +169,13 @@ class DataManager(object):
         self.train_image_gen = ImageDataGenerator(**ImageDataGen_args)
         self.train_image_gen.fit(self.X_train)
         self.train_data_gen = self.train_image_gen.flow(self.X_train,
-                                                        self.Y_train,
+                                                        self.Y_train_encoded,
                                                         self.batch_size)
         
         self.test_image_gen = ImageDataGenerator(**ImageDataGen_args)
         self.test_image_gen.fit(self.X_test)
         self.test_data_gen = self.test_image_gen.flow(self.X_test,
-                                                      self.Y_test,
+                                                      self.Y_test_encoded,
                                                       self.batch_size)
         
 
@@ -188,9 +188,9 @@ class DataManager(object):
                                      for x in sorted(self.encoding_dict)])
         
         # Convert labels from class nums to class encodings
-        self.Y_train = self.convert_class_num_to_encoding(self.y_train,
+        self.Y_train_encoded = self.convert_class_num_to_encoding(self.y_train_classnum,
                                                           self.encoding_dict)
-        self.Y_test = self.convert_class_num_to_encoding(self.y_test,
+        self.Y_test_encoded = self.convert_class_num_to_encoding(self.y_test_classnum,
                                                          self.encoding_dict)
 
     def convert_class_num_to_encoding(self, y, nb_2_encoding_dict):
