@@ -12,59 +12,6 @@ import pickle
 import shutil
 import tensorflow as tf
 
-'''
-class LR_Scheduler(Callback):
-
-    def __init__(self, opt, lr_schedule):
-        self.opt = opt
-        self.lr_schedule = lr_schedule
-
-    def on_epoch_begin(self, epoch, logs=None):
-        if epoch % 2 != 0:
-            new_val = epoch*.3+.3
-        else:
-            new_val = epoch*.2+.2
-
-        #self.opt.delta = tf.constant(new_val, dtype = self.opt.lr.dtype)
-        SGD_VAR.learn_rate = new_val
-        print ("New LR: ", new_val)
-'''
-'''
-      #Copying graph node that stores original value of learning rate
-        lr = self.lr 
-
-        # Checking whether learning rate schedule is to be used
-        if self.initial_lr_decay > 0:
-            # this decay mimics exponential decay from 
-            # tensorflow/python/keras/optimizer_v2/exponential_decay 
-
-            # Get value of current number of processed batches from graph node
-            # and convert to numeric value for use in K.pow()
-            curr_batch = float(K.get_value(self.iterations))
-
-            # Create graph node containing lr decay factor
-            # Note: self.lr_decay_steps is a number, not a node
-            #       self.lr_decay is a node, not a number
-            decay_factor =  K.pow(self.lr_decay, (curr_batch / self.lr_decay_steps)) 
-
-            # Reassign lr to graph node formed by
-            # product of graph node containing decay factor
-            # and graph node containing original learning rate.
-            lr = lr * decay_factor
-
-            # Get product of two numbers to calculate number of batches processed
-            # in warmup period
-            num_warmup_batches = self.steps_per_epoch_num * self.warmup_epochs
-
-            # Make comparisons between numbers to determine if we're in warmup period
-            if (self.warmup_epochs > 0) and (curr_batch < num_warmup_batches):
-
-                # Create node with value of learning rate by multiplying a number
-                # by a node, and then dividing by a number
-                lr = (self.initial_lr  *
-                      K.cast(self.iterations, K.floatx()) / curr_batch)
-'''
-
 
 class LRScheduleFunction(Callback):
     def __init__(self, sched_function, on_batch,
