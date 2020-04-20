@@ -57,6 +57,24 @@ class Runner(object):
         self.augment_param_dict = self.get_param_dict('DataAugmentParams')
         self.regularizer_param_dict = self.get_param_dict('RegularizerParams')
 
+        # Record Changes From Data Augment/Preprocess Args
+        temp_dict = dict()
+        for curr_key in self.augment_param_dict:
+            if self.augment_param_dict[curr_key] != ImageDataGen_args[curr_key]:
+                temp_dict[curr_key] = self.augment_param_dict[curr_key]
+
+        for curr_key in self.preprocess_param_dict:
+            if self.preprocess_param_dict[curr_key] != ImageDataGen_args[curr_key]:
+                temp_dict[curr_key] = self.preprocess_param_dict[curr_key]
+                
+        self.data_mod_str = ""
+        for x in temp_dict:
+            self.data_mod_str += "  " + x + ": " + str(temp_dict[x]) + "\n"
+        if len(self.data_mod_str) == 0:
+            self.data_mod_str = "\nData Modifications: None\n"
+        else:
+            self.data_mod_str = "\nData Modifications:\n" + self.data_mod_str 
+
         # ConfigParser doesn't allow for subsections, so this just seemed an
         # easier, though kludgy, way to add a new param dict to be used
         # in net_manager.py
@@ -202,10 +220,12 @@ class Runner(object):
         global keras
         global NetManager
         global DataManager
+        global ImageDataGen_args
 
         import keras
         from net_manager import NetManager
         from data_manager import DataManager
+        from data_manager import ImageDataGen_args
 
         # Enable tensorflow debugger
         if cmd_line_args.dbg == True:
@@ -364,7 +384,9 @@ class Runner(object):
         score_str = "{:5.2f}%".format(self.expt_net.best_score*100).strip()
         epoch_str = "{:4d}".format(self.expt_net.best_epoch).strip()
         result_str = "Peak Accuracy: " + score_str + " at epoch " + epoch_str + '\n'
+        print(self.data_mod_str)
         print(result_str)
+        expt_log.write(self.data_mod_str+'\n')
         expt_log.write(result_str)
         #expt_log.close_log(self.outdir)
 
