@@ -87,7 +87,7 @@ class NetManager(object):
 
             sched_param_dict = {}
             sched_param_dict['train_batch_size'] = self.data_manager.batch_size
-            sched_param_dict['steps_per_epoch'] = self.data_manager.batches_per_epoch
+            sched_param_dict['steps_per_epoch'] = self.data_manager.train_batches_per_epoch
 
             self.lr_schedule = LRScheduleFunction(lr_sched_fnc,
                                                   on_batch, on_epoch,
@@ -423,7 +423,7 @@ class NetManager(object):
 
         init_test_loss, init_test_acc = \
         self.model.evaluate_generator(dm.test_data_gen,
-                                      steps=dm.train_batches_per_epoch)
+                                      steps=dm.test_batches_per_epoch)
 
         print("\nInit loss and acc:                             loss: ",
               "%0.5f - %s: %0.5f - val_loss: %0.5f - %s: %0.5f" %
