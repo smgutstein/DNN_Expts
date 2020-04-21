@@ -316,13 +316,18 @@ class Runner(object):
                 keras_branch_name = "Version: " + str(keras.__version__)
                 keras_commit_num = "N/A"
 
-            backend_name = keras.backend._BACKEND
+            try:
+                backend_name = keras.backend.backend()
+            except:
+                backend_name = keras.backend._BACKEND
             if backend_name == 'theano':
                 temp = keras.backend.theano_backend.theano.__version__.split('-')
                 if len(temp) > 1:
                     backend_version = '-'.join([temp[0], temp[1][0:8]])
                 else:
                     backend_version = temp[0]
+            elif backend_name == 'tensorflow':
+                backend_version = keras.backend.tensorflow_backend.tf.__version__
             else:
                 backend_version = "Unknown for " + backend_name
 
