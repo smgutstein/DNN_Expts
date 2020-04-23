@@ -271,6 +271,20 @@ class Runner(object):
                 elif str(param_dict[x]).lower() == 'false':
                     param_dict[x] = False
 
+            # Convert strings representing lists of floats to floats
+            # TBD: Generalize this to more than floats. Perhaps turn
+            # above 2 conversion loops to separate method
+            for x in param_dict:
+                if isinstance(param_dict[x], str):
+                    temp = param_dict[x].strip()
+                    if (len(temp) > 0 and
+                        ((temp[0] == '[' and temp[-1] == ']') or
+                         (temp[0] == '(' and temp[-1] == ')'))):
+                        temp = temp[1:-1]
+                        temp = temp.split(',')
+                        temp = [float(y) for y in temp]
+                        param_dict[x] = temp
+
         except configparser.NoSectionError:
             # Return empty dict if section missing
             pass
