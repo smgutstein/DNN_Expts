@@ -1,10 +1,11 @@
 def lr_sched_func(kwargs):
 
     curr_batch = kwargs["batch"] 
+    epoch = kwargs["epoch"]
     lr_decay = kwargs['lr_decay']
     lr_decay_steps = kwargs['lr_decay_steps']
     initial_lr = kwargs['base_lr']
-    warmup_epochs = kwargs['warmup_epochs']
+    decay_factor = kwargs['warmup_epochs']
     steps_per_epoch = kwargs['steps_per_epoch']
 
     decay_factor = lr_decay * (curr_batch / lr_decay_steps)
