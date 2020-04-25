@@ -223,36 +223,6 @@ class EffNet_RMSprop(Optimizer):
             # and graph node containing original learning rate.
             lr = lr * decay_factor
 
-            '''
-            # Get product of two numbers to calculate number of batches processed
-            # in warmup period
-            num_warmup_batches = self.steps_per_epoch_num * self.warmup_epochs
-
-            # Make comparisons between numbers to determine if we're in warmup period
-            if (self.warmup_epochs > 0) and (curr_batch < num_warmup_batches):
-
-                # Create node with value of learning rate by multiplying a number
-                # by a node, and then dividing by a number
-                lr = (self.initial_lr  *
-                      K.cast(self.iterations, K.floatx()) / curr_batch)
-            '''
-        
-        '''    
-        # Old Code - To Be Deleted
-        lr = self.lr
-        if self.initial_lr_decay > 0:
-            # mimics exponential decay from tensorflow/python/keras/optimizer_v2/exponential_decay
-            # which is called tf.train.exponential_decay in efficientnet/utils.py
-            curr_batch = float(K.get_value(self.iterations))
-            decay_factor =  K.pow(self.lr_decay, (curr_batch / self.lr_decay_steps)) 
-            lr = lr * decay_factor
-            num_warmup_batches = self.steps_per_epoch_num * self.warmup_epochs
-            if (self.warmup_epochs > 0) and (curr_batch < num_warmup_batches):
-                warmup_steps = self.warmup_epochs * self.steps_per_epoch
-                warmup_lr = (self.initial_lr  *
-                             K.cast(self.iterations, K.floatx()) / K.cast(warmup_steps, K.floatx()))
-                lr =  warmup_lr
-        '''
         # Updates
         self.updates = [K.update_add(self.iterations, 1)]
 
