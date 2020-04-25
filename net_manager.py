@@ -37,6 +37,7 @@ class NetManager(object):
                  expt_param_dict,
                  metric_param_dict,
                  optimizer_param_dict,
+                 lr_schedule_param_dict,
                  saved_param_dict,
                  trgt_task_param_dict,
                  nocheckpoint,
@@ -71,27 +72,25 @@ class NetManager(object):
                     raise
                 
         # Make optimizer
-        if "lr_schedule" in optimizer_param_dict:
-            lr_sched_module = optimizer_param_dict.pop('lr_schedule')
+        if lr_schedule_param_dict is not None:
+            lr_sched_module = lr_schedule_param_dict.pop('lr_schedule')
             # Hacky way of getting relative import to work in importlib
             import lr_sched_fncs
             temp = importlib.import_module('lr_sched_fncs.' + lr_sched_module)
             lr_sched_fnc = getattr(temp, "lr_sched_func")
-            on_batch = getattr(temp, "on_batch")
-            on_epoch = getattr(temp, "on_epoch")
+            on_batch = lr_schedule_param_dict['on_batch']
+            on_epoch = lr_schedule_param_dict['on_epoch']
             
             # Some optimizers scale lr as a function of batch size, so
             # larger training batches take larger lr others depend on
             # both number of epochs and batches. Need better way of
             # handling this requirement.
 
-            sched_param_dict = {}
-            sched_param_dict['train_batch_size'] = self.data_manager.batch_size
-            sched_param_dict['steps_per_epoch'] = self.data_manager.train_batches_per_epoch
+            lr_schedule_param_dict['train_batch_size'] = self.data_manager.batch_size
+            lr_schedule_param_dict['steps_per_epoch'] = self.data_manager.train_batches_per_epoch
 
             self.lr_schedule = LRScheduleFunction(lr_sched_fnc,
-                                                  on_batch, on_epoch,
-                                                  sched_param_dict)
+                                                  lr_schedule_param_dict)
             
         else:
             self.lr_schedule = None

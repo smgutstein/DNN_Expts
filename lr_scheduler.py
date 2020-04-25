@@ -14,28 +14,43 @@ import tensorflow as tf
 
 
 class LRScheduleFunction(Callback):
-    def __init__(self, sched_function, on_batch,
-                 on_epoch, kwargs):
+    def __init__(self, schedule_function, kwargs):
+        super(LRScheduleFunction, self).__init__()
         self.epoch = 0
         self.batch = 0
-        self.on_batch = on_batch
-        self.on_epoch = on_epoch
-        self.sched_function = sched_function
+        
+        self.schedule_function = schedule_function
+        self.on_batch = False
+        self.on_epoch = True
+        if 'on_batch' in kwargs:
+            self.on_batch = kwargs['on_batch']
+        if 'on_epoch' in kwargs:
+            self.on_epoch = kwargs['on_epoch']
+
         self.kwargs = kwargs
 
     def on_batch_begin(self, batch, logs=None):
-        self.batch += 1
+        if not hasattr(self.model.optimizer, 'lr'):
+            raise ValueError('Optimizer must have a "lr" attribute.')
+        lr = float(K.get_value(self.model.optimizer.lr))
+        self.batch = batch
+        self.kwargs["batch"] = self.batch
         if self.on_batch:
-          self.kwargs["batch"] = self.batch
-          self.kwargs["epoch"] = self.epoch
           lr = self.sched_function(self.kwargs)
           K.set_value(self.model.optimizer.lr, lr)
         
     def on_epoch_begin(self, epoch, logs=None):
-        self.epoch += 1
+        if not hasattr(self.model.optimizer, 'lr'):
+            raise ValueError('Optimizer must have a "lr" attribute.')
+        lr = float(K.get_value(self.model.optimizer.lr))
+        self.epoch = epoch
+        self.kwargs["epoch"] = self.epoch
         if self.on_epoch:
-          lr = self.sched_function(self.batch, self.epoch)
+          lr = self.schedule_function(lr, self.kwargs)
           K.set_value(self.model.optimizer.lr, lr)
+        if self.on_batch or self.on_epoch:
+          print('\nEpoch %05d: LearningRateScheduler setting learning '
+                  'rate to %s.' % (epoch + 1, lr))
           
     def on_batch_end(self, batch, logs=None):
         logs = logs or {}
@@ -48,6 +63,9 @@ class LRScheduleFunction(Callback):
         # Cast is to ensure lr is json serializable. For some reason np.float32
         # is not serializable, but np.float64 is
         logs['lr'] = K.get_value(self.model.optimizer.lr).astype(np.float64)
+
+
+
         
 class StepLearningRateScheduler(Callback):
     def __init__(self, schedule_list, verbose = 1): 
@@ -89,9 +107,10 @@ class StepLearningRateScheduler(Callback):
             K.set_value(self.model.optimizer.lr, lr)
 
             if self.verbose > 0:
-                print('\nEpoch %05d: StepLearningRateScheduler changing learning ' 'rate to %s. from %s' % (epoch + 1,
-                                                                                                            str(lr),
-                                                                                                            str(old_lr)))
+                msg_str = '\nEpoch %05d: changing learning rate to %s. from %s'
+                print( msg_str % (epoch + 1,
+                                  str(lr),
+                                  str(old_lr)))
 
 
     def on_epoch_end(self, epoch, logs=None):

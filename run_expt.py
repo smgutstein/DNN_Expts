@@ -153,6 +153,7 @@ class Runner(object):
         # Get optimizer params
         self.config.read(self.net_param_dict['optimizer_cfg'])
         self.optimizer_param_dict = self.get_param_dict('OptimizerParams')
+        self.lrschedule_param_dict = self.get_param_dict('LRSchedParams')
 
         shutil.copy(self.net_param_dict['optimizer_cfg'],
                     os.path.join(self.metadata_dir,
@@ -174,6 +175,7 @@ class Runner(object):
                                    self.expt_param_dict,
                                    self.metric_param_dict,
                                    self.optimizer_param_dict,
+                                   self.lrschedule_param_dict,
                                    self.saved_param_dict,
                                    self.trgt_task_param_dict,
                                    self.nocheckpoint)
