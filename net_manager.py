@@ -100,7 +100,7 @@ class NetManager(object):
         if regularizer_param_dict is not None:
             reg_func_name = regularizer_param_dict['regularizer_function']
             reg_func_wrapper = getattr(local_regularizer, reg_func_name)
-            self.reg_func = reg_func_wrapper(regularizer_param_dict['regularizer_function'])
+            self.reg_func = reg_func_wrapper(regularizer_param_dict['regularizer_weight'])
         else:
             self.reg_func = None
             
