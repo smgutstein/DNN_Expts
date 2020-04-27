@@ -97,10 +97,13 @@ class NetManager(object):
         else:
             self.lr_schedule = None
 
-        if regularizer_param_dict is not None:
-            reg_func_name = regularizer_param_dict['regularizer_function']
-            reg_func_wrapper = getattr(local_regularizer, reg_func_name)
-            self.reg_func = reg_func_wrapper(regularizer_param_dict['regularizer_weight'])
+        if len(regularizer_param_dict) > 0:
+            try: 
+                reg_func_name = regularizer_param_dict['regularizer_function']
+                reg_func_wrapper = getattr(local_regularizer, reg_func_name)
+                self.reg_func = reg_func_wrapper(regularizer_param_dict['regularizer_weight'])
+            except:
+                sys.exit("Regularizer function incorrectly specified/created")
         else:
             self.reg_func = None
             
