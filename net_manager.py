@@ -252,7 +252,8 @@ class NetManager(object):
                                            net_param_dict['output_activation'],
                                            regularizer=net_param_dict['regularizer'])
                  if self.reg_func is not None:
-                     add_regularizer(arch.inputs, arch.output, l2)
+                     add_regularizer(arch.inputs, arch.output,
+                                     self.reg_func)
                      
             except curses.error as e:
                 print('\nError:')
