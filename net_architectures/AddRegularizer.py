@@ -51,11 +51,13 @@ def add_regularizer(inputs, x, regularizer):
         if reg_layer_list != []:
            regularizer_layers[k] = reg_layer_list
 
+    import pdb
+    pdb.set_trace()
     for curr_layer in regularizer_layers:
         for curr_node in regularizer_layers[curr_layer]:
             if 'kernel_regularizer' in curr_node.__dict__:
-                curr_node.kernel_initializer = regularizer
+                curr_node.kernel_regularizer = regularizer
             if 'bias_regularizer' in curr_node.__dict__:
-                curr_node.bias_initializer = regularizer
+                curr_node.bias_regularizer = regularizer
             if 'depthwise_regularizer' in curr_node.__dict__:
-                curr_node.depthwise_initializer = regularizer
+                curr_node.depthwise_regularizer = regularizer

@@ -11,7 +11,8 @@ from keras_loggers import TrainingMonitor, ModelCheckpoint
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten 
 from net_architectures.sgActivation import Activation
-
+from net_architectures.AddRegularizer import add_regularizer
+import local_regularizer
 from lr_scheduler import StepLearningRateScheduler
 from lr_scheduler import LRScheduleFunction
 from operator import itemgetter
@@ -38,6 +39,7 @@ class NetManager(object):
                  metric_param_dict,
                  optimizer_param_dict,
                  lr_schedule_param_dict,
+                 regularizer_param_dict,
                  saved_param_dict,
                  trgt_task_param_dict,
                  nocheckpoint,
@@ -95,6 +97,13 @@ class NetManager(object):
         else:
             self.lr_schedule = None
 
+        if regularizer_param_dict is not None:
+            reg_func_name = regularizer_param_dict['regularizer_function']
+            reg_func_wrapper = getattr(local_regularizer, reg_func_name)
+            self.reg_func = reg_func_wrapper(regularizer_param_dict['regularizer_function'])
+        else:
+            self.reg_func = None
+            
         optimizer_module = optimizer_param_dict.pop('optimizer_module')
         optimizer = optimizer_param_dict.pop('optimizer')
         temp = importlib.import_module(optimizer_module)
@@ -239,6 +248,9 @@ class NetManager(object):
                                            self.src_nb_output_nodes,
                                            net_param_dict['output_activation'],
                                            regularizer=net_param_dict['regularizer'])
+                 if self.reg_func is not None:
+                     add_regularizer(arch.inputs, arch.output, l2)
+                     
             except curses.error as e:
                 print('\nError:')
                 print (e.message)
