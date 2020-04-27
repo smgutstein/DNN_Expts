@@ -51,8 +51,6 @@ def add_regularizer(inputs, x, regularizer):
         if reg_layer_list != []:
            regularizer_layers[k] = reg_layer_list
 
-    import pdb
-    pdb.set_trace()
     for curr_layer in regularizer_layers:
         for curr_node in regularizer_layers[curr_layer]:
             if 'kernel_regularizer' in curr_node.__dict__:
