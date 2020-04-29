@@ -79,10 +79,10 @@ def build_architecture(input_shape,
 
     # Classification block
     model.add(Flatten(name='flatten'))
-    model.add(Dense(4096, name='fc1'))
+    model.add(Dense(512, name='fc1'))
     model.add(Activation('relu', name='fc1_relu1'))
     model.add(Dropout(0.5, name='fc1_dropout'))
-    model.add(Dense(4096, name='fc2'))
+    model.add(Dense(512, name='fc2'))
     model.add(Activation('relu', name='fc2_relu2'))
     model.add(Dropout(0.5, name='fc2_dropout'))
     model.add(Dense(nb_output_nodes, name="fc_prediction"))

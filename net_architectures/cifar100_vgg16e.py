@@ -30,26 +30,41 @@ def build_architecture(input_shape,
     model.add(Conv2D(64, (3, 3), padding='same',
                      name='block1_conv1', input_shape = input_shape))
     model.add(Activation('relu', name='block1_relu1'))
+    model.add(BatchNormalization())
+    model.add(Dropout(0.3))
+    
     model.add(Conv2D(64, (3, 3), padding='same', name='block1_conv2'))
-    model.add(Activation('relu', name='block1_relu2'))             
+    model.add(Activation('relu', name='block1_relu2'))
+    model.add(BatchNormalization())
     model.add(MaxPooling2D((2, 2), strides=(2, 2), name='block1_pool'))
 
     # Block 2
     model.add(Conv2D(128, (3, 3), padding='same',
                      name='block2_conv1', input_shape = input_shape))
-    model.add(Activation('relu', name='block2_relu1'))   
+    model.add(Activation('relu', name='block2_relu1'))
+    model.add(BatchNormalization())
+    model.add(Dropout(0.4))
+    
     model.add(Conv2D(128, (3, 3), padding='same', name='block2_conv2'))
-    model.add(Activation('relu', name='block2_relu2'))              
+    model.add(Activation('relu', name='block2_relu2'))
+    model.add(BatchNormalization())
     model.add(MaxPooling2D((2, 2), strides=(2, 2), name='block2_pool'))
 
     # Block 3
     model.add(Conv2D(256, (3, 3), padding='same',
                      name='block3_conv1', input_shape = input_shape))
-    model.add(Activation('relu', name='block3_relu1'))             
+    model.add(Activation('relu', name='block3_relu1'))
+    model.add(BatchNormalization())
+    model.add(Dropout(0.4))
+    
     model.add(Conv2D(256, (3, 3), padding='same', name='block3_conv2'))
-    model.add(Activation('relu', name='block3_relu2'))             
+    model.add(Activation('relu', name='block3_relu2'))
+    model.add(BatchNormalization())
+    model.add(Dropout(0.4))
+    
     model.add(Conv2D(256, (3, 3), padding='same', name='block3_conv3'))
-    model.add(Activation('relu', name='block3_relu3'))             
+    model.add(Activation('relu', name='block3_relu3'))
+    model.add(BatchNormalization())
     model.add(MaxPooling2D((2, 2), strides=(2, 2), name='block3_pool'))
 
     # Block 4
@@ -57,11 +72,16 @@ def build_architecture(input_shape,
                      name='block4_conv1', input_shape = input_shape))
     model.add(Activation('relu', name='block4_relu1'))             
     model.add(BatchNormalization())
+    model.add(Dropout(0.4))
+    
     model.add(Conv2D(512, (3, 3), padding='same', name='block4_conv2'))
     model.add(Activation('relu', name='block4_relu2'))             
     model.add(BatchNormalization())
+    model.add(Dropout(0.4))
+    
     model.add(Conv2D(512, (3, 3), padding='same', name='block4_conv3'))
-    model.add(Activation('relu', name='block4_relu3'))             
+    model.add(Activation('relu', name='block4_relu3'))
+    model.add(BatchNormalization())
     model.add(MaxPooling2D((2, 2), strides=(2, 2), name='block4_pool'))
 
     # Block 5
@@ -69,22 +89,25 @@ def build_architecture(input_shape,
                      name='block5_conv1', input_shape = input_shape))
     model.add(Activation('relu', name='block5_relu1'))              
     model.add(BatchNormalization())
+    model.add(Dropout(0.4))
+    
     model.add(Conv2D(512, (3, 3), padding='same', name='block5_conv2'))
     model.add(Activation('relu', name='block5_relu2'))              
     model.add(BatchNormalization())
+    model.add(Dropout(0.4))
+    
     model.add(Conv2D(512, (3, 3), padding='same', name='block5_conv3'))
     model.add(Activation('relu', name='block5_relu3'))
     model.add(BatchNormalization())
     model.add(MaxPooling2D((2, 2), strides=(2, 2), name='block5_pool'))
+    model.add(Dropout(0.5))
 
     # Classification block
     model.add(Flatten(name='flatten'))
-    model.add(Dense(4096, name='fc1'))
+    model.add(Dense(512, name='fc1'))
     model.add(Activation('relu', name='fc1_relu1'))
     model.add(Dropout(0.5, name='fc1_dropout'))
-    model.add(Dense(4096, name='fc2'))
-    model.add(Activation('relu', name='fc2_relu2'))
-    model.add(Dropout(0.5, name='fc2_dropout'))
+    
     model.add(Dense(nb_output_nodes, name="fc_prediction"))
     model.add(Activation(output_activation, name="fc_prediction_out"))
 
