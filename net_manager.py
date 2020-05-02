@@ -76,6 +76,7 @@ class NetManager(object):
         # Make optimizer
         if lr_schedule_param_dict is not None:
             lr_sched_module = lr_schedule_param_dict.pop('lr_schedule')
+            lr_orig = optimizer_param_dict['lr']
             # Hacky way of getting relative import to work in importlib
             import lr_sched_fncs
             temp = importlib.import_module('lr_sched_fncs.' + lr_sched_module)
@@ -91,7 +92,8 @@ class NetManager(object):
             lr_schedule_param_dict['train_batch_size'] = self.data_manager.batch_size
             lr_schedule_param_dict['steps_per_epoch'] = self.data_manager.train_batches_per_epoch
 
-            self.lr_schedule = LRScheduleFunction(lr_sched_fnc,
+            self.lr_schedule = LRScheduleFunction(lr_orig,
+                                                  lr_sched_fnc,
                                                   lr_schedule_param_dict)
             
         else:
@@ -502,7 +504,8 @@ class NetManager(object):
                                            validation_steps=\
                                                  dm.test_batches_per_epoch,
                                            callbacks = callbacks,
-                                           shuffle=True)
+                                           shuffle=True,
+                                           verbose=2)
         self.best_score = checkpointer.best_score
         self.best_epoch = checkpointer.best_epoch
         

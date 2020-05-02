@@ -14,10 +14,12 @@ import tensorflow as tf
 
 
 class LRScheduleFunction(Callback):
-    def __init__(self, schedule_function, kwargs):
+    def __init__(self, lr_orig,
+                 schedule_function, kwargs):
         super(LRScheduleFunction, self).__init__()
         self.epoch = 0
         self.batch = 0
+
         
         self.schedule_function = schedule_function
         self.on_batch = False
@@ -27,6 +29,7 @@ class LRScheduleFunction(Callback):
         if 'on_epoch' in kwargs:
             self.on_epoch = kwargs['on_epoch']
 
+        self.lr_orig = lr_orig
         self.kwargs = kwargs
 
     def on_batch_begin(self, batch, logs=None):
@@ -36,7 +39,8 @@ class LRScheduleFunction(Callback):
         self.batch = batch
         self.kwargs["batch"] = self.batch
         if self.on_batch:
-          lr = self.sched_function(self.kwargs)
+          lr = self.sched_function(lr, self.lr_orig,
+                                   self.kwargs)
           K.set_value(self.model.optimizer.lr, lr)
         
     def on_epoch_begin(self, epoch, logs=None):
@@ -46,7 +50,8 @@ class LRScheduleFunction(Callback):
         self.epoch = epoch
         self.kwargs["epoch"] = self.epoch
         if self.on_epoch:
-          lr = self.schedule_function(lr, self.kwargs)
+          lr = self.schedule_function(lr, self.lr_orig,
+                                      self.kwargs)
           K.set_value(self.model.optimizer.lr, lr)
         if self.on_batch or self.on_epoch:
           print('\nEpoch %05d: LearningRateScheduler setting learning '
