@@ -46,7 +46,9 @@ class Runner(object):
         except StopIteration as exception:
             return False
 
-        # Get dicts of configuration parameters
+        self.notes_dict = dict()
+        
+        # Get Expt Params
         self.config.read(self.expt_file_name)
         self.file_param_dict = self.get_param_dict('ExptFiles')        
         self.net_param_dict = self.get_param_dict('NetParams')
@@ -55,38 +57,71 @@ class Runner(object):
         self.trgt_task_param_dict = self.get_param_dict('TrgtTaskParams')
         self.preprocess_param_dict = self.get_param_dict('DataPreprocessParams')
         self.augment_param_dict = self.get_param_dict('DataAugmentParams')
+
+        # Get notes from expt cfg file
+        temp_dict = self.get_param_dict('Notes')
+        if 'notes' in temp_dict:
+            self.notes_dict["Expt Notes"] = temp_dict['notes']
+            self.config.remove_section('Notes')
+        
+        # To allow quick testing without needing to change specified
+        # epochs in cfg files
+        if self.override_epochs > 0:
+            self.expt_param_dict['epochs'] = self.override_epochs
+            self.config.remove_section('Notes')
+
+        # Get Encoding Params
+        self.config.read(self.file_param_dict['encoding_cfg'])
+        self.encoding_param_dict = self.get_param_dict('Encoding')
+        self.encoding_module_param_dict = self.get_param_dict('EncodingModuleParams')
+        self.metric_param_dict = self.get_param_dict('MetricParams')
+
+        # Get notes from encoding cfg file
+        temp_dict = self.get_param_dict('Notes')
+        if 'notes' in temp_dict:
+            self.notes_dict["Encoding Notes"] = temp_dict['notes']
+            self.config.remove_section('Notes')
+
+        # Get Optimizer Params
+        self.config.read(self.net_param_dict['optimizer_cfg'])
+        self.optimizer_param_dict = self.get_param_dict('OptimizerParams')
+        self.lrschedule_param_dict = self.get_param_dict('LRSchedParams')
         self.regularizer_param_dict = self.get_param_dict('RegularizerParams')
+
+        # Get notes from optimizer cfg file
+        temp_dict = self.get_param_dict('Notes')
+        if 'notes' in temp_dict:
+            self.notes_dict["Optimizer Notes"] = temp_dict['notes']
 
         # Record Changes From Data Augment/Preprocess Args
         temp_dict = dict()
+        #  Get Augmentation Changes
         for curr_key in self.augment_param_dict:
             if self.augment_param_dict[curr_key] != ImageDataGen_args[curr_key]:
                 temp_dict[curr_key] = self.augment_param_dict[curr_key]
 
+        #  Get Preprocessing Changes
         for curr_key in self.preprocess_param_dict:
             if self.preprocess_param_dict[curr_key] != ImageDataGen_args[curr_key]:
                 temp_dict[curr_key] = self.preprocess_param_dict[curr_key]
-                
+
+        #  Create Output String Recording Changes
         self.data_mod_str = ""
         for x in temp_dict:
             self.data_mod_str += "  " + x + ": " + str(temp_dict[x]) + "\n"
         if len(self.data_mod_str) == 0:
             self.data_mod_str = "\nData Modifications: None\n"
         else:
-            self.data_mod_str = "\nData Modifications:\n" + self.data_mod_str 
+            self.data_mod_str = "\nData Modifications:\n" + self.data_mod_str
 
-        # ConfigParser doesn't allow for subsections, so this just seemed an
-        # easier, though kludgy, way to add a new param dict to be used
-        # in net_manager.py
-        if len(self.regularizer_param_dict) != 0:
-            self.net_param_dict['RegularizerParams'] = self.regularizer_param_dict
+        # Create Output String for ad hoc notes
+        self.notes_str = ""
+        for x in sorted(self.notes_dict):
+            self.notes_str += "  " + x + ": " + str(self.notes_dict[x]) + "\n"
+        if len(self.notes_str) == 0:
+            self.notes_str = "Notes: None\n"
         else:
-            self.net_param_dict['RegularizerParams'] = None
-
-        # To allow quick testing without needing to change specified
-        # epochs in cfg files
-        if self.override_epochs > 0:
-            self.expt_param_dict['epochs'] = self.override_epochs
+            self.notes_str = "Notes:\n" + self.notes_str
 
         # Create output directory
         self.expt_set_dir = os.path.join(self.file_param_dict['root_expt_dir'],
@@ -130,10 +165,15 @@ class Runner(object):
             shutil.copy(self.file_param_dict['encoding_cfg'],    
                         os.path.join(self.metadata_dir, 'encoding.cfg'))
             
+        if 'optimizer_cfg' in self.file_param_dict:
+            shutil.copy(self.file_param_dict['optimizer_cfg'],    
+                        os.path.join(self.metadata_dir, 'optimizer.cfg'))
+            
         if 'encoding_cfg' in self.trgt_task_param_dict:
             shutil.copy(self.file_param_dict['encoding_cfg'],    
                         os.path.join(self.metadata_dir, 'encoding.cfg'))
 
+            # Need to overwrite source task encoding
             self.config.read(self.trgt_task_param_dict['encoding_cfg'])
             self.trgt_task_param_dict['_EncodingParamDict'] = self.get_param_dict('Encoding')
             self.trgt_task_param_dict['_EncodingModuleParamDict'] = self.get_param_dict('EncodingModuleParams')
@@ -144,17 +184,6 @@ class Runner(object):
                             os.path.join(self.metadata_dir, 'orig_encoding.cfg'))
             
         self.store_git_meta_data()
-
-        self.config.read(self.file_param_dict['encoding_cfg'])
-        self.encoding_param_dict = self.get_param_dict('Encoding')
-        self.encoding_module_param_dict = self.get_param_dict('EncodingModuleParams')
-        self.metric_param_dict = self.get_param_dict('MetricParams')
-
-        # Get optimizer params
-        self.config.read(self.net_param_dict['optimizer_cfg'])
-        self.optimizer_param_dict = self.get_param_dict('OptimizerParams')
-        self.lrschedule_param_dict = self.get_param_dict('LRSchedParams')
-        self.regularizer_param_dict = self.get_param_dict('RegularizerParams')
 
         shutil.copy(self.net_param_dict['optimizer_cfg'],
                     os.path.join(self.metadata_dir,
@@ -408,8 +437,10 @@ class Runner(object):
         epoch_str = "{:4d}".format(self.expt_net.best_epoch).strip()
         result_str = "Peak Accuracy: " + score_str + " at epoch " + epoch_str + '\n'
         print(self.data_mod_str)
+        print(self.notes_str)
         print(result_str)
         expt_log.write(self.data_mod_str+'\n')
+        expt_log.write(self.notes_str+'\n')
         expt_log.write(result_str)
         #expt_log.close_log(self.outdir)
 
