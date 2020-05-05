@@ -182,8 +182,6 @@ class Runner(object):
             if 'encoding_cfg' in self.file_param_dict:
                 shutil.copy(self.file_param_dict['encoding_cfg'],    
                             os.path.join(self.metadata_dir, 'orig_encoding.cfg'))
-            
-        self.store_git_meta_data()
 
         shutil.copy(self.net_param_dict['optimizer_cfg'],
                     os.path.join(self.metadata_dir,
@@ -411,8 +409,36 @@ class Runner(object):
             pass
 
         return
-    
 
+    def store_env_data(self):
+
+        major, minor, micro, rlease, cereal = sys.version_info
+        vers = '.'.join([str(x) for x in [major, minor, micro]]) 
+        out_str = "Python: " + vers + "  Release: " + rlease + "  Serial: " + str(cereal) + "\n" 
+        indent_str = "    "
+        
+        if os.path.exists(os.path.join(sys.prefix, 'conda-meta')):
+            out_str += "Found Anaconda Environment:\n"
+            env_name = os.path.basename(sys.prefix)
+            out_str += indent_str + "Name: " + env_name + '\n'            
+        else:
+            out_str += "Did Not Find Anaconda Environment:\n"
+
+        temp_list = sys.path
+        for temp in temp_list:
+            if os.path.basename(temp) == 'site-packages':
+                site_pack_dir = temp
+                break
+        out_str += indent_str + "Installed Packages:\n"
+        installed_packages = os.listdir(site_pack_dir)
+        for curr_pack in sorted(installed_packages):
+            out_str += 2*indent_str + curr_pack + '\n'
+
+        with open(os.path.join(self.metadata_dir, 'env_info.txt'), 'w') as f:
+            f.write(out_str)
+
+        return
+            
     def run_expt(self):
 
         # Run Expt
@@ -443,6 +469,8 @@ class Runner(object):
         expt_log.write(self.notes_str+'\n')
         expt_log.write(result_str)
         #expt_log.close_log(self.outdir)
+        self.store_git_meta_data()
+        self.store_env_data()
 
         return 
 
