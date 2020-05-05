@@ -99,6 +99,7 @@ class NetManager(object):
         else:
             self.lr_schedule = None
 
+        # Get Loss Function Regularizer
         if len(regularizer_param_dict) > 0:
             try: 
                 reg_func_name = regularizer_param_dict['regularizer_function']
@@ -127,17 +128,17 @@ class NetManager(object):
             self.loss_fnc = 'mean_squared_error'
 
         # Get Loss Function Regularizer
-        if net_param_dict['RegularizerParams'] != None:
-          reg_param_dict = net_param_dict['RegularizerParams']
-          reg_module = reg_param_dict['regularizer_module']
-          reg_fnc_name = reg_param_dict['regularizer_fnc']
-          reg_args = {k:v for k,v in reg_param_dict.items()
-                      if k != "regularizer_module" and  k != "regularizer_fnc"}
-          temp = importlib.import_module(reg_module)
-          reg_fnc = getattr(temp, reg_fnc_name)
-          net_param_dict['regularizer'] = reg_fnc(**reg_args)
-        else:
-          net_param_dict['regularizer'] = None  
+        #if net_param_dict['RegularizerParams'] != None:
+        #  reg_param_dict = net_param_dict['RegularizerParams']
+        #  reg_module = reg_param_dict['regularizer_module']
+        #  reg_fnc_name = reg_param_dict['regularizer_fnc']
+        #  reg_args = {k:v for k,v in reg_param_dict.items()
+        #              if k != "regularizer_module" and  k != "regularizer_fnc"}
+        #  temp = importlib.import_module(reg_module)
+        #  reg_fnc = getattr(temp, reg_fnc_name)
+        #  net_param_dict['regularizer'] = reg_fnc(**reg_args)
+        #else:
+        #  net_param_dict['regularizer'] = None  
           
 
         # Prepare standard training
@@ -251,8 +252,7 @@ class NetManager(object):
             try:
                  arch = build_architecture(input_shape,
                                            self.src_nb_output_nodes,
-                                           net_param_dict['output_activation'],
-                                           regularizer=net_param_dict['regularizer'])
+                                           net_param_dict['output_activation'])
                  if self.reg_func is not None:
                      add_regularizer(arch.inputs, arch.output,
                                      self.reg_func)
@@ -495,7 +495,7 @@ class NetManager(object):
         checkpointer.set_model(self.model)
         checkpointer.on_epoch_end(epoch=-1,logs = log_dir)
 
-        # Train Model
+        # Train Model: TBD - Move this code to run_expt.py
         dm = self.data_manager
         results = self.model.fit_generator(dm.train_data_gen,
                                            steps_per_epoch = dm.train_batches_per_epoch,
