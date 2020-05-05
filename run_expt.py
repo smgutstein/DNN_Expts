@@ -356,8 +356,8 @@ class Runner(object):
                 keras_repo = Repo(os.path.dirname(keras.__path__[0]))
                 keras_branch_name = str(keras_repo.active_branch)
                 keras_commit_num = str(keras_repo.head.commit)
+                print("Found Keras git repository")
             except InvalidGitRepositoryError:
-                print("No git repository found for keras")
                 keras_branch_name = "Version: " + str(keras.__version__)
                 keras_commit_num = "N/A"
 
@@ -446,6 +446,17 @@ class Runner(object):
         expt_log.stop_log()
         expt_log.switch_log_file(self.metadata_dir)
         self.expt_net.train()
+        self.expt_net.model.fit_generator(self.expt_dm.train_data_gen,
+                                          steps_per_epoch = self.expt_dm.train_batches_per_epoch,
+                                          epochs=self.expt_net.epochs,
+                                          validation_data=self.expt_dm.test_data_gen,
+                                          validation_steps=\
+                                                 self.expt_dm.test_batches_per_epoch,
+                                          callbacks = self.expt_net.callbacks,
+                                          shuffle=True,
+                                          verbose=2)
+        best_score = self.expt_net.checkpointer.best_score
+        best_epoch = self.expt_net.checkpointer.best_epoch
         stop_time = datetime.datetime.now()
 
         # Show run time (by wall clock)
@@ -459,8 +470,8 @@ class Runner(object):
         timing_info = '\n'.join([start_str, stop_str, tot_str])
         print (timing_info)
         expt_log.write(timing_info + '\n')
-        score_str = "{:5.2f}%".format(self.expt_net.best_score*100).strip()
-        epoch_str = "{:4d}".format(self.expt_net.best_epoch).strip()
+        score_str = "{:5.2f}%".format(best_score*100).strip()
+        epoch_str = "{:4d}".format(best_epoch).strip()
         result_str = "Peak Accuracy: " + score_str + " at epoch " + epoch_str + '\n'
         print(self.data_mod_str)
         print(self.notes_str)

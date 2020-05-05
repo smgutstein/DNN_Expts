@@ -472,17 +472,17 @@ class NetManager(object):
         # Assemble Callbacks
         training_monitor = TrainingMonitor(fig_path, jsonPath=json_path,
                                            resultsPath = results_path)
-        checkpointer = ModelCheckpoint(checkpoint_dir,
-                                       monitor = self.val_acc_str,
-                                       verbose=1,
-                                       data_manager=self.data_manager,
-                                       period=self.epochs_per_recording,
-                                       nocheckpoint = self.nocheckpoint)
-        callbacks = [training_monitor, checkpointer]
+        self.checkpointer = ModelCheckpoint(checkpoint_dir,
+                                            monitor = self.val_acc_str,
+                                            verbose=1,
+                                            data_manager=self.data_manager,
+                                            period=self.epochs_per_recording,
+                                            nocheckpoint = self.nocheckpoint)
+        self.callbacks = [training_monitor, self.checkpointer]
 
         # Add lr scheduler
         if self.lr_schedule:
-            callbacks.append(self.lr_schedule)
+            self.callbacks.append(self.lr_schedule)
 
         # Get results for initialized net
         training_monitor.on_train_begin()
@@ -492,20 +492,20 @@ class NetManager(object):
         log_dir[self.val_acc_str] = init_test_acc
         
         training_monitor.on_epoch_end(epoch=0,logs = log_dir)
-        checkpointer.set_model(self.model)
-        checkpointer.on_epoch_end(epoch=-1,logs = log_dir)
+        self.checkpointer.set_model(self.model)
+        self.checkpointer.on_epoch_end(epoch=-1,logs = log_dir)
 
         # Train Model: TBD - Move this code to run_expt.py
         dm = self.data_manager
-        results = self.model.fit_generator(dm.train_data_gen,
-                                           steps_per_epoch = dm.train_batches_per_epoch,
-                                           epochs=self.epochs,
-                                           validation_data=dm.test_data_gen,
-                                           validation_steps=\
-                                                 dm.test_batches_per_epoch,
-                                           callbacks = callbacks,
-                                           shuffle=True,
-                                           verbose=2)
-        self.best_score = checkpointer.best_score
-        self.best_epoch = checkpointer.best_epoch
+        #results = self.model.fit_generator(dm.train_data_gen,
+        #                                   steps_per_epoch = dm.train_batches_per_epoch,
+        #                                   epochs=self.epochs,
+        #                                   validation_data=dm.test_data_gen,
+        #                                   validation_steps=\
+        #                                         dm.test_batches_per_epoch,
+        #                                   callbacks = self.callbacks,
+        #                                   shuffle=True,
+        #                                   verbose=2)
+        self.best_score = self.checkpointer.best_score
+        self.best_epoch = self.checkpointer.best_epoch
         
