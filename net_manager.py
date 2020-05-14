@@ -252,7 +252,7 @@ class NetManager(object):
             try:
                  arch = build_architecture(input_shape,
                                            self.src_nb_output_nodes,
-                                           net_param_dict['output_activation'])
+                                           net_param_dict)
                  if self.reg_func is not None:
                      add_regularizer(arch.inputs, arch.output,
                                      self.reg_func)
@@ -263,6 +263,8 @@ class NetManager(object):
                 print ("Check to ensure you're using a POSIX", end = ' ')
                 print ("enabled terminal - i.e. Works with POSIX termios calls")
                 print ('\n\n')
+                print("Check to ensure build_architecture has signature consistent")
+                print("with current net_manager call to build_architecture\n\n")
                 sys.exit()
                 
             
