@@ -21,7 +21,7 @@ def build_architecture(input_shape,
                        nb_output_nodes,
                        net_params):
     """Instantiates the wide resnet architecture."""
-    # Default Values
+    # Default Values 
     N = 4
     k = 10
     dropout = 0.00
@@ -35,11 +35,11 @@ def build_architecture(input_shape,
     
     if 'dropout' in net_params:
         dropout = net_params['dropout']
-    
-
+    # Unless N & k are specified ints, they become floats
+    # which causes a crash .... alas
     model = wrn.create_wide_residual_network(input_shape,
                                              nb_classes=nb_output_nodes,
-                                             N=N, k=k,
+                                             N=int(N), k=int(k),
                                              dropout=dropout)
 
 
