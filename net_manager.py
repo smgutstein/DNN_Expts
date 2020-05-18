@@ -74,7 +74,7 @@ class NetManager(object):
                     raise
                 
         # Make optimizer
-        if lr_schedule_param_dict is not None:
+        if lr_schedule_param_dict is not None and len(lr_schedule_param_dict) > 0:
             lr_sched_module = lr_schedule_param_dict.pop('lr_schedule')
             lr_orig = optimizer_param_dict['lr']
             # Hacky way of getting relative import to work in importlib
@@ -334,7 +334,7 @@ class NetManager(object):
             else:
                 pass
 
-        # Add final classification layer
+       # Add final classification layer
         self.model.add(Dense(self.nb_output_nodes))
         self.model.add(Activation(output_activation,
                                   name=output_activation + '_tfer_out'))
