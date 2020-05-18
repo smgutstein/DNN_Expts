@@ -254,6 +254,15 @@ class TrainingMonitor(BaseLogger):
                 out_fields = sorted(self.H)
                 for curr_out in out_fields:
                     out_str += '{}: {:5.4f}  '.format(curr_out, self.H[curr_out][-1])
+
+                val_acc_list = [x for x in self.H if 'val_acc' in x]
+                for curr_val_acc in val_acc_list:
+                    tr_acc = [x for x in self.H if curr_val_acc[4:] == x][0]
+                    overtrain = np.abs(float(self.H[tr_acc][-1]) -
+                                       float(self.H[curr_val_acc][-1]))
+                    overtrain_label = 'overtrain_' + tr_acc[4:]
+                    out_str += '{}: {:5.4f}  '.format(overtrain_label, overtrain)
+                    
                 with open(self.resultsPath, 'a') as f:
                     f.write(out_str + '\n')
 
