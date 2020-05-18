@@ -5,11 +5,10 @@ from keras.layers import Conv2D, Convolution2D, MaxPooling2D
 
 def build_architecture(input_shape,
                        nb_output_nodes,
-                       output_activation,
-                       **kwargs):
+                       net_params):
 
     # Note: input_shape = (channels, rows, cols)
-    
+    output_activation = net_params['output_activation']
     model = Sequential()
 
     model.add(Convolution2D(32, (3, 3), padding='same',
