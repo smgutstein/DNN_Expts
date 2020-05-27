@@ -10,13 +10,28 @@ from os.path import expanduser
 import shutil
 from six.moves import cPickle
 
-def make_data_dir(dir_path):
+def make_sure_data_dir_exists(dir_path):
     try:
-        os.makedirs(dir_path, exist_ok=True)
+        os.makedirs(dir_path)
     except OSError:
         print ("Creation of the directory %s failed" % dir_path)
     else:
         print ("Successfully created the directory %s" % dir_path)
+
+def make_data_dir(main_dir):
+
+        done = False
+        suffix = '_v0'
+        while not done:
+            curr_output_dir = main_dir + suffix # + '_' + self.gpu)
+            if not os.path.isdir(curr_output_dir):
+                make_sure_data_dir_exists(curr_output_dir)
+                done = True
+            else:
+                version = int(suffix[2:]) + 1
+                suffix = '_v' + str(version)
+        print ("Saving results to %s" % curr_output_dir)
+        return curr_output_dir
 
 
 def get_subtasks(subtasks, data_path, dataset, samps_per_class):
@@ -29,8 +44,10 @@ def get_subtasks(subtasks, data_path, dataset, samps_per_class):
     coarse_classes = classes_lists['coarse_label_names']
 
     # Initialze info for subset_dict
+    #  Images
     tot_images = samps_per_class*num_classes
     subset_data = np.zeros((tot_images, 3072))
+    #  Image labels and meta-data
     subset_dict = dict()
     subset_dict['fine_labels'.encode('utf-8')] = []
     subset_dict['coarse_labels'.encode('utf-8')] = []
@@ -63,28 +80,32 @@ def get_subtasks(subtasks, data_path, dataset, samps_per_class):
     subset_dict['data'.encode('utf-8')] = subset_data
     for curr_class in sorted(used_dict):
         print (coarse_classes[curr_class],"(",curr_class,"): ", used_dict[curr_class])
-    print("\n\n")
+    print("\n")
 
     return (subset_dict, classes_lists)
 
 if __name__ == '__main__':
 
-    # Get desired samples per class
+    # Get cfg file
     ap = argparse.ArgumentParser()
     ap.add_argument("infile", type = str,
                     help="file with input parameters")
     args = ap.parse_args()
 
+    # Parse cfg file
     config = configparser.ConfigParser()
     config.read(args.infile)
-    
+
+    # Get classes for src and trgt tasks
     src_tasks = [x.strip() for x in config.get("Tasks","source").split(",")]
     trgt_tasks = [x.strip() for x in config.get("Tasks","target").split(",")]
-    
+
+    # Get data about datasets 
     class_type = config.get("MetaData","class_type")
     train_spc = config.getint("MetaData","samps_per_class_training")
     test_spc = config.getint("MetaData","samps_per_class_testing")
 
+    # Get names for output dirs / expt names
     expt_name = config.get("output_names", "expt")
     source_name = config.get("output_names", "source")
     target_name = config.get("output_names", "target")
@@ -96,14 +117,16 @@ if __name__ == '__main__':
     data_path = os.path.join(home, parent_dir, data_dir)
 
     # Make ouput dirs 
-    expt_dir = expt_name
-    expt_path = os.path.join(home, parent_dir, data_dir, expt_dir)
+    expt_path = os.path.join(home, parent_dir, data_dir, expt_name)
+    #expt_path = make_data_dir(expt_path)
+    try:
+        os.makedirs(expt_path, exist_ok=True)
+    except OSError:
+        print ("Creation of the directory %s failed" % expt_path)
     src_path = os.path.join(expt_path, "src_tasks")
+    src_path = make_data_dir(src_path)
     trgt_path = os.path.join(expt_path, "trgt_tasks")
-    make_data_dir(expt_path)
-    make_data_dir(src_path)
-    make_data_dir(trgt_path)
-
+    trgt_path = make_data_dir(trgt_path)
 
     for tasks, out_path in zip([src_tasks, trgt_tasks],[src_path, trgt_path]):
         for set_type, spc in zip(["train", "test"], [train_spc, test_spc]):
