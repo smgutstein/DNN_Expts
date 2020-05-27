@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+import datetime
 from keras.callbacks import BaseLogger, Callback
 import matplotlib.pyplot as plt
 import numpy as np
@@ -205,8 +206,21 @@ class TrainingMonitor(BaseLogger):
         self.loss_fig = plt.figure(2)
         plt.clf()
         self.loss_ax = self.loss_fig.add_axes([0.15, 0.1, 0.8, 0.8])
-                
 
+    def record_start_time(self):
+        start_time = datetime.datetime.now()
+        start_str = "Training Start Time: %s" % (start_time.strftime("%H:%M:%S %p %A %Y-%m-%d"))
+        if self.resultsPath is not None:
+            with open(self.resultsPath, 'a') as f:
+                f.write(start_str + '\n')
+        
+    def record_stop_time(self):
+        stop_time = datetime.datetime.now()
+        stop_str = "Training Stop Time:  %s" % (stop_time.strftime("%H:%M:%S %p %A %Y-%m-%d"))
+        if self.resultsPath is not None:
+            with open(self.resultsPath, 'a') as f:
+                f.write(stop_str + '\n')
+        
     def on_train_begin(self, logs={}):
         if not hasattr(self, 'H'):
             # initialize the history dictionary

@@ -455,6 +455,7 @@ class Runner(object):
                                           callbacks = self.expt_net.callbacks,
                                           shuffle=True,
                                           verbose=2)
+        self.expt_net.training_monitor.record_stop_time()
         best_score = self.expt_net.checkpointer.best_score
         best_epoch = self.expt_net.checkpointer.best_epoch
         stop_time = datetime.datetime.now()

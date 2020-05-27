@@ -467,12 +467,8 @@ class NetManager(object):
             # No data generator used
             print ("No data augmentation")
             
-        (init_train_loss, init_train_acc,
-               init_test_loss, init_test_acc) = self.get_init_condits(dm.train_data_gen,
-                                                                      dm.test_data_gen)
-
         # Assemble Callbacks
-        training_monitor = TrainingMonitor(fig_path, jsonPath=json_path,
+        self.training_monitor = TrainingMonitor(fig_path, jsonPath=json_path,
                                            resultsPath = results_path)
         self.checkpointer = ModelCheckpoint(checkpoint_dir,
                                             monitor = self.val_acc_str,
@@ -480,34 +476,29 @@ class NetManager(object):
                                             data_manager=self.data_manager,
                                             period=self.epochs_per_recording,
                                             nocheckpoint = self.nocheckpoint)
-        self.callbacks = [training_monitor, self.checkpointer]
+        self.callbacks = [self.training_monitor, self.checkpointer]
 
         # Add lr scheduler
         if self.lr_schedule:
             self.callbacks.append(self.lr_schedule)
 
         # Get results for initialized net
-        training_monitor.on_train_begin()
+        self.training_monitor.record_start_time()
+        (init_train_loss, init_train_acc,
+         init_test_loss, init_test_acc) = self.get_init_condits(dm.train_data_gen,
+                                                                dm.test_data_gen)
+        self.training_monitor.on_train_begin()
         log_dir = {'loss': init_train_loss,
                    'val_loss': init_test_loss}
         log_dir[self.train_acc_str] = init_train_acc
         log_dir[self.val_acc_str] = init_test_acc
         
-        training_monitor.on_epoch_end(epoch=0,logs = log_dir)
+        self.training_monitor.on_epoch_end(epoch=0,logs = log_dir)
         self.checkpointer.set_model(self.model)
         self.checkpointer.on_epoch_end(epoch=-1,logs = log_dir)
 
         # Train Model: TBD - Move this code to run_expt.py
-        dm = self.data_manager
-        #results = self.model.fit_generator(dm.train_data_gen,
-        #                                   steps_per_epoch = dm.train_batches_per_epoch,
-        #                                   epochs=self.epochs,
-        #                                   validation_data=dm.test_data_gen,
-        #                                   validation_steps=\
-        #                                         dm.test_batches_per_epoch,
-        #                                   callbacks = self.callbacks,
-        #                                   shuffle=True,
-        #                                   verbose=2)
+        #dm = self.data_manager
         self.best_score = self.checkpointer.best_score
         self.best_epoch = self.checkpointer.best_epoch
         
