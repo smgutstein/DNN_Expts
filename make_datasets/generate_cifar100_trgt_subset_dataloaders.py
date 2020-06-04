@@ -32,7 +32,7 @@ def load_data(label_mode='fine'):
         raise ValueError(\'`label_mode` must be one of `\"fine\"`, `\"coarse\"`.')
 
     path = os.path.join(home,\'.keras/datasets/\', \'cifar-100-python\',
-                        \'Living_vs_Not_Living\', \'trgt_tasks_\' '''
+                        \'Living_Not_Living\', \'trgt_tasks_\' '''
 
 tail_str = ''' ) 
 
