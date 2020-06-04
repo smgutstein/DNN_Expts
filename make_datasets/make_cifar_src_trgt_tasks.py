@@ -23,7 +23,7 @@ def make_data_dir(main_dir):
         done = False
         suffix = '_v0'
         while not done:
-            curr_output_dir = main_dir + suffix # + '_' + self.gpu)
+            curr_output_dir = main_dir # + '_' + self.gpu)
             if not os.path.isdir(curr_output_dir):
                 make_sure_data_dir_exists(curr_output_dir)
                 done = True

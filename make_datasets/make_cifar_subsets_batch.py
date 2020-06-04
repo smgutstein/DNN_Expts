@@ -10,8 +10,6 @@ import os
 from os.path import expanduser
 import shutil
 
-
-
 def convert(data):
     # Converts strings of form b'my_string' to 'my_string'
     # (i.e. converts bytes to str)
@@ -34,8 +32,8 @@ def get_subset(samps_per_class):
     subset_dict['fine_labels'] = []
     subset_dict['coarse_labels'] = []
     subset_dict['filenames'] = [] 
-    subset_dict['batch_label'] = "Subset training batch 1 of 1 - " + str(samps_per_class*num_classes)
-    subset_dict['batch_label'] += " samps per class"
+    subset_dict['batch_label'] = "Subset training batch 1 of 1 - " 
+    subset_dict['batch_label'] += str(samps_per_class*num_classes) + " samps per class"
     
     # Initialize dict to track number of samples used per class
     used_dict = defaultdict(int)
@@ -65,8 +63,7 @@ def get_subset(samps_per_class):
             tot_used += 1
             used_dict[curr_candidate_class] += 1
         else:
-            pass
-        
+            pass   
         # Proceed to next candidate element
         curr_candidate = candidate_list.pop()
         
@@ -91,7 +88,7 @@ if __name__ == '__main__':
                     default='cifar-100-python',
                     help="source directory")
     ap.add_argument("--subset_root_dir", type=str,
-                    default = "Living_vs_Not_Living",
+                    default = "cifar100_living_not_living",
                     help="sub dir for all subsets")
     ap.add_argument("--subset_dir", type=str,
                     default = "trgt_tasks",
@@ -113,8 +110,8 @@ if __name__ == '__main__':
     config.read(config_file)
     spc_list = [x.strip() for x in config['Subsets']['spc'].split(',')]
     suffix_list = [x.strip() for x in config['Subsets']['suffixes'].split(',')]
+    
     for spc,suffix in itertools.product(spc_list, suffix_list):
-
         trgt_dir = "_".join([args.subset_dir, str(spc), suffix])
         trgt_path = os.path.join(subset_root_path, trgt_dir)
         print(trgt_path)
