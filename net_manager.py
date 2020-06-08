@@ -8,7 +8,7 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras import backend as K
 from keras.models import model_from_json, model_from_yaml
 from keras_loggers import TrainingMonitor, ModelCheckpoint
-from keras.models import Sequential
+from keras.models import Sequential, Model
 from keras.layers import Dense, Dropout, Flatten 
 from net_architectures.sgActivation import Activation
 from net_architectures.AddRegularizer import add_regularizer
@@ -300,20 +300,15 @@ class NetManager(object):
 
         num_resets = int(trgt_task_param_dict['num_reset_layers'])
         pen_ult_nodes = trgt_task_param_dict['penultimate_node_list']
-        pen_ult_nodes = pen_ult_nodes.split('[')[1].strip()
-        pen_ult_nodes = [x.strip()
-                         for x in pen_ult_nodes.split(']')[0].split(',')]
-        pen_ult_nodes = [x for x in pen_ult_nodes if x.isdigit()]
-
         
         if 'output_activation' in trgt_task_param_dict:
             output_activation = trgt_task_param_dict['output_activation']
         else:
             output_activation = net_param_dict['output_activation']
         
-        ctr = 0        
+        ctr = 0
         while ctr < num_resets:
-            #Returns layer info, but keeps layer in net
+            #Pops layer and returns layer info
             pop_layer = self.model.layers.pop() 
             print("Popping ",pop_layer.name," ..... ",end=' ')
 
@@ -321,10 +316,18 @@ class NetManager(object):
             if len(pop_layer.weights) > 0:
                 ctr += 1
             print("Popped")
-            
-            #Removes layer from net, but returns no info 
-            self.model.pop()
 
+        input_layer = self.model.layers[0].output
+        output_layer = self.model.layers[-1].output
+
+        output_layer = Dense(self.nb_output_nodes)(output_layer)
+        output_layer = Activation(output_activation,
+                               name=output_activation + '_tfer_out')(output_layer)
+
+        new_model = Model(inputs=[input_layer], outputs=[output_layer])
+        self.model = new_model
+
+        '''
         # Add intermediate layers
         if len(pen_ult_nodes) > 0:
             for curr in pen_ult_nodes:
@@ -338,7 +341,7 @@ class NetManager(object):
         self.model.add(Dense(self.nb_output_nodes))
         self.model.add(Activation(output_activation,
                                   name=output_activation + '_tfer_out'))
-
+       '''
     def check_for_saved_model_weights(self, net_param_dict, saved_param_dict):
 
         # Load weights (if necessary)
