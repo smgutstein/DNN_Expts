@@ -134,7 +134,7 @@ class DataManager(object):
     def _load_data(self):
         # Load data
         data_load_module = importlib.import_module("dataset_loaders." + self.data_loading_module)
-        print("Loading data")
+        print("Loading data from", os.path.join("dataset_loaders",  self.data_loading_module))
         (self.X_train, self.y_train_classnum), \
         (self.X_test, self.y_test_classnum) = data_load_module.load_data()
 
