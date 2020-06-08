@@ -311,9 +311,30 @@ class Runner(object):
                     if (len(temp) > 0 and
                         ((temp[0] == '[' and temp[-1] == ']') or
                          (temp[0] == '(' and temp[-1] == ')'))):
+                        
+                        # data is list or tuple
+                        data_type = ""
+                        if (temp[0] == '[' and temp[-1] == ']'):
+                            data_type = 'list'
+                            empty_data = []
+                        elif (temp[0] == '(' and temp[-1] == ')'):
+                            data_type = 'tuple'
+                            empty_data = ()
+                        else:
+                            pass
+
+                        # Convert string to desired data container of float
+                        #  Remove container brackets
                         temp = temp[1:-1]
-                        temp = temp.split(',')
-                        temp = [float(y) for y in temp]
+                        
+                        if len(temp) == 0:
+                            temp = empty_data
+                        else:
+                            temp = temp.split(',')
+                            temp = [float(y) for y in temp]
+                            if data_type == 'tuple':
+                                temp = tuple(temp)
+                                
                         param_dict[x] = temp
 
         except configparser.NoSectionError:
