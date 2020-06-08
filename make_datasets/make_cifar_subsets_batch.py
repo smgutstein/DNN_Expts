@@ -117,7 +117,10 @@ if __name__ == '__main__':
         print(trgt_path)
 
         # Note: shutil.copytree calls os.makedirs and will fail if trgt_path exists
-        shutil.copytree(src_path, trgt_path, symlinks=False, ignore=None)
+        try:
+            shutil.copytree(src_path, trgt_path, symlinks=False, ignore=None)
+        except FileExistsError:
+            print ("Skipping", trgt_path, ". File Already exists.")
 
         # Save training subset
         sd = get_subset(int(spc))
