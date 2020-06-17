@@ -479,11 +479,6 @@ class NetManager(object):
                                             data_manager=self.data_manager,
                                             period=self.epochs_per_recording,
                                             nocheckpoint = self.nocheckpoint)
-        self.callbacks = [self.training_monitor, self.checkpointer]
-
-        # Add lr scheduler
-        if self.lr_schedule:
-            self.callbacks.append(self.lr_schedule)
 
         # Get results for initialized net
         self.training_monitor.record_start_time()
@@ -499,7 +494,12 @@ class NetManager(object):
         self.training_monitor.on_epoch_end(epoch=0,logs = log_dir)
         self.checkpointer.set_model(self.model)
         self.checkpointer.on_epoch_end(epoch=-1,logs = log_dir)
-
+        
+        self.callbacks = [self.training_monitor, self.checkpointer]
+        # Add lr scheduler
+        if self.lr_schedule:
+            self.callbacks.append(self.lr_schedule)
+        
         # Train Model: TBD - Move this code to run_expt.py
         #dm = self.data_manager
         self.best_score = self.checkpointer.best_score
