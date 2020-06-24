@@ -14,7 +14,6 @@ res_dir = "results"
 enc_dir = "cfg_dir/enc_cfg"
 expt_dir = "cfg_dir/expt_cfg"
 src_nets_dir = "src_nets/workshop_expts"
-machine_name = "balin"
 
 spc_list = [1,5,10,25,50,100,200]
 src_epoch_list = [x for x in range(0,210,10)]
@@ -169,10 +168,11 @@ def make_cfg_files_and_dirs():
             cfg_file_name = "tfer_net_" + str(cfg_version) + ".cfg"
 
             # Write cfg file
-            #print("   Writing: ", cfg_file_name)
+            #print("   Writing: ", os.path.join(cfg_dir, cfg_file_name))
             with open(os.path.join(cfg_dir, cfg_file_name), 'w') as f:
                 f.write(cfg_file_str)
                 ctr += 1
     print("\nTotal # of Files Created: ",ctr)
     print("Total # of Files Not Created: ",ctr2)
+
 make_cfg_files_and_dirs()
