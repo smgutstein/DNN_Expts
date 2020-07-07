@@ -28,7 +28,7 @@ Creating training sets with set number of samples per class (spc):
 
 python make_cifar_subsets_batch.py
 
-Currently this code automatically goes to a config file (../cfg_dir/gen_cfg/opt_tfer_expts/tfer_datasets/subsets.cfg
+Currently this code automatically goes to a config file (../cfg_dir/gen_cfg/opt_tfer_expts/cifar_100_living_notliving/tfer_datasets/subsets.cfg
 to find out how many samples per class the transfer training sets will contain, and how many new training sets are desired. The config file looks like this:
 
 [Subsets]
@@ -36,3 +36,9 @@ spc: 1,5
 suffixes: a,b
 
 spc is a comma separated list of the number of samples per class in each new training set. suffixes is a comma separated list of the suffixes to be added to each training set's name, in order to differentiate them. 
+
+Create dataset loaders:
+
+python make_cifar_subsets_batch.py
+
+Currently, this file expects input to specify where the datasets it's creating loaders for will be found. But all the defaults are set for the CIFAR100 living/non-living tfer expts
