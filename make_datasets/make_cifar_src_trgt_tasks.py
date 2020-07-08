@@ -22,14 +22,18 @@ def make_data_dir(main_dir):
 
         done = False
         suffix = '_v0'
+
+        curr_output_dir = main_dir # + '_' + self.gpu)
         while not done:
-            curr_output_dir = main_dir # + '_' + self.gpu)
             if not os.path.isdir(curr_output_dir):
                 make_sure_data_dir_exists(curr_output_dir)
                 done = True
             else:
+                # Make certain existing dataset not accidentally
+                # over written
                 version = int(suffix[2:]) + 1
                 suffix = '_v' + str(version)
+                curr_output_dir = main_dir + suffix
         print ("Saving results to %s" % curr_output_dir)
         return curr_output_dir
 
