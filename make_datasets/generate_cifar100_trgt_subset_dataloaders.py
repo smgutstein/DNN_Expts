@@ -1,7 +1,9 @@
 import argparse
+import configparser
+import itertools
 import os
 
-head_str = '''
+import_str = '''
 from __future__ import absolute_import
 import os
 import sys
@@ -15,10 +17,15 @@ import numpy as np
 from os.path import expanduser
 home = expanduser("~")
 
+'''
 
+header_str = '''
 def load_data(label_mode='fine'):
-    \"\"\"Loads trgt tasks for CIFAR100 living_vs_notliving datasets.
+'''
 
+doc_str_body = '''
+    
+    
     # Arguments
         label_mode: one of \"fine\", \"coarse\".
 
@@ -27,14 +34,15 @@ def load_data(label_mode='fine'):
 
     # Raises
         ValueError: in case of invalid `label_mode`.
-    \"\"\"
+
+'''
+
+path_str = '''
+    path = os.path.join(home'''
+
+body_str = '''
     if label_mode not in [\'fine\', \'coarse\']:
         raise ValueError(\'`label_mode` must be one of `\"fine\"`, `\"coarse\"`.')
-
-    path = os.path.join(home,\'.keras/datasets/\', \'cifar-100-python\',
-                        \'cifar100_living_not_living\', \'trgt_tasks_\' '''
-
-tail_str = ''' ) 
 
     fpath = os.path.join(path, \'train\')
     x_train, y_train = load_batch(fpath, label_key=label_mode + \'_labels\')
@@ -60,14 +68,54 @@ tail_str = ''' )
 '''
 
 if __name__ == '__main__':
+    # Get desired samples per class
     ap = argparse.ArgumentParser()
-    ap.add_argument("suffix", type = str,
-                    help="samples per class")
+    ap.add_argument("-r", "--cfg_root", type = str,
+                    default = "../cfg_dir/gen_cfg/opt_tfer_expts",
+                    help = "root dir for config files")
+    ap.add_argument("-s", "--cfg_sub", type = str,
+                    default = "cifar_100_living_living_expts",
+                    help = "dir for config files for set of expts")
+    ap.add_argument("-l", "--cfg_leaf", type = str,
+                    default = "tfer_datasets/subsets.cfg",
+                    help = "dir for config files for set of expts")
     args = ap.parse_args()
-    suffix = args.suffix 
-    outstr = head_str + " + \'" + args.suffix +"\'" + tail_str
-    outpath  = '../dataset_loaders/'
-    outfile = 'cifar100_trgt_living_vs_notliving_subset_' + suffix + '.py'
-    with open(os.path.join(outpath,outfile), 'w') as f:
-        f.write(outstr)
-    
+
+    # Make target dirs and copy info from src dir
+    config_file = os.path.join(args.cfg_root,
+                              args.cfg_sub, 
+                              args.cfg_leaf)
+    print("Reading ", config_file)
+    config = configparser.ConfigParser()
+    config.read(config_file)
+
+    note = "Loads data for " + config['Notes']['note']
+    doc_str = '    \"\"\"\n' + '    ' + note + doc_str_body + '    \"\"\"\n'
+
+    data_root_dir = config['StorageDirectory']['data_root_dir']
+    data_dir = config['StorageDirectory']['data_dir']
+    subset_root_dir = config['StorageDirectory']['subset_root_dir']
+    subset_dir = config['StorageDirectory']['subset_dir']
+    path_str = ', '.join([path_str,
+                          "'" + data_root_dir + "'",
+                          "'" + data_dir + "'",
+                          "'" + subset_root_dir + "'",
+                          "'" + subset_dir])
+
+    # Get spc and training set id suffix for each data loader
+    spc_list = [x.strip() for x in config['Subsets']['spc'].split(',')]
+    suffix_list = [x.strip() for x in config['Subsets']['suffixes'].split(',')]
+
+    for spc,suffix in itertools.product(spc_list, suffix_list):
+        data_path = "_".join([path_str, str(spc), suffix + "'"])
+        data_path += ")"
+
+        out_str = import_str + header_str + doc_str + data_path + body_str
+        out_path = '../dataset_loaders/'
+        out_file = '_'.join([subset_root_dir,subset_dir,spc,suffix,"TEST"]) + '.py'
+        
+        with open(os.path.join(out_path,out_file), 'w') as f:
+            f.write(out_str)
+            print("Wrote: ",os.path.join(out_path,out_file))
+
+ 
