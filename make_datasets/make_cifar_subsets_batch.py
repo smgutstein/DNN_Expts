@@ -20,6 +20,9 @@ def convert(data):
     return data
 
 def get_subset(samps_per_class):
+    """Creates subset of a cifar100 training set. 
+       New subset will have specified
+       number of samples per class"""
 
     print("Loading training set")
     train  = pickle.load(open(os.path.join(src_path,"train"),'rb'))
@@ -75,44 +78,51 @@ def get_subset(samps_per_class):
 if __name__ == '__main__':
 
     config_root_dir = "../cfg_dir/gen_cfg/opt_tfer_expts"
+    config_sub_dir = "cifar_100_living_living_expts"
     config_leaf = "tfer_datasets/subsets.cfg"
-
-    data_root_dir = '.keras/datasets'
 
     # Get desired samples per class
     ap = argparse.ArgumentParser()
-    ap.add_argument("--cfg_subdir", type = str,
-                    default = "cifar_100_living_notliving_expts",
-                    help="config file sub-directory")
-    ap.add_argument("--data_dir", type = str, 
-                    default='cifar-100-python',
-                    help="source directory")
-    ap.add_argument("--subset_root_dir", type=str,
-                    default = "cifar100_living_not_living",
-                    help="sub dir for all subsets")
-    ap.add_argument("--subset_dir", type=str,
-                    default = "trgt_tasks",
-                    help="sub dir for trgt subset")
+    ap.add_argument("-r", "--cfg_root", type = str,
+                    default = "../cfg_dir/gen_cfg/opt_tfer_expts",
+                    help = "root dir for config files")
+    ap.add_argument("-s", "--cfg_sub", type = str,
+                    default = "cifar_100_living_living_expts",
+                    help = "dir for config files for set of expts")
+    ap.add_argument("-l", "--cfg_leaf", type = str,
+                    default = "tfer_datasets/subsets.cfg",
+                    help = "dir for config files for set of expts")
     args = ap.parse_args()
+
+
+    # Make target dirs and copy info from src dir
+    #cfg_subdir = args.cfg_subdir
+    config_file = os.path.join(args.cfg_root,
+                              args.cfg_sub, 
+                              args.cfg_leaf)
+    print("Reading ", config_file)
+    config = configparser.ConfigParser()
+    config.read(config_file)
+
+
 
     # Get source dir for cifar 100 data
     home = expanduser("~")
-    subset_root_path = os.path.join(home, data_root_dir, args.data_dir,
-                                    args.subset_root_dir)
-    src_path = os.path.join(subset_root_path, args.subset_dir)
+    data_root_dir = config['StorageDirectory']['data_root_dir']
+    data_dir = config['StorageDirectory']['data_dir']
+    subset_root_dir = config['StorageDirectory']['subset_root_dir']
+    subset_dir = config['StorageDirectory']['subset_dir']
+    
+    subset_root_path = os.path.join(home, data_root_dir, data_dir,
+                                    subset_root_dir)
+    src_path = os.path.join(subset_root_path, subset_dir)
 
-    # Make target dirs and copy info from src dir
-    cfg_subdir = args.cfg_subdir
-    config_file = os.path.join(config_root_dir, 
-                              cfg_subdir, 
-                              config_leaf)
-    config = configparser.ConfigParser()
-    config.read(config_file)
+    
     spc_list = [x.strip() for x in config['Subsets']['spc'].split(',')]
     suffix_list = [x.strip() for x in config['Subsets']['suffixes'].split(',')]
     
     for spc,suffix in itertools.product(spc_list, suffix_list):
-        trgt_dir = "_".join([args.subset_dir, str(spc), suffix])
+        trgt_dir = "_".join([subset_dir, str(spc), suffix])
         trgt_path = os.path.join(subset_root_path, trgt_dir)
         print(trgt_path)
 
@@ -128,3 +138,21 @@ if __name__ == '__main__':
         print ("Saved to ", trgt_path)
     print("Done")
   
+""" Sample cfg file:
+
+[Subsets]
+spc: 50
+suffixes: a,b,c
+
+[StorageDirectory]
+data_root_dir: .keras/datasets
+data_dir: cifar-100-python
+subset_root_dir: cifar100_living_living
+subset_dir: trgt_tasks
+
+Notes:
+data_root_dir is root dir where all raw data stored.
+data_dir is dir where specific downloaded data is stored
+subset_root_dir is dir where class-wise subset of downloaded data stored
+subset_dir where sample-wise subset of subset data stored
+"""
