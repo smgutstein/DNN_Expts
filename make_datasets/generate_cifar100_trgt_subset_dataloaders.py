@@ -112,7 +112,7 @@ if __name__ == '__main__':
 
         out_str = import_str + header_str + doc_str + data_path + body_str
         out_path = '../dataset_loaders/'
-        out_file = '_'.join([subset_root_dir,subset_dir,spc,suffix,"TEST"]) + '.py'
+        out_file = '_'.join([subset_root_dir,subset_dir,spc,suffix]) + '.py'
         
         with open(os.path.join(out_path,out_file), 'w') as f:
             f.write(out_str)
