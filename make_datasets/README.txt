@@ -1,7 +1,6 @@
 Some notes on files in this directory:
 
-Splitting CIFAR-100 into suubsets (by class) in order to create source and target tasks:
-Run make_cifar_src_trgt_tasks.py  -- e.g.  python make_cifar_src_trgt_tasks.py ../dataset_info/cifar100_src_trgt_v1.cfg
+make_cifar_src_trgt_tasks.py - Used to split CIFAR-100 into source task and target task subsets. Uses a cfg file, which is given as 1st cmd line argument
 
 Sample cfg file for make_cifar_src_trgt_tasks:
 [MetaData]
@@ -24,21 +23,40 @@ expt: Living_vs_Not_Living
 source: Animals_Plants
 target: Non_Living_Things
 
-Creating training sets with set number of samples per class (spc):
+------------------------------------------------------------------
+make_cifar_spc_training_sets.py - Used to create training sets for target task with requisite number of samples per class (spc). Uses cfg file,  which is given as 1st cmd line argument
 
-python make_cifar_subsets_batch.py
-
-Currently this code automatically goes to a config file (../cfg_dir/gen_cfg/opt_tfer_expts/cifar_100_living_notliving/tfer_datasets/subsets.cfg
-to find out how many samples per class the transfer training sets will contain, and how many new training sets are desired. The config file looks like this:
+Sample cfg file for make_cifar_spc_training_sets (also used by make_cifar_trgt_dataloaders.py):
 
 [Subsets]
-spc: 1,5
-suffixes: a,b
+spc: 50
+suffixes: a,b,c
 
-spc is a comma separated list of the number of samples per class in each new training set. suffixes is a comma separated list of the suffixes to be added to each training set's name, in order to differentiate them. 
+[StorageDirectory]
+data_root_dir: .keras/datasets
+data_dir: cifar-100-python
+subset_root_dir: cifar100_living_living
+subset_dir: trgt_tasks
 
-Create dataset loaders:
+[Notes]
+note: CIFAR 100 living vs living datasets
+------------------------------------------------------------------
+make_cifar_trgt_dataloaders.py - Used to create dataset_loaders for various target task training datasets. Uses cfg file,  which is given as 1st cmd line argument
 
-python make_cifar_subsets_batch.py
+Sample cfg file for make_cifar_spc_training_sets (also used by make_cifar_spc_training_sets.py):
 
-Currently, this file expects input to specify where the datasets it's creating loaders for will be found. But all the defaults are set for the CIFAR100 living/non-living tfer expts
+[Subsets]
+spc: 50
+suffixes: a,b,c
+
+[StorageDirectory]
+data_root_dir: .keras/datasets
+data_dir: cifar-100-python
+subset_root_dir: cifar100_living_living
+subset_dir: trgt_tasks
+
+[Notes]
+note: CIFAR 100 living vs living datasets
+----------------------------------------------------------------
+trgt_task_dataloader_strings.py - Stores static strings used to create target task dataset_loaders. Is imported by make_cifar_trgt_dataloaders.py
+----------------------------------------------------------------

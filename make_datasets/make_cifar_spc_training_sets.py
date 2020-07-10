@@ -77,10 +77,6 @@ def get_subset(samps_per_class):
 
 if __name__ == '__main__':
 
-    config_root_dir = "../cfg_dir/gen_cfg/opt_tfer_expts"
-    config_sub_dir = "cifar_100_living_living_expts"
-    config_leaf = "tfer_datasets/subsets.cfg"
-
     # Get desired samples per class
     ap = argparse.ArgumentParser()
     ap.add_argument("-r", "--cfg_root", type = str,
@@ -96,7 +92,6 @@ if __name__ == '__main__':
 
 
     # Make target dirs and copy info from src dir
-    #cfg_subdir = args.cfg_subdir
     config_file = os.path.join(args.cfg_root,
                               args.cfg_sub, 
                               args.cfg_leaf)
