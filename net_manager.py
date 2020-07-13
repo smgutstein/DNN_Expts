@@ -9,7 +9,7 @@ from keras import backend as K
 from keras.models import model_from_json, model_from_yaml
 from keras_loggers import TrainingMonitor, ModelCheckpoint
 from keras.models import Sequential, Model
-from keras.layers import Dense, Dropout, Flatten 
+from keras.layers import Dense, Dropout, Flatten
 from net_architectures.sgActivation import Activation
 from net_architectures.AddRegularizer import add_regularizer
 import local_regularizer
@@ -22,12 +22,14 @@ import shutil
 import sys
 import types
 
+
 def is_int(in_str):
     try:
         int(in_str)
         return True
     except ValueError:
         return False
+
 
 class NetManager(object):
 
@@ -60,8 +62,8 @@ class NetManager(object):
             self.epochs_per_recording = int(expt_param_dict['epochs_per_recording'])
         else:
             self.epochs_per_recording = self.epochs
-            
-        self.tot_rec_sets = self.epochs/self.epochs_per_recording
+
+        self.tot_rec_sets = self.epochs / self.epochs_per_recording
         self.save_best_n = save_best_n
         self.best_n = 0
 
@@ -72,7 +74,7 @@ class NetManager(object):
             except OSError:
                 if not os.path.isdir(expt_dir):
                     raise
-                
+
         # Make optimizer
         if lr_schedule_param_dict is not None and len(lr_schedule_param_dict) > 0:
             lr_sched_module = lr_schedule_param_dict.pop('lr_schedule')
@@ -83,7 +85,7 @@ class NetManager(object):
             lr_sched_fnc = getattr(temp, "lr_sched_func")
             on_batch = lr_schedule_param_dict['on_batch']
             on_epoch = lr_schedule_param_dict['on_epoch']
-            
+
             # Some optimizers scale lr as a function of batch size, so
             # larger training batches take larger lr others depend on
             # both number of epochs and batches. Need better way of
@@ -95,13 +97,13 @@ class NetManager(object):
             self.lr_schedule = LRScheduleFunction(lr_orig,
                                                   lr_sched_fnc,
                                                   lr_schedule_param_dict)
-            
+
         else:
             self.lr_schedule = None
 
         # Get Loss Function Regularizer
         if len(regularizer_param_dict) > 0:
-            try: 
+            try:
                 reg_func_name = regularizer_param_dict['regularizer_function']
                 reg_func_wrapper = getattr(local_regularizer, reg_func_name)
                 self.reg_func = reg_func_wrapper(regularizer_param_dict['regularizer_weight'])
@@ -109,7 +111,7 @@ class NetManager(object):
                 sys.exit("Regularizer function incorrectly specified/created")
         else:
             self.reg_func = None
-            
+
         optimizer_module = optimizer_param_dict.pop('optimizer_module')
         optimizer = optimizer_param_dict.pop('optimizer')
         temp = importlib.import_module(optimizer_module)
@@ -128,7 +130,7 @@ class NetManager(object):
             self.loss_fnc = 'mean_squared_error'
 
         # Get Loss Function Regularizer
-        #if net_param_dict['RegularizerParams'] != None:
+        # if net_param_dict['RegularizerParams'] != None:
         #  reg_param_dict = net_param_dict['RegularizerParams']
         #  reg_module = reg_param_dict['regularizer_module']
         #  reg_fnc_name = reg_param_dict['regularizer_fnc']
@@ -137,9 +139,8 @@ class NetManager(object):
         #  temp = importlib.import_module(reg_module)
         #  reg_fnc = getattr(temp, reg_fnc_name)
         #  net_param_dict['regularizer'] = reg_fnc(**reg_args)
-        #else:
+        # else:
         #  net_param_dict['regularizer'] = None  
-          
 
         # Prepare standard training
         print("Standard training")
@@ -156,8 +157,8 @@ class NetManager(object):
         # previous encoding
         if metric_fnc_args.args == ['y_encode']:
             metric_fnc = metric_fnc(self.data_manager.encoding_matrix)
-            print ("Warning: Need to ensure correct acc", end= ' ')
-            print ("function is obtained with reuse of encoding")
+            print("Warning: Need to ensure correct acc", end=' ')
+            print("function is obtained with reuse of encoding")
         self.acc_metric = metric_fnc.__name__
         self.train_acc_str = self.acc_metric
         self.val_acc_str = 'val_' + self.train_acc_str
@@ -186,47 +187,46 @@ class NetManager(object):
 
         # Compile model
         print("Compiling model ...")
-        self.model.compile(loss=self.loss_fnc, #'mean_squared_error',
+        self.model.compile(loss=self.loss_fnc,  # 'mean_squared_error',
                            optimizer=self.opt,
                            metrics=[metric_fnc])
 
         try:
             from keras.utils import plot_model
             # Write the network architecture visualization graph to disk
-            model_img_file = os.path.join(self.expt_dir,"metadata",
-                                      self.expt_prefix + "_image.png")
+            model_img_file = os.path.join(self.expt_dir, "metadata",
+                                          self.expt_prefix + "_image.png")
             plot_model(self.model, to_file=model_img_file, show_shapes=True)
-            print ("Saved image of architecture to", model_img_file)
+            print("Saved image of architecture to", model_img_file)
         except ImportError as e:
             # Prob'ly need to install pydot
-            print (e)
-            print ("Not saving graphical image of net")
+            print(e)
+            print("Not saving graphical image of net")
         except OSError as e:
             # Prob'ly need Graphviz
-            print (e)
-            print ("Not saving graphical image of net")
+            print(e)
+            print("Not saving graphical image of net")
 
-
-        # Summarize            
+        # Summarize
         self.summary()
-        print (self.data_manager.get_targets_str_sign())
-        print (self.data_manager.get_data_classes_summary_str())
+        print(self.data_manager.get_targets_str_sign())
+        print(self.data_manager.get_data_classes_summary_str())
 
     def summary(self):
-        print ("\n============================================================\n")
-        print ("Expt Info:\n")
-        print ("NB Epochs:", self.epochs)
-        print ("Expt Dir:", self.expt_dir)
-        print ("Expt Prefix:", self.expt_prefix)
+        print("\n============================================================\n")
+        print("Expt Info:\n")
+        print("NB Epochs:", self.epochs)
+        print("Expt Dir:", self.expt_dir)
+        print("Expt Prefix:", self.expt_prefix)
 
-        print ("\nModel:")
+        print("\nModel:")
         self.model.summary()
-        print ("\n============================================================\n")
+        print("\n============================================================\n")
 
     def init_model_architecture(self, net_param_dict, saved_param_dict):
         # Import Architecture
         if ('arch_module' in net_param_dict and
-            len(net_param_dict['arch_module']) > 0):
+                len(net_param_dict['arch_module']) > 0):
 
             # Create net architecure from general module
             if K.image_data_format() != 'channels_last':
@@ -250,24 +250,23 @@ class NetManager(object):
                 self.net_arch_file = self.net_arch_file[:-1]
 
             try:
-                 arch = build_architecture(input_shape,
-                                           self.src_nb_output_nodes,
-                                           net_param_dict)
-                 if self.reg_func is not None:
-                     add_regularizer(arch.inputs, arch.output,
-                                     self.reg_func)
-                     
+                arch = build_architecture(input_shape,
+                                          self.src_nb_output_nodes,
+                                          net_param_dict)
+                if self.reg_func is not None:
+                    add_regularizer(arch.inputs, arch.output,
+                                    self.reg_func)
+
             except curses.error as e:
                 print('\nError:')
-                print (e.message)
-                print ("Check to ensure you're using a POSIX", end = ' ')
-                print ("enabled terminal - i.e. Works with POSIX termios calls")
-                print ('\n\n')
+                print(e.message)
+                print("Check to ensure you're using a POSIX", end=' ')
+                print("enabled terminal - i.e. Works with POSIX termios calls")
+                print('\n\n')
                 print("Check to ensure build_architecture has signature consistent")
                 print("with current net_manager call to build_architecture\n\n")
                 sys.exit()
-                
-            
+
             return arch
 
         elif (len(saved_param_dict) > 0 and
@@ -289,9 +288,8 @@ class NetManager(object):
                 else:
                     # Error
                     print("No architecure was specified in ", end=' ')
-                    print ("config file, either by 'arch_module' or 'saved_arch'")
+                    print("config file, either by 'arch_module' or 'saved_arch'")
                     sys.exit(0)
-
 
     def check_for_transfer(self, trgt_task_param_dict,
                            net_param_dict):
@@ -300,17 +298,17 @@ class NetManager(object):
 
         num_resets = int(trgt_task_param_dict['num_reset_layers'])
         pen_ult_nodes = trgt_task_param_dict['penultimate_node_list']
-        
+
         if 'output_activation' in trgt_task_param_dict:
             output_activation = trgt_task_param_dict['output_activation']
         else:
             output_activation = net_param_dict['output_activation']
-        
+
         ctr = 0
         while ctr < num_resets:
-            #Pops layer and returns layer info
-            pop_layer = self.model.layers.pop() 
-            print("Popping ",pop_layer.name," ..... ",end=' ')
+            # Pops layer and returns layer info
+            pop_layer = self.model.layers.pop()
+            print("Popping ", pop_layer.name, " ..... ", end=' ')
 
             # Count layers *with* trainable weights that get popped
             if len(pop_layer.weights) > 0:
@@ -322,7 +320,7 @@ class NetManager(object):
 
         output_layer = Dense(self.nb_output_nodes)(output_layer)
         output_layer = Activation(output_activation,
-                               name=output_activation + '_tfer_out')(output_layer)
+                                  name=output_activation + '_tfer_out')(output_layer)
 
         new_model = Model(inputs=[input_layer], outputs=[output_layer])
         self.model = new_model
@@ -342,14 +340,15 @@ class NetManager(object):
         self.model.add(Activation(output_activation,
                                   name=output_activation + '_tfer_out'))
        '''
+
     def check_for_saved_model_weights(self, net_param_dict, saved_param_dict):
 
         # Load weights (if necessary)
         if (len(saved_param_dict) == 0 or
-            ('saved_set_dir' not in saved_param_dict or
-             'saved_dir' not in saved_param_dict or
-             'saved_iter' not in saved_param_dict
-             )):
+                ('saved_set_dir' not in saved_param_dict or
+                 'saved_dir' not in saved_param_dict or
+                 'saved_iter' not in saved_param_dict
+                )):
 
             # No saved weights - training from scratch
             self.init_epoch = 0
@@ -360,17 +359,16 @@ class NetManager(object):
             net_dir = os.path.join(saved_param_dict['saved_set_dir'],
                                    saved_param_dict['saved_dir'])
             net_iter = saved_param_dict['saved_iter']
-            
 
-            if ('saved_weights_file' not in saved_param_dict):
+            if 'saved_weights_file' not in saved_param_dict:
 
                 if 'last' in str(net_iter).lower().strip():
 
                     # Load from final iteration
                     wt_files = [(os.path.join(net_dir, x),
                                  os.stat(os.path.join(net_dir, x)).st_mtime)
-                                 for x in os.listdir(net_dir)
-                                 if x[-3:] == '.h5']
+                                for x in os.listdir(net_dir)
+                                if x[-3:] == '.h5']
                     wt_files = sorted(wt_files, key=itemgetter(1))
                     wt_file = wt_files[-1][0]
                     self.init_epoch = int(wt_file.split('_')[-1].split('.')[0])
@@ -383,7 +381,7 @@ class NetManager(object):
                     # Load weights from specified iteration (or closest
                     # iteration prior to specified iteration)
                     self.init_epoch = int(net_iter.split('_')[0])
-                    #wt_file = os.path.join(net_dir, saved_param_dict['saved_dir'] +
+                    # wt_file = os.path.join(net_dir, saved_param_dict['saved_dir'] +
                     wt_file = os.path.join(net_dir,
                                            'checkpoint_weights_' +
                                            str(self.init_epoch) +
@@ -403,7 +401,7 @@ class NetManager(object):
                              "a saved weight file is explicitly named")
             print("Starting with weights from epoch %d" % self.init_epoch)
             if wt_file is not None:
-               print("   Loading wts from %s" % wt_file)
+                print("   Loading wts from %s" % wt_file)
             self.model.load_weights(wt_file)
 
             # Hacky way of ensuring that continuing training from a saved point
@@ -430,7 +428,7 @@ class NetManager(object):
                 # (i.e. init condits for trgt net)
                 if curr_file[-3:] != '.h5' or not self.nocheckpoint:
                     shutil.copy2(os.path.join(net_dir, curr_file), orig_expt_copy_dir)
-                elif  curr_file[-3:] == '.h5' and self.nocheckpoint:
+                elif curr_file[-3:] == '.h5' and self.nocheckpoint:
                     # Create soft link to original src file
                     curr_src = os.path.abspath(os.path.join(net_dir, curr_file))
                     curr_trgt = os.path.join(orig_expt_copy_dir, curr_file)
@@ -440,12 +438,12 @@ class NetManager(object):
                          test_data_generator):
         dm = self.data_manager
         init_train_loss, init_train_acc = \
-        self.model.evaluate_generator(dm.train_data_gen,
-                                      steps=dm.train_batches_per_epoch)
+            self.model.evaluate_generator(dm.train_data_gen,
+                                          steps=dm.train_batches_per_epoch)
 
         init_test_loss, init_test_acc = \
-        self.model.evaluate_generator(dm.test_data_gen,
-                                      steps=dm.test_batches_per_epoch)
+            self.model.evaluate_generator(dm.test_data_gen,
+                                          steps=dm.test_batches_per_epoch)
 
         print("\nInit loss and acc:                             loss: ",
               "%0.5f - %s: %0.5f - val_loss: %0.5f - %s: %0.5f" %
@@ -453,32 +451,31 @@ class NetManager(object):
                init_test_loss, self.val_acc_str, init_test_acc))
 
         return (init_train_loss, init_train_acc,
-               init_test_loss, init_test_acc)
+                init_test_loss, init_test_acc)
 
-            
     def train(self, data_augmentation=True):
 
-        checkpoint_dir = os.path.join(self.expt_dir,"checkpoints","checkpoint")
+        checkpoint_dir = os.path.join(self.expt_dir, "checkpoints", "checkpoint")
         results_path = os.path.join(self.expt_dir, 'results.txt')
         fig_path = [os.path.join(self.expt_dir, 'results_acc.png'),
                     os.path.join(self.expt_dir, 'results_loss.png')]
         json_path = os.path.join(self.expt_dir, 'results.json')
-    
+
         # Create data_generator - if necessary
         dm = self.data_manager
         if not dm.augment_param_dict:
             # No data generator used
-            print ("No data augmentation")
-            
+            print("No data augmentation")
+
         # Assemble Callbacks
         self.training_monitor = TrainingMonitor(fig_path, jsonPath=json_path,
-                                           resultsPath = results_path)
+                                                resultsPath=results_path)
         self.checkpointer = ModelCheckpoint(checkpoint_dir,
-                                            monitor = self.val_acc_str,
+                                            monitor=self.val_acc_str,
                                             verbose=1,
                                             data_manager=self.data_manager,
                                             period=self.epochs_per_recording,
-                                            nocheckpoint = self.nocheckpoint)
+                                            nocheckpoint=self.nocheckpoint)
 
         # Get results for initialized net
         self.training_monitor.record_start_time()
@@ -490,18 +487,17 @@ class NetManager(object):
                    'val_loss': init_test_loss}
         log_dir[self.train_acc_str] = init_train_acc
         log_dir[self.val_acc_str] = init_test_acc
-        
-        self.training_monitor.on_epoch_end(epoch=0,logs = log_dir)
+
+        self.training_monitor.on_epoch_end(epoch=0, logs=log_dir)
         self.checkpointer.set_model(self.model)
-        self.checkpointer.on_epoch_end(epoch=-1,logs = log_dir)
-        
+        self.checkpointer.on_epoch_end(epoch=-1, logs=log_dir)
+
         self.callbacks = [self.training_monitor, self.checkpointer]
         # Add lr scheduler
         if self.lr_schedule:
             self.callbacks.append(self.lr_schedule)
-        
+
         # Train Model: TBD - Move this code to run_expt.py
-        #dm = self.data_manager
+        # dm = self.data_manager
         self.best_score = self.checkpointer.best_score
         self.best_epoch = self.checkpointer.best_epoch
-        
