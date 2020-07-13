@@ -34,6 +34,7 @@ def write_shell_scripts(config_infile):
     # Create cmd strings to be exectued by shell scripts
     sh_str = "#!  /bin/bash \n\n"
     cmd_str_root = "python run_expt.py "
+    cmd_str_args = " --nocheckpoint"
     cmd_str_suffix = " > /dev/null 2>&1"
 
     # Create arguments for cmd strings (i.e. arguments for run_expt.py)
@@ -47,7 +48,7 @@ def write_shell_scripts(config_infile):
     full_batch_path = os.path.join(exec_sh_root_dir, full_batch_name)
     full_batch_file = open(full_batch_path, 'w')
     full_batch_file.write(sh_str)
-    echo_str = "echo 'time " + full_batch_path +"' `date` \n"
+    echo_str = "echo 'time " + full_batch_path[1:] +"' `date` \n"
     full_batch_file.write(echo_str)
 
     # Get list of params over which expts vary
@@ -74,24 +75,25 @@ def write_shell_scripts(config_infile):
         
         spc_batch_file = open(spc_batch_path, 'w')
         spc_batch_file.write(sh_str)
-        echo_str = "echo '    " + spc_batch_path +"' `date` \n\n"
+        echo_str = "echo '" + spc_batch_path[1:] +"' `date` \n\n"
         spc_batch_file.write(echo_str)
 
     
 
         for curr_SRC_EPOCH in src_epoch_list:
-            # Create shell scripts for give (source net, samples per class, source task training epochs)
+            # Create shell scripts for give (source net, samples per class,
+            #                                source task training epochs)
             curr_src_epoch_dir = os.path.join(curr_spc_dir, 'src_epoch_' + curr_SRC_EPOCH)
             os.makedirs(curr_src_epoch_dir, exist_ok=True)
 
             src_epoch_batch_name = 'batch_src_epoch_' + curr_SRC_EPOCH + '.sh'
             src_epoch_batch_path = os.path.join(curr_src_epoch_dir, 
                                                 src_epoch_batch_name)
-            print ("   ", src_epoch_batch_path)
+            print ("   ", src_epoch_batch_name)
             
             src_epoch_batch_file = open(src_epoch_batch_path, 'w')
             src_epoch_batch_file.write(sh_str)
-            echo_str = "echo '      " + src_epoch_batch_path +"' `date` \n\n"
+            echo_str = "echo '  " + src_epoch_batch_name +"' `date` \n\n"
             src_epoch_batch_file.write(echo_str)
 
             arg_str_prefix = os.path.join(arg_root_dir + curr_SPC, 
@@ -100,18 +102,23 @@ def write_shell_scripts(config_infile):
 
             for curr_SRC_NET in src_net_list:
                 # Create shell scripts for given source net
-                curr_src_net_dir = os.path.join(curr_src_epoch_dir, "src_net_" + curr_SRC_NET)
+                machine_name = curr_SRC_NET.split('_')[0]
+                version = curr_SRC_NET.split('_')[-1]
+                curr_src_net_dir = os.path.join(curr_src_epoch_dir,
+                                                '_'.join(['src_net',
+                                                          machine_name,
+                                                          version]))
                 os.makedirs(curr_src_net_dir, exist_ok=True)
 
-                src_net_batch_name = 'batch_src_net' + curr_SRC_NET + '.sh'
+                src_net_batch_name = '_'.join(['batch_src_net', machine_name, version + '.sh'])
                 src_net_batch_path = os.path.join(curr_src_net_dir, src_net_batch_name)
-                print ("      ",src_net_batch_path)
+                print ("      ",src_net_batch_name)
                 
                 src_net_batch_file = open(src_net_batch_path, 'w')
                 src_net_batch_file.write(sh_str)
-                echo_str = "echo '  " + src_net_batch_path +"' `date` \n\n"
+                echo_str = "echo '    " + src_net_batch_name +"' `date` \n\n"
                 src_net_batch_file.write(echo_str)
-                
+
                 for curr_TR_ID  in trgt_train_id_list:
                     # Create shell scripts for give (source net, samples per class,
                     #                                source task training epochs,
@@ -125,24 +132,27 @@ def write_shell_scripts(config_infile):
                     cfg_file_path = os.path.join(arg_root_dir,
                                                  "spc_" + curr_SPC,
                                                  "src_epoch_" + curr_SRC_EPOCH,
-                                                 "src_net_" + curr_SRC_NET,
+                                                 '_'.join(["src_net",
+                                                           machine_name,
+                                                           version]),
                                                  "tr_set_" + curr_TR_ID,
                                                  "tfer_net_0.cfg")
                     
-                    cmd_str = ' '.join([cmd_str_root, cfg_file_path, cmd_str_suffix, '\n\n'])
+                    cmd_str = ' '.join([cmd_str_root, cfg_file_path,
+                                        cmd_str_args, cmd_str_suffix, '\n\n'])
                     src_net_batch_file.write(cmd_str)
 
                 src_net_batch_file.close()
                 os.chmod(src_net_batch_path, 0o755)
-                src_epoch_batch_file.write(src_net_batch_path + '\n')
+                src_epoch_batch_file.write(src_net_batch_path[1:] + '\n')
 
             src_epoch_batch_file.close()
-            os.chmod(spc_batch_path, 0o755)
-            spc_batch_file.write(src_epoch_batch_path + '\n')
+            os.chmod(src_epoch_batch_path, 0o755)
+            spc_batch_file.write(src_epoch_batch_path[1:] + '\n')
 
         spc_batch_file.close()
         os.chmod(spc_batch_path, 0o755)
-        full_batch_file.write(spc_batch_path + '\n')
+        full_batch_file.write(spc_batch_path[1:] + '\n')
 
     full_batch_file.close()
     os.chmod(full_batch_path, 0o755)
@@ -154,7 +164,7 @@ if __name__ == "__main__":
     parser.add_argument("ExecCfg", help="execute cfg file for series of expts")
     parser.add_argument("--Major", type=str, default = "opt_tfer_expts",
                help="Directory for all expts in series")
-    parser.add_argument("--Data", type=str, default = "cifar_100_living_notliving_expts",
+    parser.add_argument("--Data", type=str, default = "cifar_100_living_notliving_2_expts",
                help="Directory for all expts using given datasets")
     parser.add_argument("--Arch", type=str, default = "wide_resnet_28_10",
                help="Directory for all expts using given net architecture")
@@ -180,3 +190,31 @@ if __name__ == "__main__":
     exec_config.read(exec_cfg_file)
     write_shell_scripts(exec_config)
 
+    '''
+    Creates tree of shell scripts to run batches of experiments.
+    Uses info from cfg file of this format:
+
+    [DirStructure]
+    expt_class: opt_tfer_expts
+    expt_datasets: cifar_100_living_notliving_2_expts
+    expt_arch: wide_resnet_28_10_arch
+    spc_prefix: spc_
+    src_epoch_prefix: src_epoch_
+    src_prefix: src_net_
+    tfer_tr_set_prefix: tr_set_
+    res_dir: results
+    enc_dir: cfg_dir/enc_cfg
+    expt_dir: cfg_dir/expt_cfg
+    src_nets_dir: src_nets/workshop_expts
+
+    [ExptParams]
+    src_net_list: Chanticleer_cifar_100_living_notliving_expts_v2
+    spc_list: 1, 5, 10, 25, 50, 100, 200, 250
+    src_epoch_list: 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, best
+    trgt_train_id_list: a
+
+    [ExecParams]
+    exec_sh_spc_dir: spc
+    exec_sh_file_prefix: cifar100_living_trgt_series
+    exec_sh_file_suffix: .sh
+    '''
