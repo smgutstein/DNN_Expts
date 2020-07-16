@@ -14,7 +14,7 @@ def get_src_tfer_expt_root_dirs(config_v):
     root_dir = os.path.join('..', path_dict['expt_dir'],
                             path_dict['expt_class'],
                             path_dict['expt_datasets'],
-                            path_dict['expt_arch'], 'tfer_nets_TEST')
+                            path_dict['expt_arch'], 'tfer_nets')
 
     # Root dir containing src nets
     src_net_root_dir = os.path.join('..', path_dict['res_dir'],
