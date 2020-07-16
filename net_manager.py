@@ -4,23 +4,20 @@ import curses
 import errno
 import importlib
 import inspect
-from keras.preprocessing.image import ImageDataGenerator
 from keras import backend as K
+from keras.initializers import glorot_uniform
 from keras.models import model_from_json, model_from_yaml
 from keras_loggers import TrainingMonitor, ModelCheckpoint
-from keras.models import Sequential, Model
-from keras.layers import Dense, Dropout, Flatten
+from keras.models import Model
+from keras.layers import Dense
 from net_architectures.sgActivation import Activation
 from net_architectures.AddRegularizer import add_regularizer
 import local_regularizer
-from lr_scheduler import StepLearningRateScheduler
 from lr_scheduler import LRScheduleFunction
 from operator import itemgetter
 import os
-import pickle
 import shutil
 import sys
-import types
 
 
 def is_int(in_str):
@@ -317,8 +314,10 @@ class NetManager(object):
 
         input_layer = self.model.layers[0].output
         output_layer = self.model.layers[-1].output
+        seed_initializer = glorot_uniform(seed=1453)
 
-        output_layer = Dense(self.nb_output_nodes)(output_layer)
+        output_layer = Dense(self.nb_output_nodes,
+                             kernel_initializer=seed_initializer)(output_layer)
         output_layer = Activation(output_activation,
                                   name=output_activation + '_tfer_out')(output_layer)
 
@@ -484,9 +483,9 @@ class NetManager(object):
                                                                 dm.test_data_gen)
         self.training_monitor.on_train_begin()
         log_dir = {'loss': init_train_loss,
-                   'val_loss': init_test_loss}
-        log_dir[self.train_acc_str] = init_train_acc
-        log_dir[self.val_acc_str] = init_test_acc
+                   'val_loss': init_test_loss,
+                   self.train_acc_str: init_train_acc,
+                   self.val_acc_str: init_test_acc}
 
         self.training_monitor.on_epoch_end(epoch=0, logs=log_dir)
         self.checkpointer.set_model(self.model)
