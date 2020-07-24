@@ -139,8 +139,8 @@ class DataManager(object):
         (self.X_test, self.y_test_classnum) = data_load_module.load_data()
 
         # Set batches (i.e. steps) per epoch
-        self.train_batches_per_epoch = self.y_train_classnum.shape[0] // self.batch_size
-        self.test_batches_per_epoch = self.y_test_classnum.shape[0] // self.batch_size
+        self.train_batches_per_epoch = self.y_train_classnum.shape[0] // self.batch_size + 1
+        self.test_batches_per_epoch = self.y_test_classnum.shape[0] // self.batch_size + 1
         
         # Get rows, cols and channels. Assume smallest dim, other than 0th
         # is channel dim
