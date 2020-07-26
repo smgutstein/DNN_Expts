@@ -147,7 +147,7 @@ class Runner(object):
         #                                      str(self.saved_param_dict['saved_iter']))
 
         # Make output_dir, if necessary        
-        self.expt_dir = self.host_machine + "_" + self.file_param_dict['expt_dir']
+        self.expt_dir = self.host_machine #+ "_" + self.file_param_dict['expt_dir']
         if not hasattr(self, 'outdir'):
             self.outdir = self.make_outdir(self.expt_set_dir, self.expt_dir)
             
@@ -196,6 +196,8 @@ class Runner(object):
                                    self.trgt_task_param_dict,
                                    self.preprocess_param_dict,
                                    self.augment_param_dict)
+        print("Built Data Manager")
+
 
         self.expt_net = NetManager(self.expt_dm, self.outdir,
                                    self.metadata_dir,
@@ -208,6 +210,7 @@ class Runner(object):
                                    self.saved_param_dict,
                                    self.trgt_task_param_dict,
                                    self.nocheckpoint)
+        print("Built Net Manager")
         return True
         
     def get_cmd_line_args(self):
