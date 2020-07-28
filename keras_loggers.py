@@ -112,9 +112,10 @@ class ModelCheckpoint(Callback):
                 # Save new best model
                 self.best_score = current
                 self.best_epoch = epoch
-                if self.nocheckpoint:
-                    return
-                elif self.save_weights_only:
+                #if self.nocheckpoint:
+                #    return
+                #elif self.save_weights_only:
+                if self.save_weights_only:
                     self.model.save_weights(outfile, overwrite=True)
                 else:
                     self.model.save(outfile, overwrite=True)
@@ -137,9 +138,9 @@ class ModelCheckpoint(Callback):
         self.encodings_saved = True
 
 
-    def save_net(self, trgt_file):
+    def save_net(self, trgt_file, init_net=False):
 
-        if self.nocheckpoint:
+        if self.nocheckpoint and not init_net:
             return
         
         if self.save_weights_only:
@@ -157,8 +158,9 @@ class ModelCheckpoint(Callback):
         curr_data_manager_file = self.filepath + '_encodings_' + str(epoch) + '.pkl'
         #old_data_manager_file = self.filepath + '_weights_' + str(epoch - 1) + '.pkl'
 
-
-        if (epoch % self.period) == 0:
+        if epoch == 0:
+            self.save_net(curr_weights_file, init_net=True)
+        elif (epoch % self.period) == 0:
             # Save every nth epoch
             self.save_net(curr_weights_file)
             #self.save_data_manager(epoch, "weights")

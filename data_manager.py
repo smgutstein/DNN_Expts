@@ -6,7 +6,7 @@ import pickle
 import sys
 import types
 
-from display_data.data_display import Data_Display
+#from display_data.data_display import Data_Display
 from keras.preprocessing.image import ImageDataGenerator
 
 ImageDataGen_args = {'featurewise_center': False, 'samplewise_center': False,
@@ -122,9 +122,9 @@ class DataManager(object):
         #######################################################################################
         
         # Might not need/want this anymore
-        self.data_display = Data_Display(self.X_test,
-                                         self.y_test_classnum,
-                                         self.label_dict)
+        #self.data_display = Data_Display(self.X_test,
+        #                                 self.y_test_classnum,
+        #                                 self.label_dict)
         
     def _init_num_name_dicts(self, category_name_file):
         # Make class_num/class_name dictionaries
@@ -139,8 +139,8 @@ class DataManager(object):
         (self.X_test, self.y_test_classnum) = data_load_module.load_data()
 
         # Set batches (i.e. steps) per epoch
-        self.train_batches_per_epoch = self.y_train_classnum.shape[0] // self.batch_size
-        self.test_batches_per_epoch = self.y_test_classnum.shape[0] // self.batch_size
+        self.train_batches_per_epoch = self.y_train_classnum.shape[0] // self.batch_size + 1
+        self.test_batches_per_epoch = self.y_test_classnum.shape[0] // self.batch_size + 1
         
         # Get rows, cols and channels. Assume smallest dim, other than 0th
         # is channel dim
@@ -165,19 +165,19 @@ class DataManager(object):
         for x in self.augment_param_dict:
             ImageDataGen_args[x] = self.augment_param_dict[x]
 
-        print("Preprocessing Images")
+        print("Preprocessing Train Images")
         self.train_image_gen = ImageDataGenerator(**ImageDataGen_args)
         self.train_image_gen.fit(self.X_train)
         self.train_data_gen = self.train_image_gen.flow(self.X_train,
                                                         self.Y_train_encoded,
                                                         self.batch_size)
         
+        print("Preprocessing Test Images")
         self.test_image_gen = ImageDataGenerator(**ImageDataGen_args)
         self.test_image_gen.fit(self.X_test)
         self.test_data_gen = self.test_image_gen.flow(self.X_test,
                                                       self.Y_test_encoded,
                                                       self.batch_size)
-        
 
     def encode_labels(self):
         """Convert array of class nums to arrays of encodings"""
@@ -212,8 +212,8 @@ class DataManager(object):
             Y[i, :] = nb_2_encoding_dict[y[i]]
         return Y
 
-    def display(self):
-        self.data_display.start_display()
+    #def display(self):
+    #    self.data_display.start_display()
 
     def get_targets_str(self):
         nums_per_row = 20

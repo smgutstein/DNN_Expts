@@ -164,9 +164,9 @@ if __name__ == "__main__":
     parser.add_argument("ExecCfg", help="execute cfg file for series of expts")
     parser.add_argument("--Major", type=str, default = "opt_tfer_expts",
                help="Directory for all expts in series")
-    parser.add_argument("--Data", type=str, default = "cifar_100_living_notliving_2_expts",
+    parser.add_argument("--Data", type=str, default = "cifar_100_living_notliving_expts",
                help="Directory for all expts using given datasets")
-    parser.add_argument("--Arch", type=str, default = "wide_resnet_28_10",
+    parser.add_argument("--Arch", type=str, default = "wide_resnet_28_10_arch",
                help="Directory for all expts using given net architecture")
     parser.add_argument("--Src", action="store_true",
                help="Directory for all expts using given net architecture")
@@ -186,6 +186,7 @@ if __name__ == "__main__":
                                  dataset, arch, config_leaf_dir,
                                  exec_cfg)
 
+    print("Reading: ",exec_cfg_file) 
     exec_config = configparser.ConfigParser()
     exec_config.read(exec_cfg_file)
     write_shell_scripts(exec_config)
