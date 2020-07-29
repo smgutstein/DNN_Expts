@@ -28,7 +28,7 @@ def load_data(label_mode='fine'):
         raise ValueError('`label_mode` must be one of `"fine"`, `"coarse"`.')
 
     path = os.path.join(home,'.keras/datasets/', 'cifar-100-python',
-                        'cifar100_living_not_living', 'src_tasks') 
+                        'cifar100_living_notliving', 'src_tasks') 
 
     fpath = os.path.join(path, 'train')
     x_train, y_train = load_batch(fpath, label_key=label_mode + '_labels')
