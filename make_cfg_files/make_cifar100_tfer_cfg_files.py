@@ -183,8 +183,8 @@ if __name__ == '__main__':
                     default="tfer_datasets",
                     help="dir for config files for set of expts")
     ap.add_argument("-s", "--cfg_subset_file", type=str,
-                   default="subsets.cfg",
-                   help="dir for config files for set of expts")
+                    default="subsets.cfg",
+                    help="dir for config files for set of expts")
 
     ap.add_argument("-c", "--cfg_skel", type=str,
                     default="tfer_net_skeleton_0.cfg",
@@ -196,8 +196,8 @@ if __name__ == '__main__':
 
     # Find and Read cfg file with info on trgt task datasets/expts 
     config_dir = os.path.join(args.cfg_root,
-                               args.cfg_branch,
-                               args.cfg_leaf)
+                              args.cfg_branch,
+                              args.cfg_leaf)
     config_file = os.path.join(config_dir, args.cfg_subset_file)
     print("Reading ", config_file)
     config = configparser.ConfigParser()
