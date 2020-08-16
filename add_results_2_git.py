@@ -1,5 +1,6 @@
 from git import Repo
 import os
+import subprocess
 
 
 def find_files(curr_dir, found_files=None):
@@ -37,4 +38,6 @@ for curr_result_root in result_root_list:
     found_files = find_files(curr_result_root)    
     git_add(found_files)
 
-git_commit()
+subprocess.run(["git", "checkout", "result_branch"], check=True)
+#git_commit()
+subprocess.run(["git", "checkout", "master"], check=True)
