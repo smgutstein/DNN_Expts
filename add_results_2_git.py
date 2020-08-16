@@ -31,8 +31,7 @@ def git_commit():
     repo = Repo('.')
     repo.git.commit('-m','adding results to tfer to/from BIERS cluster')
 
-result_root_list = ['./results/opt_tfer_expts/cifar_100_living_notliving_expts/wide_resnet_28_10_arch/src_nets/workshop_expts',
-                    './results/opt_tfer_expts/cifar_100_living_notliving_2_expts/wide_resnet_28_10_arch/tfer_nets']
+result_root_list = ['./results/opt_tfer_expts/cifar_100_living_living_expts/wide_resnet_28_10_arch/tfer_nets']
 
 for curr_result_root in result_root_list:
     found_files = find_files(curr_result_root)
