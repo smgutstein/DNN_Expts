@@ -35,9 +35,12 @@ result_root_list = ['./results/opt_tfer_expts/cifar_100_living_notliving_expts/w
                     './results/opt_tfer_expts/cifar_100_living_notliving_2_expts/wide_resnet_28_10_arch/tfer_nets']
 
 for curr_result_root in result_root_list:
-    found_files = find_files(curr_result_root)    
+    found_files = find_files(curr_result_root)
+    print("Found Files:")
+    for found_file in sorted(found_files):
+        print("    ",found_file)
     git_add(found_files)
 
 subprocess.run(["git", "checkout", "result_branch"], check=True)
-#git_commit()
+git_commit()
 subprocess.run(["git", "checkout", "master"], check=True)
