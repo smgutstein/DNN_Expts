@@ -1,0 +1,13 @@
+  batch_src_epoch_120.sh Mon Aug 17 16:06:23 EDT 2020
+    batch_src_net_alt08.arl.army.mil_v0.sh Mon Aug 17 16:06:23 EDT 2020
+          spc_25_src_epoch_120_tr_set_a Mon Aug 17 16:06:23 EDT 2020
+          spc_25_src_epoch_120_tr_set_b Mon Aug 17 17:16:15 EDT 2020
+          spc_25_src_epoch_120_tr_set_c Mon Aug 17 18:26:00 EDT 2020
+    batch_src_net_alt09.arl.army.mil_v0.sh Mon Aug 17 19:35:51 EDT 2020
+          spc_25_src_epoch_120_tr_set_a Mon Aug 17 19:35:51 EDT 2020
+          spc_25_src_epoch_120_tr_set_b Mon Aug 17 20:45:35 EDT 2020
+          spc_25_src_epoch_120_tr_set_c Mon Aug 17 21:55:15 EDT 2020
+    batch_src_net_alt10.arl.army.mil_v0.sh Mon Aug 17 23:04:54 EDT 2020
+          spc_25_src_epoch_120_tr_set_a Mon Aug 17 23:04:54 EDT 2020
+          spc_25_src_epoch_120_tr_set_b Tue Aug 18 00:14:17 EDT 2020
+          spc_25_src_epoch_120_tr_set_c Tue Aug 18 01:23:52 EDT 2020
