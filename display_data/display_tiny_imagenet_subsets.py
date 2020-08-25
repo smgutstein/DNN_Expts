@@ -11,7 +11,7 @@ file_dir = os.path.join(
 if file_dir not in sys.path:
     sys.path.append(file_dir)
 
-dict_path = './dataset_info/cifar100_dicts_all.pkl'
+dict_path = './dataset_info/tinyimagenet200_dicts_all.pkl'
 with open(dict_path,'rb') as f:
     label_dict = pickle.load(f, encoding='latin1')
     
