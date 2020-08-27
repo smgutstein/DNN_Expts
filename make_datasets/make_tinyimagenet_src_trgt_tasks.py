@@ -39,7 +39,7 @@ def make_data_dir(main_dir):
 def get_subtasks(subtasks, data_path, dataset, samps_per_class):
     num_classes = len(subtasks)
 
-    print("Loading data set")
+    print("\nLoading", os.path.join(data_path, dataset))
     data_dict = pickle.load(open(os.path.join(data_path, dataset), "rb"), encoding='latin1')
     classes_lists = pickle.load(open(os.path.join(data_path, 'meta'), 'rb'), encoding='latin1')
     coarse_classes = classes_lists['coarse_label_names']
@@ -81,7 +81,6 @@ def get_subtasks(subtasks, data_path, dataset, samps_per_class):
     subset_dict['data'.encode('utf-8')] = subset_data
     for curr_class in sorted(used_dict):
         print(coarse_classes[curr_class], "(", curr_class, "): ", used_dict[curr_class])
-    print("\n")
 
     return subset_dict, classes_lists
 
@@ -91,7 +90,7 @@ if __name__ == '__main__':
     # Get cfg file
     ap = argparse.ArgumentParser()
     ap.add_argument("-i", "--infile", type=str,
-                    default="../dataset_info/cifar100_src_trgt_v1.cfg",
+                    default="../dataset_info/tinyimagenet200_src_trgt_v1.cfg",
                     help="file with input parameters")
     args = ap.parse_args()
 
@@ -113,14 +112,14 @@ if __name__ == '__main__':
     source_name = config.get("output_names", "source")
     target_name = config.get("output_names", "target")
 
-    # Get source dir for cifar 100 data
+    # Get source dir for tiny imagenet 200 data
     home = expanduser("~")
     parent_dir = '.keras/datasets/'
-    data_dir = 'cifar-100-python'
+    data_dir = 'tiny-imagenet-200'
     data_path = os.path.join(home, parent_dir, data_dir)
 
     # Make ouput dirs 
-    expt_path = os.path.join(home, parent_dir, data_dir, expt_name)
+    expt_path = os.path.join(data_path, expt_name)
     try:
         os.makedirs(expt_path, exist_ok=True)
     except OSError:
@@ -135,7 +134,7 @@ if __name__ == '__main__':
         for set_type, spc in zip(["train", "test"], [train_spc, test_spc]):
             (sd, meta) = get_subtasks(tasks, data_path, set_type, spc)
             cPickle.dump(sd, open(os.path.join(out_path, set_type), 'wb'))
-            zz = cPickle.load(open(os.path.join(out_path, set_type), 'rb'), encoding='bytes')
+            print("Writing ", os.path.join(out_path, set_type))
         # Metadata does not vary between training & testing sets
         pickle.dump(meta, open(os.path.join(out_path, "meta"), 'wb'))
 
