@@ -28,11 +28,7 @@ def load_data(label_mode='fine'):
     if label_mode not in ['fine', 'coarse']:
         raise ValueError('`label_mode` must be one of `"fine"`, `"coarse"`.')
 
-    path = os.path.join(home,'.keras/datasets/', 'tiny-imagenet-200',
-                        'tiny-imagenet-200-orig') 
-
-    fpath = os.path.join(path, 'temp')
-    x_train, y_train = load_batch(fpath, label_key=label_mode + '_labels')
+    path = os.path.join(home,'.keras/datasets/', 'tiny-imagenet-200')
 
     fpath = os.path.join(path, 'train')
     x_train, y_train = load_batch(fpath, label_key=label_mode + '_labels')
@@ -50,8 +46,6 @@ def load_data(label_mode='fine'):
     x_train /= 255.
     x_test /= 255.
 
-    import pdb
-    pdb.set_trace()
     if K.image_data_format() == 'channels_last':
         x_train = x_train.transpose(0, 2, 3, 1)
         x_test = x_test.transpose(0, 2, 3, 1)
