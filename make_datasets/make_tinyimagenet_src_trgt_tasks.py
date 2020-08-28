@@ -6,6 +6,7 @@ import pickle
 import os
 from os.path import expanduser
 from six.moves import cPickle
+import sys
 
 
 def make_sure_data_dir_exists(dir_path):
@@ -44,6 +45,19 @@ def get_subtasks(subtasks, data_path, dataset, samps_per_class):
     classes_lists = pickle.load(open(os.path.join(data_path, 'meta'), 'rb'), encoding='latin1')
     coarse_classes = classes_lists['coarse_label_names']
 
+    # Check validity of subtasks list
+    coarse_set = set(coarse_classes)
+    subt_set = set(subtasks)
+    found_set = coarse_set.intersection(subt_set)
+    if len(found_set) != len(subt_set):
+       missing_set = subt_set - found_set
+       missing_list = sorted(list(missing_set))
+       print ("Error: Could not find the following classes:")
+       for x in missing_list:
+           print("    ",x)
+       print(" ")
+       sys.exit()
+      
     # Initialze info for subset_dict
     #  Images
     tot_images = samps_per_class * num_classes
@@ -79,8 +93,9 @@ def get_subtasks(subtasks, data_path, dataset, samps_per_class):
             pass
 
     subset_dict['data'.encode('utf-8')] = subset_data
+    print("Total Classes Used: ", len(used_dict), "out of", len(found_set))
     for curr_class in sorted(used_dict):
-        print(coarse_classes[curr_class], "(", curr_class, "): ", used_dict[curr_class])
+        print("  ",coarse_classes[curr_class], "(", curr_class, "): ", used_dict[curr_class])
 
     return subset_dict, classes_lists
 
