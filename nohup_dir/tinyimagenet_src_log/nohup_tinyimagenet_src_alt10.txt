@@ -1,0 +1,2428 @@
+2020-08-28 15:36:02.669951: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcuda.so.1
+2020-08-28 15:36:03.296111: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1555] Found device 0 with properties: 
+pciBusID: 0000:03:00.0 name: Quadro M6000 computeCapability: 5.2
+coreClock: 1.114GHz coreCount: 24 deviceMemorySize: 11.93GiB deviceMemoryBandwidth: 295.49GiB/s
+2020-08-28 15:36:03.305920: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudart.so.10.1
+2020-08-28 15:36:03.696098: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcublas.so.10
+2020-08-28 15:36:04.062000: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcufft.so.10
+2020-08-28 15:36:04.666494: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcurand.so.10
+2020-08-28 15:36:04.986845: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcusolver.so.10
+2020-08-28 15:36:05.233226: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcusparse.so.10
+2020-08-28 15:36:05.995334: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudnn.so.7
+2020-08-28 15:36:05.999351: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1697] Adding visible gpu devices: 0
+2020-08-28 15:36:06.000021: I tensorflow/core/platform/cpu_feature_guard.cc:142] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX AVX2 FMA
+2020-08-28 15:36:06.020918: I tensorflow/core/platform/profile_utils/cpu_utils.cc:94] CPU Frequency: 3099875000 Hz
+2020-08-28 15:36:06.025887: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x562ead02fbd0 initialized for platform Host (this does not guarantee that XLA will be used). Devices:
+2020-08-28 15:36:06.025942: I tensorflow/compiler/xla/service/service.cc:176]   StreamExecutor device (0): Host, Default Version
+2020-08-28 15:36:06.028180: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1555] Found device 0 with properties: 
+pciBusID: 0000:03:00.0 name: Quadro M6000 computeCapability: 5.2
+coreClock: 1.114GHz coreCount: 24 deviceMemorySize: 11.93GiB deviceMemoryBandwidth: 295.49GiB/s
+2020-08-28 15:36:06.028256: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudart.so.10.1
+2020-08-28 15:36:06.028291: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcublas.so.10
+2020-08-28 15:36:06.028321: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcufft.so.10
+2020-08-28 15:36:06.028349: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcurand.so.10
+2020-08-28 15:36:06.028378: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcusolver.so.10
+2020-08-28 15:36:06.028406: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcusparse.so.10
+2020-08-28 15:36:06.028435: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudnn.so.7
+2020-08-28 15:36:06.031378: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1697] Adding visible gpu devices: 0
+2020-08-28 15:36:06.031444: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudart.so.10.1
+2020-08-28 15:36:06.094745: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1096] Device interconnect StreamExecutor with strength 1 edge matrix:
+2020-08-28 15:36:06.094791: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1102]      0 
+2020-08-28 15:36:06.094810: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1115] 0:   N 
+2020-08-28 15:36:06.098202: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1241] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 11498 MB memory) -> physical GPU (device: 0, name: Quadro M6000, pci bus id: 0000:03:00.0, compute capability: 5.2)
+2020-08-28 15:36:06.101739: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x562ead520190 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+2020-08-28 15:36:06.101769: I tensorflow/compiler/xla/service/service.cc:176]   StreamExecutor device (0): Quadro M6000, Compute Capability 5.2
+QStandardPaths: XDG_RUNTIME_DIR not set, defaulting to '/tmp/runtime-sgutstei'
+Qt: XKEYBOARD extension not present on the X server.
+2020-08-28 15:36:20.125710: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcublas.so.10
+2020-08-28 15:36:20.508649: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudnn.so.7
+2020-08-28 15:36:24.250754: W tensorflow/stream_executor/gpu/redzone_allocator.cc:312] Not found: ./bin/ptxas not found
+Relying on driver to perform ptx compilation. This message will be only logged once.
+CMD LINE ARGS:
+config_files : ['./cfg_dir/expt_cfg/opt_tfer_expts/tinyimagenet_200_notliving_living_expts/wide_resnet_28_10_arch/src_nets/src_net_1.cfg']
+gpu : 
+dbg : False
+epochs : 0
+silent : False
+nocheckpoint : False
+Using TensorFlow backend.
+Saving results to results/opt_tfer_expts/tinyimagenet_200_notliving_living_expts/wide_resnet_28_10_arch/src_nets/workshop_expts/alt10.arl.army.mil_v0
+Loading data from dataset_loaders/tinyimagenet200_src_notliving_vs_living
+Encoding data
+Creating 1-hot encodings -  hot/not_hot (1.0000 / 0.0000)
+Creating encoding matrices for train & test data
+Preprocessing Train Images
+Preprocessing Test Images
+Built Data Manager
+Standard training
+Initializing data manager ...
+Using TensorFlow local_backend.
+Initializing architecture ...
+/mnt/growler/barleyhome/sgutstei/Projects/opt-tfer/net_architectures/wide_residual_network_base.py:13: UserWarning: Update your `Conv2D` call to the Keras 2 API: `Conv2D(16, (3, 3), padding="same", kernel_initializer="he_normal", use_bias=False, kernel_regularizer=<keras.reg...)`
+  use_bias=False)(input)
+/mnt/growler/barleyhome/sgutstei/Projects/opt-tfer/net_architectures/wide_residual_network_base.py:25: UserWarning: Update your `Conv2D` call to the Keras 2 API: `Conv2D(160, (3, 3), padding="same", strides=(1, 1), kernel_initializer="he_normal", use_bias=False, kernel_regularizer=<keras.reg...)`
+  use_bias=False)(init)
+/mnt/growler/barleyhome/sgutstei/Projects/opt-tfer/net_architectures/wide_residual_network_base.py:34: UserWarning: Update your `Conv2D` call to the Keras 2 API: `Conv2D(160, (3, 3), padding="same", kernel_initializer="he_normal", use_bias=False, kernel_regularizer=<keras.reg...)`
+  use_bias=False)(x)
+/mnt/growler/barleyhome/sgutstei/Projects/opt-tfer/net_architectures/wide_residual_network_base.py:38: UserWarning: Update your `Conv2D` call to the Keras 2 API: `Conv2D(160, (1, 1), padding="same", strides=(1, 1), kernel_initializer="he_normal", use_bias=False, kernel_regularizer=<keras.reg...)`
+  use_bias=False)(init)
+/mnt/growler/barleyhome/sgutstei/Projects/opt-tfer/net_architectures/wide_residual_network_base.py:54: UserWarning: Update your `Conv2D` call to the Keras 2 API: `Conv2D(160, (3, 3), padding="same", kernel_initializer="he_normal", use_bias=False, kernel_regularizer=<keras.reg...)`
+  use_bias=False)(x)
+/mnt/growler/barleyhome/sgutstei/Projects/opt-tfer/net_architectures/wide_residual_network_base.py:62: UserWarning: Update your `Conv2D` call to the Keras 2 API: `Conv2D(160, (3, 3), padding="same", kernel_initializer="he_normal", use_bias=False, kernel_regularizer=<keras.reg...)`
+  use_bias=False)(x)
+/mnt/growler/barleyhome/sgutstei/Projects/opt-tfer/net_architectures/wide_residual_network_base.py:25: UserWarning: Update your `Conv2D` call to the Keras 2 API: `Conv2D(320, (3, 3), padding="same", strides=(2, 2), kernel_initializer="he_normal", use_bias=False, kernel_regularizer=<keras.reg...)`
+  use_bias=False)(init)
+/mnt/growler/barleyhome/sgutstei/Projects/opt-tfer/net_architectures/wide_residual_network_base.py:34: UserWarning: Update your `Conv2D` call to the Keras 2 API: `Conv2D(320, (3, 3), padding="same", kernel_initializer="he_normal", use_bias=False, kernel_regularizer=<keras.reg...)`
+  use_bias=False)(x)
+/mnt/growler/barleyhome/sgutstei/Projects/opt-tfer/net_architectures/wide_residual_network_base.py:38: UserWarning: Update your `Conv2D` call to the Keras 2 API: `Conv2D(320, (1, 1), padding="same", strides=(2, 2), kernel_initializer="he_normal", use_bias=False, kernel_regularizer=<keras.reg...)`
+  use_bias=False)(init)
+/mnt/growler/barleyhome/sgutstei/Projects/opt-tfer/net_architectures/wide_residual_network_base.py:79: UserWarning: Update your `Conv2D` call to the Keras 2 API: `Conv2D(320, (3, 3), padding="same", kernel_initializer="he_normal", use_bias=False, kernel_regularizer=<keras.reg...)`
+  use_bias=False)(x)
+/mnt/growler/barleyhome/sgutstei/Projects/opt-tfer/net_architectures/wide_residual_network_base.py:87: UserWarning: Update your `Conv2D` call to the Keras 2 API: `Conv2D(320, (3, 3), padding="same", kernel_initializer="he_normal", use_bias=False, kernel_regularizer=<keras.reg...)`
+  use_bias=False)(x)
+/mnt/growler/barleyhome/sgutstei/Projects/opt-tfer/net_architectures/wide_residual_network_base.py:25: UserWarning: Update your `Conv2D` call to the Keras 2 API: `Conv2D(640, (3, 3), padding="same", strides=(2, 2), kernel_initializer="he_normal", use_bias=False, kernel_regularizer=<keras.reg...)`
+  use_bias=False)(init)
+/mnt/growler/barleyhome/sgutstei/Projects/opt-tfer/net_architectures/wide_residual_network_base.py:34: UserWarning: Update your `Conv2D` call to the Keras 2 API: `Conv2D(640, (3, 3), padding="same", kernel_initializer="he_normal", use_bias=False, kernel_regularizer=<keras.reg...)`
+  use_bias=False)(x)
+/mnt/growler/barleyhome/sgutstei/Projects/opt-tfer/net_architectures/wide_residual_network_base.py:38: UserWarning: Update your `Conv2D` call to the Keras 2 API: `Conv2D(640, (1, 1), padding="same", strides=(2, 2), kernel_initializer="he_normal", use_bias=False, kernel_regularizer=<keras.reg...)`
+  use_bias=False)(init)
+/mnt/growler/barleyhome/sgutstei/Projects/opt-tfer/net_architectures/wide_residual_network_base.py:104: UserWarning: Update your `Conv2D` call to the Keras 2 API: `Conv2D(640, (3, 3), padding="same", kernel_initializer="he_normal", use_bias=False, kernel_regularizer=<keras.reg...)`
+  use_bias=False)(x)
+/mnt/growler/barleyhome/sgutstei/Projects/opt-tfer/net_architectures/wide_residual_network_base.py:112: UserWarning: Update your `Conv2D` call to the Keras 2 API: `Conv2D(640, (3, 3), padding="same", kernel_initializer="he_normal", use_bias=False, kernel_regularizer=<keras.reg...)`
+  use_bias=False)(x)
+/mnt/growler/barleyhome/sgutstei/Projects/opt-tfer/net_architectures/wide_residual_network_base.py:172: UserWarning: Update your `Dense` call to the Keras 2 API: `Dense(65, activation="softmax", kernel_regularizer=<keras.reg...)`
+  x = Dense(nb_classes, W_regularizer=l2(weight_decay), activation='softmax')(x)
+Wide Residual Network-28-10 created.
+Starting with weights from epoch 0
+Compiling model ...
+Failed to import `pydot`. Please install `pydot`. For example with `pip install pydot`.
+Not saving graphical image of net
+
+============================================================
+
+Expt Info:
+
+NB Epochs: 200
+Expt Dir: results/opt_tfer_expts/tinyimagenet_200_notliving_living_expts/wide_resnet_28_10_arch/src_nets/workshop_expts/alt10.arl.army.mil_v0
+Expt Prefix: alt10.arl.army.mil_v0
+
+Model:
+Model: "model_1"
+__________________________________________________________________________________________________
+Layer (type)                    Output Shape         Param #     Connected to                     
+==================================================================================================
+input_1 (InputLayer)            (None, 32, 32, 3)    0                                            
+__________________________________________________________________________________________________
+conv2d_1 (Conv2D)               (None, 32, 32, 16)   432         input_1[0][0]                    
+__________________________________________________________________________________________________
+batch_normalization_1 (BatchNor (None, 32, 32, 16)   64          conv2d_1[0][0]                   
+__________________________________________________________________________________________________
+activation_1 (Activation)       (None, 32, 32, 16)   0           batch_normalization_1[0][0]      
+__________________________________________________________________________________________________
+conv2d_2 (Conv2D)               (None, 32, 32, 160)  23040       activation_1[0][0]               
+__________________________________________________________________________________________________
+batch_normalization_2 (BatchNor (None, 32, 32, 160)  640         conv2d_2[0][0]                   
+__________________________________________________________________________________________________
+activation_2 (Activation)       (None, 32, 32, 160)  0           batch_normalization_2[0][0]      
+__________________________________________________________________________________________________
+conv2d_3 (Conv2D)               (None, 32, 32, 160)  230400      activation_2[0][0]               
+__________________________________________________________________________________________________
+conv2d_4 (Conv2D)               (None, 32, 32, 160)  2560        activation_1[0][0]               
+__________________________________________________________________________________________________
+add_1 (Add)                     (None, 32, 32, 160)  0           conv2d_3[0][0]                   
+                                                                 conv2d_4[0][0]                   
+__________________________________________________________________________________________________
+batch_normalization_3 (BatchNor (None, 32, 32, 160)  640         add_1[0][0]                      
+__________________________________________________________________________________________________
+activation_3 (Activation)       (None, 32, 32, 160)  0           batch_normalization_3[0][0]      
+__________________________________________________________________________________________________
+conv2d_5 (Conv2D)               (None, 32, 32, 160)  230400      activation_3[0][0]               
+__________________________________________________________________________________________________
+batch_normalization_4 (BatchNor (None, 32, 32, 160)  640         conv2d_5[0][0]                   
+__________________________________________________________________________________________________
+activation_4 (Activation)       (None, 32, 32, 160)  0           batch_normalization_4[0][0]      
+__________________________________________________________________________________________________
+conv2d_6 (Conv2D)               (None, 32, 32, 160)  230400      activation_4[0][0]               
+__________________________________________________________________________________________________
+add_2 (Add)                     (None, 32, 32, 160)  0           add_1[0][0]                      
+                                                                 conv2d_6[0][0]                   
+__________________________________________________________________________________________________
+batch_normalization_5 (BatchNor (None, 32, 32, 160)  640         add_2[0][0]                      
+__________________________________________________________________________________________________
+activation_5 (Activation)       (None, 32, 32, 160)  0           batch_normalization_5[0][0]      
+__________________________________________________________________________________________________
+conv2d_7 (Conv2D)               (None, 32, 32, 160)  230400      activation_5[0][0]               
+__________________________________________________________________________________________________
+batch_normalization_6 (BatchNor (None, 32, 32, 160)  640         conv2d_7[0][0]                   
+__________________________________________________________________________________________________
+activation_6 (Activation)       (None, 32, 32, 160)  0           batch_normalization_6[0][0]      
+__________________________________________________________________________________________________
+conv2d_8 (Conv2D)               (None, 32, 32, 160)  230400      activation_6[0][0]               
+__________________________________________________________________________________________________
+add_3 (Add)                     (None, 32, 32, 160)  0           add_2[0][0]                      
+                                                                 conv2d_8[0][0]                   
+__________________________________________________________________________________________________
+batch_normalization_7 (BatchNor (None, 32, 32, 160)  640         add_3[0][0]                      
+__________________________________________________________________________________________________
+activation_7 (Activation)       (None, 32, 32, 160)  0           batch_normalization_7[0][0]      
+__________________________________________________________________________________________________
+conv2d_9 (Conv2D)               (None, 32, 32, 160)  230400      activation_7[0][0]               
+__________________________________________________________________________________________________
+batch_normalization_8 (BatchNor (None, 32, 32, 160)  640         conv2d_9[0][0]                   
+__________________________________________________________________________________________________
+activation_8 (Activation)       (None, 32, 32, 160)  0           batch_normalization_8[0][0]      
+__________________________________________________________________________________________________
+conv2d_10 (Conv2D)              (None, 32, 32, 160)  230400      activation_8[0][0]               
+__________________________________________________________________________________________________
+add_4 (Add)                     (None, 32, 32, 160)  0           add_3[0][0]                      
+                                                                 conv2d_10[0][0]                  
+__________________________________________________________________________________________________
+batch_normalization_9 (BatchNor (None, 32, 32, 160)  640         add_4[0][0]                      
+__________________________________________________________________________________________________
+activation_9 (Activation)       (None, 32, 32, 160)  0           batch_normalization_9[0][0]      
+__________________________________________________________________________________________________
+conv2d_11 (Conv2D)              (None, 16, 16, 320)  460800      activation_9[0][0]               
+__________________________________________________________________________________________________
+batch_normalization_10 (BatchNo (None, 16, 16, 320)  1280        conv2d_11[0][0]                  
+__________________________________________________________________________________________________
+activation_10 (Activation)      (None, 16, 16, 320)  0           batch_normalization_10[0][0]     
+__________________________________________________________________________________________________
+conv2d_12 (Conv2D)              (None, 16, 16, 320)  921600      activation_10[0][0]              
+__________________________________________________________________________________________________
+conv2d_13 (Conv2D)              (None, 16, 16, 320)  51200       activation_9[0][0]               
+__________________________________________________________________________________________________
+add_5 (Add)                     (None, 16, 16, 320)  0           conv2d_12[0][0]                  
+                                                                 conv2d_13[0][0]                  
+__________________________________________________________________________________________________
+batch_normalization_11 (BatchNo (None, 16, 16, 320)  1280        add_5[0][0]                      
+__________________________________________________________________________________________________
+activation_11 (Activation)      (None, 16, 16, 320)  0           batch_normalization_11[0][0]     
+__________________________________________________________________________________________________
+conv2d_14 (Conv2D)              (None, 16, 16, 320)  921600      activation_11[0][0]              
+__________________________________________________________________________________________________
+batch_normalization_12 (BatchNo (None, 16, 16, 320)  1280        conv2d_14[0][0]                  
+__________________________________________________________________________________________________
+activation_12 (Activation)      (None, 16, 16, 320)  0           batch_normalization_12[0][0]     
+__________________________________________________________________________________________________
+conv2d_15 (Conv2D)              (None, 16, 16, 320)  921600      activation_12[0][0]              
+__________________________________________________________________________________________________
+add_6 (Add)                     (None, 16, 16, 320)  0           add_5[0][0]                      
+                                                                 conv2d_15[0][0]                  
+__________________________________________________________________________________________________
+batch_normalization_13 (BatchNo (None, 16, 16, 320)  1280        add_6[0][0]                      
+__________________________________________________________________________________________________
+activation_13 (Activation)      (None, 16, 16, 320)  0           batch_normalization_13[0][0]     
+__________________________________________________________________________________________________
+conv2d_16 (Conv2D)              (None, 16, 16, 320)  921600      activation_13[0][0]              
+__________________________________________________________________________________________________
+batch_normalization_14 (BatchNo (None, 16, 16, 320)  1280        conv2d_16[0][0]                  
+__________________________________________________________________________________________________
+activation_14 (Activation)      (None, 16, 16, 320)  0           batch_normalization_14[0][0]     
+__________________________________________________________________________________________________
+conv2d_17 (Conv2D)              (None, 16, 16, 320)  921600      activation_14[0][0]              
+__________________________________________________________________________________________________
+add_7 (Add)                     (None, 16, 16, 320)  0           add_6[0][0]                      
+                                                                 conv2d_17[0][0]                  
+__________________________________________________________________________________________________
+batch_normalization_15 (BatchNo (None, 16, 16, 320)  1280        add_7[0][0]                      
+__________________________________________________________________________________________________
+activation_15 (Activation)      (None, 16, 16, 320)  0           batch_normalization_15[0][0]     
+__________________________________________________________________________________________________
+conv2d_18 (Conv2D)              (None, 16, 16, 320)  921600      activation_15[0][0]              
+__________________________________________________________________________________________________
+batch_normalization_16 (BatchNo (None, 16, 16, 320)  1280        conv2d_18[0][0]                  
+__________________________________________________________________________________________________
+activation_16 (Activation)      (None, 16, 16, 320)  0           batch_normalization_16[0][0]     
+__________________________________________________________________________________________________
+conv2d_19 (Conv2D)              (None, 16, 16, 320)  921600      activation_16[0][0]              
+__________________________________________________________________________________________________
+add_8 (Add)                     (None, 16, 16, 320)  0           add_7[0][0]                      
+                                                                 conv2d_19[0][0]                  
+__________________________________________________________________________________________________
+batch_normalization_17 (BatchNo (None, 16, 16, 320)  1280        add_8[0][0]                      
+__________________________________________________________________________________________________
+activation_17 (Activation)      (None, 16, 16, 320)  0           batch_normalization_17[0][0]     
+__________________________________________________________________________________________________
+conv2d_20 (Conv2D)              (None, 8, 8, 640)    1843200     activation_17[0][0]              
+__________________________________________________________________________________________________
+batch_normalization_18 (BatchNo (None, 8, 8, 640)    2560        conv2d_20[0][0]                  
+__________________________________________________________________________________________________
+activation_18 (Activation)      (None, 8, 8, 640)    0           batch_normalization_18[0][0]     
+__________________________________________________________________________________________________
+conv2d_21 (Conv2D)              (None, 8, 8, 640)    3686400     activation_18[0][0]              
+__________________________________________________________________________________________________
+conv2d_22 (Conv2D)              (None, 8, 8, 640)    204800      activation_17[0][0]              
+__________________________________________________________________________________________________
+add_9 (Add)                     (None, 8, 8, 640)    0           conv2d_21[0][0]                  
+                                                                 conv2d_22[0][0]                  
+__________________________________________________________________________________________________
+batch_normalization_19 (BatchNo (None, 8, 8, 640)    2560        add_9[0][0]                      
+__________________________________________________________________________________________________
+activation_19 (Activation)      (None, 8, 8, 640)    0           batch_normalization_19[0][0]     
+__________________________________________________________________________________________________
+conv2d_23 (Conv2D)              (None, 8, 8, 640)    3686400     activation_19[0][0]              
+__________________________________________________________________________________________________
+batch_normalization_20 (BatchNo (None, 8, 8, 640)    2560        conv2d_23[0][0]                  
+__________________________________________________________________________________________________
+activation_20 (Activation)      (None, 8, 8, 640)    0           batch_normalization_20[0][0]     
+__________________________________________________________________________________________________
+conv2d_24 (Conv2D)              (None, 8, 8, 640)    3686400     activation_20[0][0]              
+__________________________________________________________________________________________________
+add_10 (Add)                    (None, 8, 8, 640)    0           add_9[0][0]                      
+                                                                 conv2d_24[0][0]                  
+__________________________________________________________________________________________________
+batch_normalization_21 (BatchNo (None, 8, 8, 640)    2560        add_10[0][0]                     
+__________________________________________________________________________________________________
+activation_21 (Activation)      (None, 8, 8, 640)    0           batch_normalization_21[0][0]     
+__________________________________________________________________________________________________
+conv2d_25 (Conv2D)              (None, 8, 8, 640)    3686400     activation_21[0][0]              
+__________________________________________________________________________________________________
+batch_normalization_22 (BatchNo (None, 8, 8, 640)    2560        conv2d_25[0][0]                  
+__________________________________________________________________________________________________
+activation_22 (Activation)      (None, 8, 8, 640)    0           batch_normalization_22[0][0]     
+__________________________________________________________________________________________________
+conv2d_26 (Conv2D)              (None, 8, 8, 640)    3686400     activation_22[0][0]              
+__________________________________________________________________________________________________
+add_11 (Add)                    (None, 8, 8, 640)    0           add_10[0][0]                     
+                                                                 conv2d_26[0][0]                  
+__________________________________________________________________________________________________
+batch_normalization_23 (BatchNo (None, 8, 8, 640)    2560        add_11[0][0]                     
+__________________________________________________________________________________________________
+activation_23 (Activation)      (None, 8, 8, 640)    0           batch_normalization_23[0][0]     
+__________________________________________________________________________________________________
+conv2d_27 (Conv2D)              (None, 8, 8, 640)    3686400     activation_23[0][0]              
+__________________________________________________________________________________________________
+batch_normalization_24 (BatchNo (None, 8, 8, 640)    2560        conv2d_27[0][0]                  
+__________________________________________________________________________________________________
+activation_24 (Activation)      (None, 8, 8, 640)    0           batch_normalization_24[0][0]     
+__________________________________________________________________________________________________
+conv2d_28 (Conv2D)              (None, 8, 8, 640)    3686400     activation_24[0][0]              
+__________________________________________________________________________________________________
+add_12 (Add)                    (None, 8, 8, 640)    0           add_11[0][0]                     
+                                                                 conv2d_28[0][0]                  
+__________________________________________________________________________________________________
+batch_normalization_25 (BatchNo (None, 8, 8, 640)    2560        add_12[0][0]                     
+__________________________________________________________________________________________________
+activation_25 (Activation)      (None, 8, 8, 640)    0           batch_normalization_25[0][0]     
+__________________________________________________________________________________________________
+average_pooling2d_1 (AveragePoo (None, 1, 1, 640)    0           activation_25[0][0]              
+__________________________________________________________________________________________________
+flatten_1 (Flatten)             (None, 640)          0           average_pooling2d_1[0][0]        
+__________________________________________________________________________________________________
+dense_1 (Dense)                 (None, 65)           41665       flatten_1[0][0]                  
+==================================================================================================
+Total params: 36,532,401
+Trainable params: 36,514,449
+Non-trainable params: 17,952
+__________________________________________________________________________________________________
+
+============================================================
+
+
+3: +  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+   -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+   -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+   -  -  -  -  -  
+7: -  +  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+   -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+   -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+   -  -  -  -  -  
+8: -  -  +  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+   -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+   -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+   -  -  -  -  -  
+9: -  -  -  +  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+   -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+   -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+   -  -  -  -  -  
+17: -  -  -  -  +  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  
+18: -  -  -  -  -  +  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  
+22: -  -  -  -  -  -  +  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  
+24: -  -  -  -  -  -  -  +  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  
+25: -  -  -  -  -  -  -  -  +  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  
+26: -  -  -  -  -  -  -  -  -  +  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  
+37: -  -  -  -  -  -  -  -  -  -  +  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  
+38: -  -  -  -  -  -  -  -  -  -  -  +  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  
+41: -  -  -  -  -  -  -  -  -  -  -  -  +  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  
+42: -  -  -  -  -  -  -  -  -  -  -  -  -  +  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  
+48: -  -  -  -  -  -  -  -  -  -  -  -  -  -  +  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  
+49: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  +  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  
+50: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  +  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  
+54: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  +  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  
+58: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  +  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  
+62: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  +  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  
+64: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    +  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  
+68: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  +  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  
+69: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  +  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  
+73: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  +  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  
+76: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  +  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  
+77: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  +  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  
+82: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  +  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  
+87: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  +  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  
+88: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  +  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  
+89: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  +  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  
+91: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  +  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  
+96: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  +  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  
+98: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  +  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  
+100: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  +  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  
+101: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  +  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  
+102: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  +  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  
+104: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  +  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  
+109: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  +  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  
+112: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  +  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  
+113: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  +  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  
+116: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     +  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  
+118: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  +  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  
+123: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  +  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  
+129: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  +  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  
+130: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  +  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  
+132: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  +  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  
+133: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  +  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  
+134: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  +  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  
+138: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  +  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  
+141: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  +  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  
+143: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  +  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  
+145: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  +  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  
+148: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  +  -  -  -  -  -  -  -  
+     -  -  -  -  -  
+150: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  +  -  -  -  -  -  -  
+     -  -  -  -  -  
+152: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  +  -  -  -  -  -  
+     -  -  -  -  -  
+157: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  +  -  -  -  -  
+     -  -  -  -  -  
+160: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  +  -  -  -  
+     -  -  -  -  -  
+175: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  +  -  -  
+     -  -  -  -  -  
+178: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  +  -  
+     -  -  -  -  -  
+184: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  +  
+     -  -  -  -  -  
+186: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     +  -  -  -  -  
+187: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  +  -  -  -  
+191: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  +  -  -  
+194: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  +  -  
+197: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+     -  -  -  -  +  
+
+
+
+
+
+Total Classes: 65
+
+3:miniskirt -- 7:obelisk -- 8:plunger -- 9:bucket -- 17:cannon -- 
+18:broom -- 22:chain -- 24:espresso -- 25:seashore -- 26:organ -- 
+37:torch -- 38:tractor -- 41:desk -- 42:beacon -- 48:reel -- 
+49:iPod -- 50:abacus -- 54:dam -- 58:cliff -- 62:teapot -- 
+64:sunglasses -- 68:maypole -- 69:jinrikisha -- 73:barn -- 76:snorkel -- 
+77:turnstile -- 82:apron -- 87:potpie -- 88:lampshade -- 89:volleyball -- 
+91:lifeboat -- 96:crane -- 98:pretzel -- 100:oboe -- 101:syringe -- 
+102:birdhouse -- 104:fountain -- 109:barrel -- 112:alp -- 113:lakeside -- 
+116:vestment -- 118:gasmask -- 123:flagpole -- 129:wok -- 130:sandal -- 
+132:beaker -- 133:candle -- 134:basketball -- 138:nail -- 141:thatch -- 
+143:hourglass -- 145:plate -- 148:refrigerator -- 150:trolleybus -- 152:umbrella -- 
+157:dumbbell -- 160:sock -- 175:backpack -- 178:cardigan -- 184:pizza -- 
+186:limousine -- 187:stopwatch -- 191:chest -- 194:sombrero -- 197:projectile -- 
+
+Built Net Manager
+
+Init loss and acc:                             loss:  14.32737 - acc_top_1: 0.01532 - val_loss: 14.32737 - val_acc_top_1: 0.01662
+Saving results/opt_tfer_expts/tinyimagenet_200_notliving_living_expts/wide_resnet_28_10_arch/src_nets/workshop_expts/alt10.arl.army.mil_v0/checkpoints/checkpoint_encodings_0.pkl
+Epoch 00000: val_acc_top_1 improved from -inf to 0.01662, saving model to results/opt_tfer_expts/tinyimagenet_200_notliving_living_expts/wide_resnet_28_10_arch/src_nets/workshop_expts/alt10.arl.army.mil_v0/checkpoints/checkpoint_best_weights_0.h5
+
+========================================================================
+
+Epoch 1/200
+lr =  0.1
+
+Epoch 00001: LearningRateScheduler setting learning rate to 0.1.
+ - 207s - loss: 11.9233 - acc_top_1: 0.0722 - val_loss: 9.7488 - val_acc_top_1: 0.1329
+Epoch 00001: val_acc_top_1 improved from 0.01662 to 0.13292, saving model to results/opt_tfer_expts/tinyimagenet_200_notliving_living_expts/wide_resnet_28_10_arch/src_nets/workshop_expts/alt10.arl.army.mil_v0/checkpoints/checkpoint_best_weights_1.h5
+
+========================================================================
+
+Epoch 2/200
+lr =  0.1
+
+Epoch 00002: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 8.2194 - acc_top_1: 0.1666 - val_loss: 6.8839 - val_acc_top_1: 0.1920
+Epoch 00002: val_acc_top_1 improved from 0.13292 to 0.19200, saving model to results/opt_tfer_expts/tinyimagenet_200_notliving_living_expts/wide_resnet_28_10_arch/src_nets/workshop_expts/alt10.arl.army.mil_v0/checkpoints/checkpoint_best_weights_2.h5
+
+========================================================================
+
+Epoch 3/200
+lr =  0.1
+
+Epoch 00003: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 6.0510 - acc_top_1: 0.2279 - val_loss: 5.3139 - val_acc_top_1: 0.2508
+Epoch 00003: val_acc_top_1 improved from 0.19200 to 0.25077, saving model to results/opt_tfer_expts/tinyimagenet_200_notliving_living_expts/wide_resnet_28_10_arch/src_nets/workshop_expts/alt10.arl.army.mil_v0/checkpoints/checkpoint_best_weights_3.h5
+
+========================================================================
+
+Epoch 4/200
+lr =  0.1
+
+Epoch 00004: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 4.7588 - acc_top_1: 0.2760 - val_loss: 4.3341 - val_acc_top_1: 0.3062
+Epoch 00004: val_acc_top_1 improved from 0.25077 to 0.30615, saving model to results/opt_tfer_expts/tinyimagenet_200_notliving_living_expts/wide_resnet_28_10_arch/src_nets/workshop_expts/alt10.arl.army.mil_v0/checkpoints/checkpoint_best_weights_4.h5
+
+========================================================================
+
+Epoch 5/200
+lr =  0.1
+
+Epoch 00005: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 3.9610 - acc_top_1: 0.3178 - val_loss: 3.7325 - val_acc_top_1: 0.3302
+Epoch 00005: val_acc_top_1 improved from 0.30615 to 0.33015, saving model to results/opt_tfer_expts/tinyimagenet_200_notliving_living_expts/wide_resnet_28_10_arch/src_nets/workshop_expts/alt10.arl.army.mil_v0/checkpoints/checkpoint_best_weights_5.h5
+
+========================================================================
+
+Epoch 6/200
+lr =  0.1
+
+Epoch 00006: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 3.4622 - acc_top_1: 0.3534 - val_loss: 3.0944 - val_acc_top_1: 0.3618
+Epoch 00006: val_acc_top_1 improved from 0.33015 to 0.36185, saving model to results/opt_tfer_expts/tinyimagenet_200_notliving_living_expts/wide_resnet_28_10_arch/src_nets/workshop_expts/alt10.arl.army.mil_v0/checkpoints/checkpoint_best_weights_6.h5
+
+========================================================================
+
+Epoch 7/200
+lr =  0.1
+
+Epoch 00007: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 3.1629 - acc_top_1: 0.3770 - val_loss: 2.8645 - val_acc_top_1: 0.3874
+Epoch 00007: val_acc_top_1 improved from 0.36185 to 0.38738, saving model to results/opt_tfer_expts/tinyimagenet_200_notliving_living_expts/wide_resnet_28_10_arch/src_nets/workshop_expts/alt10.arl.army.mil_v0/checkpoints/checkpoint_best_weights_7.h5
+
+========================================================================
+
+Epoch 8/200
+lr =  0.1
+
+Epoch 00008: LearningRateScheduler setting learning rate to 0.1.
+ - 200s - loss: 2.9733 - acc_top_1: 0.4066 - val_loss: 2.7906 - val_acc_top_1: 0.3874
+Epoch 00008: val_acc_top_1 did not improve from 0.38738
+
+========================================================================
+
+Epoch 9/200
+lr =  0.1
+
+Epoch 00009: LearningRateScheduler setting learning rate to 0.1.
+ - 200s - loss: 2.8460 - acc_top_1: 0.4290 - val_loss: 2.5579 - val_acc_top_1: 0.4003
+Epoch 00009: val_acc_top_1 improved from 0.38738 to 0.40031, saving model to results/opt_tfer_expts/tinyimagenet_200_notliving_living_expts/wide_resnet_28_10_arch/src_nets/workshop_expts/alt10.arl.army.mil_v0/checkpoints/checkpoint_best_weights_9.h5
+
+========================================================================
+
+Epoch 10/200
+lr =  0.1
+
+Epoch 00010: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.7684 - acc_top_1: 0.4438 - val_loss: 2.7702 - val_acc_top_1: 0.4348
+Epoch 00010: val_acc_top_1 improved from 0.40031 to 0.43477, saving model to results/opt_tfer_expts/tinyimagenet_200_notliving_living_expts/wide_resnet_28_10_arch/src_nets/workshop_expts/alt10.arl.army.mil_v0/checkpoints/checkpoint_best_weights_10.h5
+
+========================================================================
+
+Epoch 11/200
+lr =  0.1
+
+Epoch 00011: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.7076 - acc_top_1: 0.4650 - val_loss: 2.7815 - val_acc_top_1: 0.4446
+Epoch 00011: val_acc_top_1 improved from 0.43477 to 0.44462, saving model to results/opt_tfer_expts/tinyimagenet_200_notliving_living_expts/wide_resnet_28_10_arch/src_nets/workshop_expts/alt10.arl.army.mil_v0/checkpoints/checkpoint_best_weights_11.h5
+
+========================================================================
+
+Epoch 12/200
+lr =  0.1
+
+Epoch 00012: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.6812 - acc_top_1: 0.4746 - val_loss: 2.8974 - val_acc_top_1: 0.4369
+Epoch 00012: val_acc_top_1 did not improve from 0.44462
+
+========================================================================
+
+Epoch 13/200
+lr =  0.1
+
+Epoch 00013: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.6673 - acc_top_1: 0.4830 - val_loss: 2.8399 - val_acc_top_1: 0.4514
+Epoch 00013: val_acc_top_1 improved from 0.44462 to 0.45138, saving model to results/opt_tfer_expts/tinyimagenet_200_notliving_living_expts/wide_resnet_28_10_arch/src_nets/workshop_expts/alt10.arl.army.mil_v0/checkpoints/checkpoint_best_weights_13.h5
+
+========================================================================
+
+Epoch 14/200
+lr =  0.1
+
+Epoch 00014: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.6492 - acc_top_1: 0.4959 - val_loss: 2.5147 - val_acc_top_1: 0.4529
+Epoch 00014: val_acc_top_1 improved from 0.45138 to 0.45292, saving model to results/opt_tfer_expts/tinyimagenet_200_notliving_living_expts/wide_resnet_28_10_arch/src_nets/workshop_expts/alt10.arl.army.mil_v0/checkpoints/checkpoint_best_weights_14.h5
+
+========================================================================
+
+Epoch 15/200
+lr =  0.1
+
+Epoch 00015: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.6396 - acc_top_1: 0.5056 - val_loss: 2.6516 - val_acc_top_1: 0.4412
+Epoch 00015: val_acc_top_1 did not improve from 0.45292
+
+========================================================================
+
+Epoch 16/200
+lr =  0.1
+
+Epoch 00016: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.6416 - acc_top_1: 0.5151 - val_loss: 3.1166 - val_acc_top_1: 0.4874
+Epoch 00016: val_acc_top_1 improved from 0.45292 to 0.48738, saving model to results/opt_tfer_expts/tinyimagenet_200_notliving_living_expts/wide_resnet_28_10_arch/src_nets/workshop_expts/alt10.arl.army.mil_v0/checkpoints/checkpoint_best_weights_16.h5
+
+========================================================================
+
+Epoch 17/200
+lr =  0.1
+
+Epoch 00017: LearningRateScheduler setting learning rate to 0.1.
+ - 200s - loss: 2.6341 - acc_top_1: 0.5209 - val_loss: 3.1929 - val_acc_top_1: 0.4720
+Epoch 00017: val_acc_top_1 did not improve from 0.48738
+
+========================================================================
+
+Epoch 18/200
+lr =  0.1
+
+Epoch 00018: LearningRateScheduler setting learning rate to 0.1.
+ - 200s - loss: 2.6363 - acc_top_1: 0.5326 - val_loss: 2.3776 - val_acc_top_1: 0.4908
+Epoch 00018: val_acc_top_1 improved from 0.48738 to 0.49077, saving model to results/opt_tfer_expts/tinyimagenet_200_notliving_living_expts/wide_resnet_28_10_arch/src_nets/workshop_expts/alt10.arl.army.mil_v0/checkpoints/checkpoint_best_weights_18.h5
+
+========================================================================
+
+Epoch 19/200
+lr =  0.1
+
+Epoch 00019: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.6338 - acc_top_1: 0.5384 - val_loss: 2.5569 - val_acc_top_1: 0.4683
+Epoch 00019: val_acc_top_1 did not improve from 0.49077
+
+========================================================================
+
+Epoch 20/200
+lr =  0.1
+
+Epoch 00020: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.6370 - acc_top_1: 0.5443 - val_loss: 3.1394 - val_acc_top_1: 0.4843
+Epoch 00020: val_acc_top_1 did not improve from 0.49077
+
+========================================================================
+
+Epoch 21/200
+lr =  0.1
+
+Epoch 00021: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.6489 - acc_top_1: 0.5458 - val_loss: 3.3202 - val_acc_top_1: 0.4815
+Epoch 00021: val_acc_top_1 did not improve from 0.49077
+
+========================================================================
+
+Epoch 22/200
+lr =  0.1
+
+Epoch 00022: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.6553 - acc_top_1: 0.5508 - val_loss: 2.8563 - val_acc_top_1: 0.5092
+Epoch 00022: val_acc_top_1 improved from 0.49077 to 0.50923, saving model to results/opt_tfer_expts/tinyimagenet_200_notliving_living_expts/wide_resnet_28_10_arch/src_nets/workshop_expts/alt10.arl.army.mil_v0/checkpoints/checkpoint_best_weights_22.h5
+
+========================================================================
+
+Epoch 23/200
+lr =  0.1
+
+Epoch 00023: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.6460 - acc_top_1: 0.5594 - val_loss: 3.2443 - val_acc_top_1: 0.5000
+Epoch 00023: val_acc_top_1 did not improve from 0.50923
+
+========================================================================
+
+Epoch 24/200
+lr =  0.1
+
+Epoch 00024: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.6485 - acc_top_1: 0.5627 - val_loss: 3.2868 - val_acc_top_1: 0.4871
+Epoch 00024: val_acc_top_1 did not improve from 0.50923
+
+========================================================================
+
+Epoch 25/200
+lr =  0.1
+
+Epoch 00025: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.6686 - acc_top_1: 0.5658 - val_loss: 2.7272 - val_acc_top_1: 0.4902
+Epoch 00025: val_acc_top_1 did not improve from 0.50923
+
+========================================================================
+
+Epoch 26/200
+lr =  0.1
+
+Epoch 00026: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.6710 - acc_top_1: 0.5682 - val_loss: 3.5325 - val_acc_top_1: 0.4868
+Epoch 00026: val_acc_top_1 did not improve from 0.50923
+
+========================================================================
+
+Epoch 27/200
+lr =  0.1
+
+Epoch 00027: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.6670 - acc_top_1: 0.5753 - val_loss: 3.1211 - val_acc_top_1: 0.4877
+Epoch 00027: val_acc_top_1 did not improve from 0.50923
+
+========================================================================
+
+Epoch 28/200
+lr =  0.1
+
+Epoch 00028: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.6775 - acc_top_1: 0.5760 - val_loss: 2.7326 - val_acc_top_1: 0.4868
+Epoch 00028: val_acc_top_1 did not improve from 0.50923
+
+========================================================================
+
+Epoch 29/200
+lr =  0.1
+
+Epoch 00029: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.6911 - acc_top_1: 0.5827 - val_loss: 2.9570 - val_acc_top_1: 0.5077
+Epoch 00029: val_acc_top_1 did not improve from 0.50923
+
+========================================================================
+
+Epoch 30/200
+lr =  0.1
+
+Epoch 00030: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.6884 - acc_top_1: 0.5825 - val_loss: 3.1129 - val_acc_top_1: 0.5194
+Epoch 00030: val_acc_top_1 improved from 0.50923 to 0.51938, saving model to results/opt_tfer_expts/tinyimagenet_200_notliving_living_expts/wide_resnet_28_10_arch/src_nets/workshop_expts/alt10.arl.army.mil_v0/checkpoints/checkpoint_best_weights_30.h5
+
+========================================================================
+
+Epoch 31/200
+lr =  0.1
+
+Epoch 00031: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.6983 - acc_top_1: 0.5849 - val_loss: 3.4143 - val_acc_top_1: 0.5046
+Epoch 00031: val_acc_top_1 did not improve from 0.51938
+
+========================================================================
+
+Epoch 32/200
+lr =  0.1
+
+Epoch 00032: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.7054 - acc_top_1: 0.5871 - val_loss: 2.7965 - val_acc_top_1: 0.5108
+Epoch 00032: val_acc_top_1 did not improve from 0.51938
+
+========================================================================
+
+Epoch 33/200
+lr =  0.1
+
+Epoch 00033: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.7072 - acc_top_1: 0.5934 - val_loss: 2.5276 - val_acc_top_1: 0.4948
+Epoch 00033: val_acc_top_1 did not improve from 0.51938
+
+========================================================================
+
+Epoch 34/200
+lr =  0.1
+
+Epoch 00034: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.7121 - acc_top_1: 0.5946 - val_loss: 2.8196 - val_acc_top_1: 0.5114
+Epoch 00034: val_acc_top_1 did not improve from 0.51938
+
+========================================================================
+
+Epoch 35/200
+lr =  0.1
+
+Epoch 00035: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.7171 - acc_top_1: 0.5956 - val_loss: 3.1369 - val_acc_top_1: 0.5034
+Epoch 00035: val_acc_top_1 did not improve from 0.51938
+
+========================================================================
+
+Epoch 36/200
+lr =  0.1
+
+Epoch 00036: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.7405 - acc_top_1: 0.5956 - val_loss: 3.0788 - val_acc_top_1: 0.5077
+Epoch 00036: val_acc_top_1 did not improve from 0.51938
+
+========================================================================
+
+Epoch 37/200
+lr =  0.1
+
+Epoch 00037: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.7401 - acc_top_1: 0.5994 - val_loss: 3.3731 - val_acc_top_1: 0.5200
+Epoch 00037: val_acc_top_1 improved from 0.51938 to 0.52000, saving model to results/opt_tfer_expts/tinyimagenet_200_notliving_living_expts/wide_resnet_28_10_arch/src_nets/workshop_expts/alt10.arl.army.mil_v0/checkpoints/checkpoint_best_weights_37.h5
+
+========================================================================
+
+Epoch 38/200
+lr =  0.1
+
+Epoch 00038: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.7274 - acc_top_1: 0.6062 - val_loss: 3.3245 - val_acc_top_1: 0.5089
+Epoch 00038: val_acc_top_1 did not improve from 0.52000
+
+========================================================================
+
+Epoch 39/200
+lr =  0.1
+
+Epoch 00039: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.7615 - acc_top_1: 0.6045 - val_loss: 3.1519 - val_acc_top_1: 0.5000
+Epoch 00039: val_acc_top_1 did not improve from 0.52000
+
+========================================================================
+
+Epoch 40/200
+lr =  0.1
+
+Epoch 00040: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.7506 - acc_top_1: 0.6069 - val_loss: 3.1905 - val_acc_top_1: 0.4908
+Epoch 00040: val_acc_top_1 did not improve from 0.52000
+
+========================================================================
+
+Epoch 41/200
+lr =  0.1
+
+Epoch 00041: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.7584 - acc_top_1: 0.6124 - val_loss: 3.6225 - val_acc_top_1: 0.5055
+Epoch 00041: val_acc_top_1 did not improve from 0.52000
+
+========================================================================
+
+Epoch 42/200
+lr =  0.1
+
+Epoch 00042: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.7696 - acc_top_1: 0.6102 - val_loss: 3.4528 - val_acc_top_1: 0.5098
+Epoch 00042: val_acc_top_1 did not improve from 0.52000
+
+========================================================================
+
+Epoch 43/200
+lr =  0.1
+
+Epoch 00043: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.7553 - acc_top_1: 0.6150 - val_loss: 3.5443 - val_acc_top_1: 0.5114
+Epoch 00043: val_acc_top_1 did not improve from 0.52000
+
+========================================================================
+
+Epoch 44/200
+lr =  0.1
+
+Epoch 00044: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.7809 - acc_top_1: 0.6123 - val_loss: 2.9008 - val_acc_top_1: 0.5022
+Epoch 00044: val_acc_top_1 did not improve from 0.52000
+
+========================================================================
+
+Epoch 45/200
+lr =  0.1
+
+Epoch 00045: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.7856 - acc_top_1: 0.6164 - val_loss: 2.7638 - val_acc_top_1: 0.5351
+Epoch 00045: val_acc_top_1 improved from 0.52000 to 0.53508, saving model to results/opt_tfer_expts/tinyimagenet_200_notliving_living_expts/wide_resnet_28_10_arch/src_nets/workshop_expts/alt10.arl.army.mil_v0/checkpoints/checkpoint_best_weights_45.h5
+
+========================================================================
+
+Epoch 46/200
+lr =  0.1
+
+Epoch 00046: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.7782 - acc_top_1: 0.6198 - val_loss: 3.0888 - val_acc_top_1: 0.5234
+Epoch 00046: val_acc_top_1 did not improve from 0.53508
+
+========================================================================
+
+Epoch 47/200
+lr =  0.1
+
+Epoch 00047: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.7848 - acc_top_1: 0.6213 - val_loss: 3.0796 - val_acc_top_1: 0.5160
+Epoch 00047: val_acc_top_1 did not improve from 0.53508
+
+========================================================================
+
+Epoch 48/200
+lr =  0.1
+
+Epoch 00048: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.8047 - acc_top_1: 0.6191 - val_loss: 3.4949 - val_acc_top_1: 0.5028
+Epoch 00048: val_acc_top_1 did not improve from 0.53508
+
+========================================================================
+
+Epoch 49/200
+lr =  0.1
+
+Epoch 00049: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.7928 - acc_top_1: 0.6222 - val_loss: 3.6636 - val_acc_top_1: 0.5142
+Epoch 00049: val_acc_top_1 did not improve from 0.53508
+
+========================================================================
+
+Epoch 50/200
+lr =  0.1
+
+Epoch 00050: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.8038 - acc_top_1: 0.6233 - val_loss: 3.6390 - val_acc_top_1: 0.5046
+Epoch 00050: val_acc_top_1 did not improve from 0.53508
+
+========================================================================
+
+Epoch 51/200
+lr =  0.1
+
+Epoch 00051: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.8099 - acc_top_1: 0.6222 - val_loss: 3.6419 - val_acc_top_1: 0.5083
+Epoch 00051: val_acc_top_1 did not improve from 0.53508
+
+========================================================================
+
+Epoch 52/200
+lr =  0.1
+
+Epoch 00052: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.8169 - acc_top_1: 0.6246 - val_loss: 3.7880 - val_acc_top_1: 0.5058
+Epoch 00052: val_acc_top_1 did not improve from 0.53508
+
+========================================================================
+
+Epoch 53/200
+lr =  0.1
+
+Epoch 00053: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.8274 - acc_top_1: 0.6267 - val_loss: 3.5482 - val_acc_top_1: 0.5098
+Epoch 00053: val_acc_top_1 did not improve from 0.53508
+
+========================================================================
+
+Epoch 54/200
+lr =  0.1
+
+Epoch 00054: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.8225 - acc_top_1: 0.6277 - val_loss: 3.6581 - val_acc_top_1: 0.5194
+Epoch 00054: val_acc_top_1 did not improve from 0.53508
+
+========================================================================
+
+Epoch 55/200
+lr =  0.1
+
+Epoch 00055: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.8296 - acc_top_1: 0.6287 - val_loss: 2.9904 - val_acc_top_1: 0.5163
+Epoch 00055: val_acc_top_1 did not improve from 0.53508
+
+========================================================================
+
+Epoch 56/200
+lr =  0.1
+
+Epoch 00056: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.8269 - acc_top_1: 0.6307 - val_loss: 3.4250 - val_acc_top_1: 0.5089
+Epoch 00056: val_acc_top_1 did not improve from 0.53508
+
+========================================================================
+
+Epoch 57/200
+lr =  0.1
+
+Epoch 00057: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.8314 - acc_top_1: 0.6322 - val_loss: 3.3987 - val_acc_top_1: 0.5095
+Epoch 00057: val_acc_top_1 did not improve from 0.53508
+
+========================================================================
+
+Epoch 58/200
+lr =  0.1
+
+Epoch 00058: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.8424 - acc_top_1: 0.6310 - val_loss: 3.3813 - val_acc_top_1: 0.5095
+Epoch 00058: val_acc_top_1 did not improve from 0.53508
+
+========================================================================
+
+Epoch 59/200
+lr =  0.1
+
+Epoch 00059: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.8579 - acc_top_1: 0.6313 - val_loss: 3.2104 - val_acc_top_1: 0.5068
+Epoch 00059: val_acc_top_1 did not improve from 0.53508
+
+========================================================================
+
+Epoch 60/200
+lr =  0.1
+
+Epoch 00060: LearningRateScheduler setting learning rate to 0.1.
+ - 199s - loss: 2.8511 - acc_top_1: 0.6332 - val_loss: 3.4119 - val_acc_top_1: 0.5237
+Epoch 00060: val_acc_top_1 did not improve from 0.53508
+
+========================================================================
+
+Epoch 61/200
+lr =  0.020000000000000004
+
+Epoch 00061: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 2.3168 - acc_top_1: 0.7717 - val_loss: 2.7703 - val_acc_top_1: 0.5988
+Epoch 00061: val_acc_top_1 improved from 0.53508 to 0.59877, saving model to results/opt_tfer_expts/tinyimagenet_200_notliving_living_expts/wide_resnet_28_10_arch/src_nets/workshop_expts/alt10.arl.army.mil_v0/checkpoints/checkpoint_best_weights_61.h5
+
+========================================================================
+
+Epoch 62/200
+lr =  0.020000000000000004
+
+Epoch 00062: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.8997 - acc_top_1: 0.8605 - val_loss: 3.1908 - val_acc_top_1: 0.6018
+Epoch 00062: val_acc_top_1 improved from 0.59877 to 0.60185, saving model to results/opt_tfer_expts/tinyimagenet_200_notliving_living_expts/wide_resnet_28_10_arch/src_nets/workshop_expts/alt10.arl.army.mil_v0/checkpoints/checkpoint_best_weights_62.h5
+
+========================================================================
+
+Epoch 63/200
+lr =  0.020000000000000004
+
+Epoch 00063: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.6776 - acc_top_1: 0.8936 - val_loss: 2.9682 - val_acc_top_1: 0.5945
+Epoch 00063: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 64/200
+lr =  0.020000000000000004
+
+Epoch 00064: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.5137 - acc_top_1: 0.9148 - val_loss: 2.7464 - val_acc_top_1: 0.5877
+Epoch 00064: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 65/200
+lr =  0.020000000000000004
+
+Epoch 00065: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.3810 - acc_top_1: 0.9307 - val_loss: 2.8233 - val_acc_top_1: 0.5883
+Epoch 00065: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 66/200
+lr =  0.020000000000000004
+
+Epoch 00066: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.2949 - acc_top_1: 0.9358 - val_loss: 3.0071 - val_acc_top_1: 0.5782
+Epoch 00066: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 67/200
+lr =  0.020000000000000004
+
+Epoch 00067: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 200s - loss: 1.2338 - acc_top_1: 0.9365 - val_loss: 2.9983 - val_acc_top_1: 0.5785
+Epoch 00067: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 68/200
+lr =  0.020000000000000004
+
+Epoch 00068: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1822 - acc_top_1: 0.9396 - val_loss: 2.5258 - val_acc_top_1: 0.5772
+Epoch 00068: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 69/200
+lr =  0.020000000000000004
+
+Epoch 00069: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1602 - acc_top_1: 0.9356 - val_loss: 3.4324 - val_acc_top_1: 0.5674
+Epoch 00069: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 70/200
+lr =  0.020000000000000004
+
+Epoch 00070: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1597 - acc_top_1: 0.9294 - val_loss: 3.0604 - val_acc_top_1: 0.5542
+Epoch 00070: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 71/200
+lr =  0.020000000000000004
+
+Epoch 00071: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1607 - acc_top_1: 0.9254 - val_loss: 3.2555 - val_acc_top_1: 0.5603
+Epoch 00071: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 72/200
+lr =  0.020000000000000004
+
+Epoch 00072: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1684 - acc_top_1: 0.9193 - val_loss: 2.9709 - val_acc_top_1: 0.5668
+Epoch 00072: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 73/200
+lr =  0.020000000000000004
+
+Epoch 00073: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1589 - acc_top_1: 0.9237 - val_loss: 3.2453 - val_acc_top_1: 0.5529
+Epoch 00073: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 74/200
+lr =  0.020000000000000004
+
+Epoch 00074: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1392 - acc_top_1: 0.9288 - val_loss: 3.1983 - val_acc_top_1: 0.5557
+Epoch 00074: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 75/200
+lr =  0.020000000000000004
+
+Epoch 00075: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1359 - acc_top_1: 0.9286 - val_loss: 2.9902 - val_acc_top_1: 0.5594
+Epoch 00075: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 76/200
+lr =  0.020000000000000004
+
+Epoch 00076: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1640 - acc_top_1: 0.9213 - val_loss: 3.1529 - val_acc_top_1: 0.5502
+Epoch 00076: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 77/200
+lr =  0.020000000000000004
+
+Epoch 00077: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1559 - acc_top_1: 0.9234 - val_loss: 3.0176 - val_acc_top_1: 0.5551
+Epoch 00077: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 78/200
+lr =  0.020000000000000004
+
+Epoch 00078: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1504 - acc_top_1: 0.9266 - val_loss: 2.8025 - val_acc_top_1: 0.5569
+Epoch 00078: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 79/200
+lr =  0.020000000000000004
+
+Epoch 00079: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1402 - acc_top_1: 0.9299 - val_loss: 2.7752 - val_acc_top_1: 0.5498
+Epoch 00079: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 80/200
+lr =  0.020000000000000004
+
+Epoch 00080: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1473 - acc_top_1: 0.9286 - val_loss: 2.3221 - val_acc_top_1: 0.5508
+Epoch 00080: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 81/200
+lr =  0.020000000000000004
+
+Epoch 00081: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 198s - loss: 1.1409 - acc_top_1: 0.9314 - val_loss: 3.5162 - val_acc_top_1: 0.5495
+Epoch 00081: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 82/200
+lr =  0.020000000000000004
+
+Epoch 00082: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1633 - acc_top_1: 0.9248 - val_loss: 3.6340 - val_acc_top_1: 0.5480
+Epoch 00082: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 83/200
+lr =  0.020000000000000004
+
+Epoch 00083: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1690 - acc_top_1: 0.9246 - val_loss: 2.7644 - val_acc_top_1: 0.5572
+Epoch 00083: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 84/200
+lr =  0.020000000000000004
+
+Epoch 00084: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1505 - acc_top_1: 0.9324 - val_loss: 2.5055 - val_acc_top_1: 0.5582
+Epoch 00084: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 85/200
+lr =  0.020000000000000004
+
+Epoch 00085: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1409 - acc_top_1: 0.9350 - val_loss: 2.4911 - val_acc_top_1: 0.5489
+Epoch 00085: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 86/200
+lr =  0.020000000000000004
+
+Epoch 00086: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1549 - acc_top_1: 0.9301 - val_loss: 3.4087 - val_acc_top_1: 0.5452
+Epoch 00086: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 87/200
+lr =  0.020000000000000004
+
+Epoch 00087: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1397 - acc_top_1: 0.9358 - val_loss: 2.8894 - val_acc_top_1: 0.5538
+Epoch 00087: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 88/200
+lr =  0.020000000000000004
+
+Epoch 00088: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 198s - loss: 1.1519 - acc_top_1: 0.9320 - val_loss: 2.3116 - val_acc_top_1: 0.5477
+Epoch 00088: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 89/200
+lr =  0.020000000000000004
+
+Epoch 00089: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1590 - acc_top_1: 0.9305 - val_loss: 4.0542 - val_acc_top_1: 0.5342
+Epoch 00089: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 90/200
+lr =  0.020000000000000004
+
+Epoch 00090: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1829 - acc_top_1: 0.9252 - val_loss: 3.4124 - val_acc_top_1: 0.5400
+Epoch 00090: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 91/200
+lr =  0.020000000000000004
+
+Epoch 00091: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1518 - acc_top_1: 0.9375 - val_loss: 3.0207 - val_acc_top_1: 0.5425
+Epoch 00091: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 92/200
+lr =  0.020000000000000004
+
+Epoch 00092: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1445 - acc_top_1: 0.9394 - val_loss: 4.3479 - val_acc_top_1: 0.5458
+Epoch 00092: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 93/200
+lr =  0.020000000000000004
+
+Epoch 00093: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1416 - acc_top_1: 0.9389 - val_loss: 3.3485 - val_acc_top_1: 0.5437
+Epoch 00093: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 94/200
+lr =  0.020000000000000004
+
+Epoch 00094: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1724 - acc_top_1: 0.9308 - val_loss: 3.2912 - val_acc_top_1: 0.5437
+Epoch 00094: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 95/200
+lr =  0.020000000000000004
+
+Epoch 00095: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1828 - acc_top_1: 0.9296 - val_loss: 3.1625 - val_acc_top_1: 0.5378
+Epoch 00095: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 96/200
+lr =  0.020000000000000004
+
+Epoch 00096: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 198s - loss: 1.1621 - acc_top_1: 0.9367 - val_loss: 3.7623 - val_acc_top_1: 0.5382
+Epoch 00096: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 97/200
+lr =  0.020000000000000004
+
+Epoch 00097: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1767 - acc_top_1: 0.9331 - val_loss: 3.0157 - val_acc_top_1: 0.5375
+Epoch 00097: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 98/200
+lr =  0.020000000000000004
+
+Epoch 00098: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1822 - acc_top_1: 0.9301 - val_loss: 3.7683 - val_acc_top_1: 0.5434
+Epoch 00098: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 99/200
+lr =  0.020000000000000004
+
+Epoch 00099: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1928 - acc_top_1: 0.9311 - val_loss: 2.9952 - val_acc_top_1: 0.5572
+Epoch 00099: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 100/200
+lr =  0.020000000000000004
+
+Epoch 00100: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1726 - acc_top_1: 0.9363 - val_loss: 3.4181 - val_acc_top_1: 0.5403
+Epoch 00100: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 101/200
+lr =  0.020000000000000004
+
+Epoch 00101: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1723 - acc_top_1: 0.9370 - val_loss: 3.7641 - val_acc_top_1: 0.5449
+Epoch 00101: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 102/200
+lr =  0.020000000000000004
+
+Epoch 00102: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1758 - acc_top_1: 0.9362 - val_loss: 3.5578 - val_acc_top_1: 0.5378
+Epoch 00102: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 103/200
+lr =  0.020000000000000004
+
+Epoch 00103: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1879 - acc_top_1: 0.9324 - val_loss: 3.0681 - val_acc_top_1: 0.5378
+Epoch 00103: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 104/200
+lr =  0.020000000000000004
+
+Epoch 00104: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1599 - acc_top_1: 0.9431 - val_loss: 3.8795 - val_acc_top_1: 0.5468
+Epoch 00104: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 105/200
+lr =  0.020000000000000004
+
+Epoch 00105: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1918 - acc_top_1: 0.9315 - val_loss: 3.2760 - val_acc_top_1: 0.5409
+Epoch 00105: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 106/200
+lr =  0.020000000000000004
+
+Epoch 00106: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1862 - acc_top_1: 0.9361 - val_loss: 2.8094 - val_acc_top_1: 0.5425
+Epoch 00106: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 107/200
+lr =  0.020000000000000004
+
+Epoch 00107: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1885 - acc_top_1: 0.9352 - val_loss: 3.8617 - val_acc_top_1: 0.5428
+Epoch 00107: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 108/200
+lr =  0.020000000000000004
+
+Epoch 00108: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.2000 - acc_top_1: 0.9342 - val_loss: 3.2362 - val_acc_top_1: 0.5366
+Epoch 00108: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 109/200
+lr =  0.020000000000000004
+
+Epoch 00109: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1910 - acc_top_1: 0.9362 - val_loss: 2.6994 - val_acc_top_1: 0.5477
+Epoch 00109: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 110/200
+lr =  0.020000000000000004
+
+Epoch 00110: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1831 - acc_top_1: 0.9387 - val_loss: 3.4048 - val_acc_top_1: 0.5455
+Epoch 00110: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 111/200
+lr =  0.020000000000000004
+
+Epoch 00111: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1945 - acc_top_1: 0.9340 - val_loss: 3.1987 - val_acc_top_1: 0.5378
+Epoch 00111: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 112/200
+lr =  0.020000000000000004
+
+Epoch 00112: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1844 - acc_top_1: 0.9394 - val_loss: 2.7697 - val_acc_top_1: 0.5440
+Epoch 00112: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 113/200
+lr =  0.020000000000000004
+
+Epoch 00113: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1933 - acc_top_1: 0.9365 - val_loss: 4.0496 - val_acc_top_1: 0.5477
+Epoch 00113: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 114/200
+lr =  0.020000000000000004
+
+Epoch 00114: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1969 - acc_top_1: 0.9374 - val_loss: 3.0182 - val_acc_top_1: 0.5449
+Epoch 00114: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 115/200
+lr =  0.020000000000000004
+
+Epoch 00115: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1896 - acc_top_1: 0.9393 - val_loss: 3.7641 - val_acc_top_1: 0.5502
+Epoch 00115: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 116/200
+lr =  0.020000000000000004
+
+Epoch 00116: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1743 - acc_top_1: 0.9427 - val_loss: 2.8523 - val_acc_top_1: 0.5369
+Epoch 00116: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 117/200
+lr =  0.020000000000000004
+
+Epoch 00117: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1877 - acc_top_1: 0.9378 - val_loss: 3.8712 - val_acc_top_1: 0.5375
+Epoch 00117: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 118/200
+lr =  0.020000000000000004
+
+Epoch 00118: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1844 - acc_top_1: 0.9383 - val_loss: 2.6357 - val_acc_top_1: 0.5492
+Epoch 00118: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 119/200
+lr =  0.020000000000000004
+
+Epoch 00119: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1847 - acc_top_1: 0.9387 - val_loss: 2.7140 - val_acc_top_1: 0.5425
+Epoch 00119: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 120/200
+lr =  0.020000000000000004
+
+Epoch 00120: LearningRateScheduler setting learning rate to 0.020000000000000004.
+ - 199s - loss: 1.1965 - acc_top_1: 0.9363 - val_loss: 3.8312 - val_acc_top_1: 0.5492
+Epoch 00120: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 121/200
+lr =  0.004000000000000001
+
+Epoch 00121: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 1.0902 - acc_top_1: 0.9695 - val_loss: 2.3624 - val_acc_top_1: 0.5840
+Epoch 00121: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 122/200
+lr =  0.004000000000000001
+
+Epoch 00122: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.9951 - acc_top_1: 0.9942 - val_loss: 2.7836 - val_acc_top_1: 0.5880
+Epoch 00122: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 123/200
+lr =  0.004000000000000001
+
+Epoch 00123: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.9658 - acc_top_1: 0.9967 - val_loss: 2.9927 - val_acc_top_1: 0.5932
+Epoch 00123: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 124/200
+lr =  0.004000000000000001
+
+Epoch 00124: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.9429 - acc_top_1: 0.9978 - val_loss: 3.0869 - val_acc_top_1: 0.5855
+Epoch 00124: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 125/200
+lr =  0.004000000000000001
+
+Epoch 00125: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.9217 - acc_top_1: 0.9984 - val_loss: 3.0200 - val_acc_top_1: 0.5895
+Epoch 00125: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 126/200
+lr =  0.004000000000000001
+
+Epoch 00126: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.9011 - acc_top_1: 0.9991 - val_loss: 3.1297 - val_acc_top_1: 0.5831
+Epoch 00126: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 127/200
+lr =  0.004000000000000001
+
+Epoch 00127: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.8829 - acc_top_1: 0.9992 - val_loss: 2.3805 - val_acc_top_1: 0.5898
+Epoch 00127: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 128/200
+lr =  0.004000000000000001
+
+Epoch 00128: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.8650 - acc_top_1: 0.9989 - val_loss: 2.6908 - val_acc_top_1: 0.5975
+Epoch 00128: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 129/200
+lr =  0.004000000000000001
+
+Epoch 00129: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.8472 - acc_top_1: 0.9992 - val_loss: 2.8554 - val_acc_top_1: 0.5895
+Epoch 00129: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 130/200
+lr =  0.004000000000000001
+
+Epoch 00130: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.8303 - acc_top_1: 0.9992 - val_loss: 3.2463 - val_acc_top_1: 0.5954
+Epoch 00130: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 131/200
+lr =  0.004000000000000001
+
+Epoch 00131: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.8133 - acc_top_1: 0.9995 - val_loss: 2.8546 - val_acc_top_1: 0.5997
+Epoch 00131: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 132/200
+lr =  0.004000000000000001
+
+Epoch 00132: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.7976 - acc_top_1: 0.9992 - val_loss: 2.4288 - val_acc_top_1: 0.5997
+Epoch 00132: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 133/200
+lr =  0.004000000000000001
+
+Epoch 00133: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.7812 - acc_top_1: 0.9998 - val_loss: 2.3853 - val_acc_top_1: 0.5902
+Epoch 00133: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 134/200
+lr =  0.004000000000000001
+
+Epoch 00134: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.7657 - acc_top_1: 0.9997 - val_loss: 3.2264 - val_acc_top_1: 0.5908
+Epoch 00134: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 135/200
+lr =  0.004000000000000001
+
+Epoch 00135: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.7501 - acc_top_1: 0.9998 - val_loss: 2.7415 - val_acc_top_1: 0.5886
+Epoch 00135: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 136/200
+lr =  0.004000000000000001
+
+Epoch 00136: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.7356 - acc_top_1: 0.9996 - val_loss: 3.4240 - val_acc_top_1: 0.5935
+Epoch 00136: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 137/200
+lr =  0.004000000000000001
+
+Epoch 00137: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.7203 - acc_top_1: 0.9999 - val_loss: 2.6727 - val_acc_top_1: 0.5982
+Epoch 00137: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 138/200
+lr =  0.004000000000000001
+
+Epoch 00138: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.7064 - acc_top_1: 0.9997 - val_loss: 2.8143 - val_acc_top_1: 0.5966
+Epoch 00138: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 139/200
+lr =  0.004000000000000001
+
+Epoch 00139: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.6924 - acc_top_1: 0.9997 - val_loss: 2.0671 - val_acc_top_1: 0.5969
+Epoch 00139: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 140/200
+lr =  0.004000000000000001
+
+Epoch 00140: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.6786 - acc_top_1: 0.9998 - val_loss: 2.9228 - val_acc_top_1: 0.5982
+Epoch 00140: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 141/200
+lr =  0.004000000000000001
+
+Epoch 00141: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.6650 - acc_top_1: 0.9999 - val_loss: 2.0807 - val_acc_top_1: 0.5862
+Epoch 00141: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 142/200
+lr =  0.004000000000000001
+
+Epoch 00142: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.6523 - acc_top_1: 0.9997 - val_loss: 2.6316 - val_acc_top_1: 0.5966
+Epoch 00142: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 143/200
+lr =  0.004000000000000001
+
+Epoch 00143: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.6393 - acc_top_1: 0.9999 - val_loss: 1.9903 - val_acc_top_1: 0.5923
+Epoch 00143: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 144/200
+lr =  0.004000000000000001
+
+Epoch 00144: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.6265 - acc_top_1: 0.9998 - val_loss: 2.2916 - val_acc_top_1: 0.5954
+Epoch 00144: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 145/200
+lr =  0.004000000000000001
+
+Epoch 00145: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.6141 - acc_top_1: 0.9998 - val_loss: 2.5131 - val_acc_top_1: 0.6003
+Epoch 00145: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 146/200
+lr =  0.004000000000000001
+
+Epoch 00146: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.6023 - acc_top_1: 0.9998 - val_loss: 2.3309 - val_acc_top_1: 0.5988
+Epoch 00146: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 147/200
+lr =  0.004000000000000001
+
+Epoch 00147: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 200s - loss: 0.5901 - acc_top_1: 0.9998 - val_loss: 2.8007 - val_acc_top_1: 0.5938
+Epoch 00147: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 148/200
+lr =  0.004000000000000001
+
+Epoch 00148: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.5786 - acc_top_1: 0.9998 - val_loss: 2.6111 - val_acc_top_1: 0.5920
+Epoch 00148: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 149/200
+lr =  0.004000000000000001
+
+Epoch 00149: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.5670 - acc_top_1: 0.9998 - val_loss: 2.6397 - val_acc_top_1: 0.5926
+Epoch 00149: val_acc_top_1 did not improve from 0.60185
+
+========================================================================
+
+Epoch 150/200
+lr =  0.004000000000000001
+
+Epoch 00150: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.5561 - acc_top_1: 0.9999 - val_loss: 2.4181 - val_acc_top_1: 0.6034
+Epoch 00150: val_acc_top_1 improved from 0.60185 to 0.60338, saving model to results/opt_tfer_expts/tinyimagenet_200_notliving_living_expts/wide_resnet_28_10_arch/src_nets/workshop_expts/alt10.arl.army.mil_v0/checkpoints/checkpoint_best_weights_150.h5
+
+========================================================================
+
+Epoch 151/200
+lr =  0.004000000000000001
+
+Epoch 00151: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.5454 - acc_top_1: 0.9998 - val_loss: 2.0913 - val_acc_top_1: 0.5982
+Epoch 00151: val_acc_top_1 did not improve from 0.60338
+
+========================================================================
+
+Epoch 152/200
+lr =  0.004000000000000001
+
+Epoch 00152: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.5342 - acc_top_1: 0.9999 - val_loss: 2.2801 - val_acc_top_1: 0.5966
+Epoch 00152: val_acc_top_1 did not improve from 0.60338
+
+========================================================================
+
+Epoch 153/200
+lr =  0.004000000000000001
+
+Epoch 00153: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.5240 - acc_top_1: 0.9998 - val_loss: 1.6474 - val_acc_top_1: 0.5985
+Epoch 00153: val_acc_top_1 did not improve from 0.60338
+
+========================================================================
+
+Epoch 154/200
+lr =  0.004000000000000001
+
+Epoch 00154: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.5141 - acc_top_1: 0.9998 - val_loss: 3.1575 - val_acc_top_1: 0.5914
+Epoch 00154: val_acc_top_1 did not improve from 0.60338
+
+========================================================================
+
+Epoch 155/200
+lr =  0.004000000000000001
+
+Epoch 00155: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.5035 - acc_top_1: 1.0000 - val_loss: 2.1397 - val_acc_top_1: 0.5975
+Epoch 00155: val_acc_top_1 did not improve from 0.60338
+
+========================================================================
+
+Epoch 156/200
+lr =  0.004000000000000001
+
+Epoch 00156: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.4937 - acc_top_1: 0.9999 - val_loss: 1.7749 - val_acc_top_1: 0.6025
+Epoch 00156: val_acc_top_1 did not improve from 0.60338
+
+========================================================================
+
+Epoch 157/200
+lr =  0.004000000000000001
+
+Epoch 00157: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.4839 - acc_top_1: 1.0000 - val_loss: 2.9334 - val_acc_top_1: 0.6003
+Epoch 00157: val_acc_top_1 did not improve from 0.60338
+
+========================================================================
+
+Epoch 158/200
+lr =  0.004000000000000001
+
+Epoch 00158: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.4744 - acc_top_1: 1.0000 - val_loss: 2.5622 - val_acc_top_1: 0.6074
+Epoch 00158: val_acc_top_1 improved from 0.60338 to 0.60738, saving model to results/opt_tfer_expts/tinyimagenet_200_notliving_living_expts/wide_resnet_28_10_arch/src_nets/workshop_expts/alt10.arl.army.mil_v0/checkpoints/checkpoint_best_weights_158.h5
+
+========================================================================
+
+Epoch 159/200
+lr =  0.004000000000000001
+
+Epoch 00159: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.4654 - acc_top_1: 0.9999 - val_loss: 1.7292 - val_acc_top_1: 0.5997
+Epoch 00159: val_acc_top_1 did not improve from 0.60738
+
+========================================================================
+
+Epoch 160/200
+lr =  0.004000000000000001
+
+Epoch 00160: LearningRateScheduler setting learning rate to 0.004000000000000001.
+ - 199s - loss: 0.4562 - acc_top_1: 0.9999 - val_loss: 1.9185 - val_acc_top_1: 0.6000
+Epoch 00160: val_acc_top_1 did not improve from 0.60738
+
+========================================================================
+
+Epoch 161/200
+lr =  0.0008000000000000003
+
+Epoch 00161: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.4506 - acc_top_1: 0.9998 - val_loss: 1.7188 - val_acc_top_1: 0.6025
+Epoch 00161: val_acc_top_1 did not improve from 0.60738
+
+========================================================================
+
+Epoch 162/200
+lr =  0.0008000000000000003
+
+Epoch 00162: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.4486 - acc_top_1: 1.0000 - val_loss: 2.8117 - val_acc_top_1: 0.5972
+Epoch 00162: val_acc_top_1 did not improve from 0.60738
+
+========================================================================
+
+Epoch 163/200
+lr =  0.0008000000000000003
+
+Epoch 00163: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.4469 - acc_top_1: 0.9999 - val_loss: 2.1375 - val_acc_top_1: 0.6058
+Epoch 00163: val_acc_top_1 did not improve from 0.60738
+
+========================================================================
+
+Epoch 164/200
+lr =  0.0008000000000000003
+
+Epoch 00164: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.4450 - acc_top_1: 0.9998 - val_loss: 2.8110 - val_acc_top_1: 0.5942
+Epoch 00164: val_acc_top_1 did not improve from 0.60738
+
+========================================================================
+
+Epoch 165/200
+lr =  0.0008000000000000003
+
+Epoch 00165: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.4434 - acc_top_1: 0.9999 - val_loss: 1.7837 - val_acc_top_1: 0.6003
+Epoch 00165: val_acc_top_1 did not improve from 0.60738
+
+========================================================================
+
+Epoch 166/200
+lr =  0.0008000000000000003
+
+Epoch 00166: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.4415 - acc_top_1: 0.9999 - val_loss: 2.3160 - val_acc_top_1: 0.6098
+Epoch 00166: val_acc_top_1 improved from 0.60738 to 0.60985, saving model to results/opt_tfer_expts/tinyimagenet_200_notliving_living_expts/wide_resnet_28_10_arch/src_nets/workshop_expts/alt10.arl.army.mil_v0/checkpoints/checkpoint_best_weights_166.h5
+
+========================================================================
+
+Epoch 167/200
+lr =  0.0008000000000000003
+
+Epoch 00167: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.4397 - acc_top_1: 0.9999 - val_loss: 2.9896 - val_acc_top_1: 0.5938
+Epoch 00167: val_acc_top_1 did not improve from 0.60985
+
+========================================================================
+
+Epoch 168/200
+lr =  0.0008000000000000003
+
+Epoch 00168: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.4379 - acc_top_1: 0.9999 - val_loss: 2.5175 - val_acc_top_1: 0.5997
+Epoch 00168: val_acc_top_1 did not improve from 0.60985
+
+========================================================================
+
+Epoch 169/200
+lr =  0.0008000000000000003
+
+Epoch 00169: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.4362 - acc_top_1: 0.9999 - val_loss: 2.1236 - val_acc_top_1: 0.6031
+Epoch 00169: val_acc_top_1 did not improve from 0.60985
+
+========================================================================
+
+Epoch 170/200
+lr =  0.0008000000000000003
+
+Epoch 00170: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.4345 - acc_top_1: 0.9999 - val_loss: 3.0755 - val_acc_top_1: 0.5969
+Epoch 00170: val_acc_top_1 did not improve from 0.60985
+
+========================================================================
+
+Epoch 171/200
+lr =  0.0008000000000000003
+
+Epoch 00171: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.4328 - acc_top_1: 1.0000 - val_loss: 2.4981 - val_acc_top_1: 0.5982
+Epoch 00171: val_acc_top_1 did not improve from 0.60985
+
+========================================================================
+
+Epoch 172/200
+lr =  0.0008000000000000003
+
+Epoch 00172: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.4311 - acc_top_1: 0.9999 - val_loss: 2.5055 - val_acc_top_1: 0.5994
+Epoch 00172: val_acc_top_1 did not improve from 0.60985
+
+========================================================================
+
+Epoch 173/200
+lr =  0.0008000000000000003
+
+Epoch 00173: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 198s - loss: 0.4295 - acc_top_1: 0.9999 - val_loss: 3.1506 - val_acc_top_1: 0.5920
+Epoch 00173: val_acc_top_1 did not improve from 0.60985
+
+========================================================================
+
+Epoch 174/200
+lr =  0.0008000000000000003
+
+Epoch 00174: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.4276 - acc_top_1: 0.9999 - val_loss: 2.2795 - val_acc_top_1: 0.6043
+Epoch 00174: val_acc_top_1 did not improve from 0.60985
+
+========================================================================
+
+Epoch 175/200
+lr =  0.0008000000000000003
+
+Epoch 00175: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.4260 - acc_top_1: 0.9999 - val_loss: 2.1529 - val_acc_top_1: 0.6074
+Epoch 00175: val_acc_top_1 did not improve from 0.60985
+
+========================================================================
+
+Epoch 176/200
+lr =  0.0008000000000000003
+
+Epoch 00176: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.4244 - acc_top_1: 0.9999 - val_loss: 2.3837 - val_acc_top_1: 0.5975
+Epoch 00176: val_acc_top_1 did not improve from 0.60985
+
+========================================================================
+
+Epoch 177/200
+lr =  0.0008000000000000003
+
+Epoch 00177: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.4227 - acc_top_1: 0.9998 - val_loss: 2.4436 - val_acc_top_1: 0.5988
+Epoch 00177: val_acc_top_1 did not improve from 0.60985
+
+========================================================================
+
+Epoch 178/200
+lr =  0.0008000000000000003
+
+Epoch 00178: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.4208 - acc_top_1: 0.9999 - val_loss: 2.3109 - val_acc_top_1: 0.5865
+Epoch 00178: val_acc_top_1 did not improve from 0.60985
+
+========================================================================
+
+Epoch 179/200
+lr =  0.0008000000000000003
+
+Epoch 00179: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.4193 - acc_top_1: 0.9999 - val_loss: 2.4791 - val_acc_top_1: 0.6031
+Epoch 00179: val_acc_top_1 did not improve from 0.60985
+
+========================================================================
+
+Epoch 180/200
+lr =  0.0008000000000000003
+
+Epoch 00180: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.4177 - acc_top_1: 0.9998 - val_loss: 2.3078 - val_acc_top_1: 0.5951
+Epoch 00180: val_acc_top_1 did not improve from 0.60985
+
+========================================================================
+
+Epoch 181/200
+lr =  0.0008000000000000003
+
+Epoch 00181: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 200s - loss: 0.4159 - acc_top_1: 1.0000 - val_loss: 1.4725 - val_acc_top_1: 0.5960
+Epoch 00181: val_acc_top_1 did not improve from 0.60985
+
+========================================================================
+
+Epoch 182/200
+lr =  0.0008000000000000003
+
+Epoch 00182: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.4142 - acc_top_1: 0.9999 - val_loss: 1.3855 - val_acc_top_1: 0.6043
+Epoch 00182: val_acc_top_1 did not improve from 0.60985
+
+========================================================================
+
+Epoch 183/200
+lr =  0.0008000000000000003
+
+Epoch 00183: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.4125 - acc_top_1: 0.9999 - val_loss: 2.4702 - val_acc_top_1: 0.5997
+Epoch 00183: val_acc_top_1 did not improve from 0.60985
+
+========================================================================
+
+Epoch 184/200
+lr =  0.0008000000000000003
+
+Epoch 00184: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.4110 - acc_top_1: 0.9999 - val_loss: 2.1611 - val_acc_top_1: 0.6009
+Epoch 00184: val_acc_top_1 did not improve from 0.60985
+
+========================================================================
+
+Epoch 185/200
+lr =  0.0008000000000000003
+
+Epoch 00185: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.4094 - acc_top_1: 0.9999 - val_loss: 3.0697 - val_acc_top_1: 0.5932
+Epoch 00185: val_acc_top_1 did not improve from 0.60985
+
+========================================================================
+
+Epoch 186/200
+lr =  0.0008000000000000003
+
+Epoch 00186: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.4076 - acc_top_1: 1.0000 - val_loss: 2.2637 - val_acc_top_1: 0.6003
+Epoch 00186: val_acc_top_1 did not improve from 0.60985
+
+========================================================================
+
+Epoch 187/200
+lr =  0.0008000000000000003
+
+Epoch 00187: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.4062 - acc_top_1: 1.0000 - val_loss: 1.9733 - val_acc_top_1: 0.5895
+Epoch 00187: val_acc_top_1 did not improve from 0.60985
+
+========================================================================
+
+Epoch 188/200
+lr =  0.0008000000000000003
+
+Epoch 00188: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.4045 - acc_top_1: 0.9999 - val_loss: 1.5309 - val_acc_top_1: 0.6015
+Epoch 00188: val_acc_top_1 did not improve from 0.60985
+
+========================================================================
+
+Epoch 189/200
+lr =  0.0008000000000000003
+
+Epoch 00189: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.4029 - acc_top_1: 1.0000 - val_loss: 2.2994 - val_acc_top_1: 0.6000
+Epoch 00189: val_acc_top_1 did not improve from 0.60985
+
+========================================================================
+
+Epoch 190/200
+lr =  0.0008000000000000003
+
+Epoch 00190: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.4015 - acc_top_1: 0.9999 - val_loss: 1.6588 - val_acc_top_1: 0.6000
+Epoch 00190: val_acc_top_1 did not improve from 0.60985
+
+========================================================================
+
+Epoch 191/200
+lr =  0.0008000000000000003
+
+Epoch 00191: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.3997 - acc_top_1: 1.0000 - val_loss: 2.4536 - val_acc_top_1: 0.6080
+Epoch 00191: val_acc_top_1 did not improve from 0.60985
+
+========================================================================
+
+Epoch 192/200
+lr =  0.0008000000000000003
+
+Epoch 00192: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.3983 - acc_top_1: 0.9999 - val_loss: 2.6027 - val_acc_top_1: 0.5929
+Epoch 00192: val_acc_top_1 did not improve from 0.60985
+
+========================================================================
+
+Epoch 193/200
+lr =  0.0008000000000000003
+
+Epoch 00193: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.3967 - acc_top_1: 0.9999 - val_loss: 2.2153 - val_acc_top_1: 0.6086
+Epoch 00193: val_acc_top_1 did not improve from 0.60985
+
+========================================================================
+
+Epoch 194/200
+lr =  0.0008000000000000003
+
+Epoch 00194: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.3950 - acc_top_1: 0.9999 - val_loss: 2.3579 - val_acc_top_1: 0.5935
+Epoch 00194: val_acc_top_1 did not improve from 0.60985
+
+========================================================================
+
+Epoch 195/200
+lr =  0.0008000000000000003
+
+Epoch 00195: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.3934 - acc_top_1: 0.9999 - val_loss: 2.1093 - val_acc_top_1: 0.6086
+Epoch 00195: val_acc_top_1 did not improve from 0.60985
+
+========================================================================
+
+Epoch 196/200
+lr =  0.0008000000000000003
+
+Epoch 00196: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.3920 - acc_top_1: 0.9999 - val_loss: 2.1398 - val_acc_top_1: 0.5991
+Epoch 00196: val_acc_top_1 did not improve from 0.60985
+
+========================================================================
+
+Epoch 197/200
+lr =  0.0008000000000000003
+
+Epoch 00197: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.3904 - acc_top_1: 0.9999 - val_loss: 2.2646 - val_acc_top_1: 0.5932
+Epoch 00197: val_acc_top_1 did not improve from 0.60985
+
+========================================================================
+
+Epoch 198/200
+lr =  0.0008000000000000003
+
+Epoch 00198: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.3888 - acc_top_1: 1.0000 - val_loss: 2.3087 - val_acc_top_1: 0.5960
+Epoch 00198: val_acc_top_1 did not improve from 0.60985
+
+========================================================================
+
+Epoch 199/200
+lr =  0.0008000000000000003
+
+Epoch 00199: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.3874 - acc_top_1: 0.9999 - val_loss: 2.4263 - val_acc_top_1: 0.5985
+Epoch 00199: val_acc_top_1 did not improve from 0.60985
+
+========================================================================
+
+Epoch 200/200
+lr =  0.0008000000000000003
+
+Epoch 00200: LearningRateScheduler setting learning rate to 0.0008000000000000003.
+ - 199s - loss: 0.3857 - acc_top_1: 1.0000 - val_loss: 2.0761 - val_acc_top_1: 0.6000
+Epoch 00200: val_acc_top_1 did not improve from 0.60985
+
+========================================================================
+
+Start Time: 15:36:16 PM Friday 2020-08-28
+Stop Time : 02:58:49 AM Saturday 2020-08-29
+Run Time  : 11:22:33
+
+Data Modifications:
+  width_shift_range: 4.0
+  height_shift_range: 4.0
+  horizontal_flip: True
+  featurewise_center: True
+  featurewise_std_normalization: True
+
+Notes:
+  Expt Notes: Used to create src expts for tiny imagenet notliving vs living.
+
+Peak Accuracy: 60.98% at epoch 166
+
+Closing log results/opt_tfer_expts/tinyimagenet_200_notliving_living_expts/wide_resnet_28_10_arch/src_nets/workshop_expts/alt10.arl.army.mil_v0/metadata
+Saving log file to results/opt_tfer_expts/tinyimagenet_200_notliving_living_expts/wide_resnet_28_10_arch/src_nets/workshop_expts/alt10.arl.army.mil_v0/metadata/Expt_output.log
