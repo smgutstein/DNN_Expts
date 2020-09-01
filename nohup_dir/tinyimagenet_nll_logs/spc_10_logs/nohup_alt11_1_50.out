@@ -1,0 +1,13 @@
+  batch_src_epoch_50.sh Mon Aug 31 20:50:42 EDT 2020
+    batch_src_net_alt08.arl.army.mil_v0.sh Mon Aug 31 20:50:42 EDT 2020
+          spc_10_src_epoch_50_tr_set_a Mon Aug 31 20:50:42 EDT 2020
+          spc_10_src_epoch_50_tr_set_b Mon Aug 31 21:11:11 EDT 2020
+          spc_10_src_epoch_50_tr_set_c Mon Aug 31 21:31:16 EDT 2020
+    batch_src_net_alt09.arl.army.mil_v0.sh Mon Aug 31 21:51:49 EDT 2020
+          spc_10_src_epoch_50_tr_set_a Mon Aug 31 21:51:49 EDT 2020
+          spc_10_src_epoch_50_tr_set_b Mon Aug 31 22:12:01 EDT 2020
+          spc_10_src_epoch_50_tr_set_c Mon Aug 31 22:32:41 EDT 2020
+    batch_src_net_alt10.arl.army.mil_v0.sh Mon Aug 31 22:52:45 EDT 2020
+          spc_10_src_epoch_50_tr_set_a Mon Aug 31 22:52:45 EDT 2020
+          spc_10_src_epoch_50_tr_set_b Mon Aug 31 23:12:47 EDT 2020
+          spc_10_src_epoch_50_tr_set_c Mon Aug 31 23:32:47 EDT 2020
