@@ -40,11 +40,19 @@ def add_results_to_repo():
         print("Found Files:")
         for found_file in sorted(found_files):
             print("    ",found_file)
-        git_add(found_files)
+        #git_add(found_files)
 
     subprocess.run(["git", "checkout", "result_branch"], check=True)
-    git_commit()
+    #git_commit()
     subprocess.run(["git", "checkout", "master"], check=True)
 
 if __name__ == "__main__":
-    add_results_to_repo()
+    try:
+        add_results_to_repo()
+    except Exception as e:
+        print("Error adding results to repo. Returning to master branch")
+        subprocess.run(["git", "checkout", "master"], check=True)
+        print("\n\n")
+        print(e)
+        raise e
+    
