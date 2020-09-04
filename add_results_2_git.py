@@ -15,6 +15,7 @@ def find_files(curr_dir, found_files=None):
                         if 'results.txt' == x or 'Expt_output.log' == x]
 
     found_files += curr_found_files
+    print(curr_dir," -- ",curr_found_files)
 
     for curr_sub_dir in curr_sub_dirs:
         found_files = find_files(os.path.join(curr_dir, curr_sub_dir),
