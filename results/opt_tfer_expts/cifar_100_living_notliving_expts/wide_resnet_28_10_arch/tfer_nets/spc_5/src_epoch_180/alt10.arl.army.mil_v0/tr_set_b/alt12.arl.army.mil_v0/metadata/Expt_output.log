@@ -1,0 +1,386 @@
+CMD LINE ARGS:
+config_files : ['./cfg_dir/expt_cfg/opt_tfer_expts/cifar_100_living_notliving_expts/wide_resnet_28_10_arch/tfer_nets/spc_5/src_epoch_180/alt10.arl.army.mil_v0/tr_set_b/tfer_net_0.cfg']
+gpu : 
+dbg : False
+epochs : 0
+silent : False
+nocheckpoint : True
+Using TensorFlow backend.
+Saving results to results/opt_tfer_expts/cifar_100_living_notliving_expts/wide_resnet_28_10_arch/tfer_nets/spc_5/src_epoch_180/alt10.arl.army.mil_v0/tr_set_b/alt12.arl.army.mil_v0
+Loading data from dataset_loaders/cifar100_living_notliving_trgt_tasks_5_b
+Encoding data
+Creating 1-hot encodings -  hot/not_hot (1.0000 / 0.0000)
+Creating encoding matrices for train & test data
+Preprocessing Train Images
+Preprocessing Test Images
+Built Data Manager
+Standard training
+Initializing data manager ...
+Using TensorFlow local_backend.
+Initializing architecture ...
+/mnt/growler/barleyhome/sgutstei/Projects/opt-tfer/net_architectures/wide_residual_network_base.py:13: UserWarning: Update your `Conv2D` call to the Keras 2 API: `Conv2D(16, (3, 3), padding="same", kernel_initializer="he_normal", use_bias=False, kernel_regularizer=<keras.reg...)`
+  use_bias=False)(input)
+/mnt/growler/barleyhome/sgutstei/Projects/opt-tfer/net_architectures/wide_residual_network_base.py:25: UserWarning: Update your `Conv2D` call to the Keras 2 API: `Conv2D(160, (3, 3), padding="same", strides=(1, 1), kernel_initializer="he_normal", use_bias=False, kernel_regularizer=<keras.reg...)`
+  use_bias=False)(init)
+/mnt/growler/barleyhome/sgutstei/Projects/opt-tfer/net_architectures/wide_residual_network_base.py:34: UserWarning: Update your `Conv2D` call to the Keras 2 API: `Conv2D(160, (3, 3), padding="same", kernel_initializer="he_normal", use_bias=False, kernel_regularizer=<keras.reg...)`
+  use_bias=False)(x)
+/mnt/growler/barleyhome/sgutstei/Projects/opt-tfer/net_architectures/wide_residual_network_base.py:38: UserWarning: Update your `Conv2D` call to the Keras 2 API: `Conv2D(160, (1, 1), padding="same", strides=(1, 1), kernel_initializer="he_normal", use_bias=False, kernel_regularizer=<keras.reg...)`
+  use_bias=False)(init)
+/mnt/growler/barleyhome/sgutstei/Projects/opt-tfer/net_architectures/wide_residual_network_base.py:54: UserWarning: Update your `Conv2D` call to the Keras 2 API: `Conv2D(160, (3, 3), padding="same", kernel_initializer="he_normal", use_bias=False, kernel_regularizer=<keras.reg...)`
+  use_bias=False)(x)
+/mnt/growler/barleyhome/sgutstei/Projects/opt-tfer/net_architectures/wide_residual_network_base.py:62: UserWarning: Update your `Conv2D` call to the Keras 2 API: `Conv2D(160, (3, 3), padding="same", kernel_initializer="he_normal", use_bias=False, kernel_regularizer=<keras.reg...)`
+  use_bias=False)(x)
+/mnt/growler/barleyhome/sgutstei/Projects/opt-tfer/net_architectures/wide_residual_network_base.py:25: UserWarning: Update your `Conv2D` call to the Keras 2 API: `Conv2D(320, (3, 3), padding="same", strides=(2, 2), kernel_initializer="he_normal", use_bias=False, kernel_regularizer=<keras.reg...)`
+  use_bias=False)(init)
+/mnt/growler/barleyhome/sgutstei/Projects/opt-tfer/net_architectures/wide_residual_network_base.py:34: UserWarning: Update your `Conv2D` call to the Keras 2 API: `Conv2D(320, (3, 3), padding="same", kernel_initializer="he_normal", use_bias=False, kernel_regularizer=<keras.reg...)`
+  use_bias=False)(x)
+/mnt/growler/barleyhome/sgutstei/Projects/opt-tfer/net_architectures/wide_residual_network_base.py:38: UserWarning: Update your `Conv2D` call to the Keras 2 API: `Conv2D(320, (1, 1), padding="same", strides=(2, 2), kernel_initializer="he_normal", use_bias=False, kernel_regularizer=<keras.reg...)`
+  use_bias=False)(init)
+/mnt/growler/barleyhome/sgutstei/Projects/opt-tfer/net_architectures/wide_residual_network_base.py:79: UserWarning: Update your `Conv2D` call to the Keras 2 API: `Conv2D(320, (3, 3), padding="same", kernel_initializer="he_normal", use_bias=False, kernel_regularizer=<keras.reg...)`
+  use_bias=False)(x)
+/mnt/growler/barleyhome/sgutstei/Projects/opt-tfer/net_architectures/wide_residual_network_base.py:87: UserWarning: Update your `Conv2D` call to the Keras 2 API: `Conv2D(320, (3, 3), padding="same", kernel_initializer="he_normal", use_bias=False, kernel_regularizer=<keras.reg...)`
+  use_bias=False)(x)
+/mnt/growler/barleyhome/sgutstei/Projects/opt-tfer/net_architectures/wide_residual_network_base.py:25: UserWarning: Update your `Conv2D` call to the Keras 2 API: `Conv2D(640, (3, 3), padding="same", strides=(2, 2), kernel_initializer="he_normal", use_bias=False, kernel_regularizer=<keras.reg...)`
+  use_bias=False)(init)
+/mnt/growler/barleyhome/sgutstei/Projects/opt-tfer/net_architectures/wide_residual_network_base.py:34: UserWarning: Update your `Conv2D` call to the Keras 2 API: `Conv2D(640, (3, 3), padding="same", kernel_initializer="he_normal", use_bias=False, kernel_regularizer=<keras.reg...)`
+  use_bias=False)(x)
+/mnt/growler/barleyhome/sgutstei/Projects/opt-tfer/net_architectures/wide_residual_network_base.py:38: UserWarning: Update your `Conv2D` call to the Keras 2 API: `Conv2D(640, (1, 1), padding="same", strides=(2, 2), kernel_initializer="he_normal", use_bias=False, kernel_regularizer=<keras.reg...)`
+  use_bias=False)(init)
+/mnt/growler/barleyhome/sgutstei/Projects/opt-tfer/net_architectures/wide_residual_network_base.py:104: UserWarning: Update your `Conv2D` call to the Keras 2 API: `Conv2D(640, (3, 3), padding="same", kernel_initializer="he_normal", use_bias=False, kernel_regularizer=<keras.reg...)`
+  use_bias=False)(x)
+/mnt/growler/barleyhome/sgutstei/Projects/opt-tfer/net_architectures/wide_residual_network_base.py:112: UserWarning: Update your `Conv2D` call to the Keras 2 API: `Conv2D(640, (3, 3), padding="same", kernel_initializer="he_normal", use_bias=False, kernel_regularizer=<keras.reg...)`
+  use_bias=False)(x)
+/mnt/growler/barleyhome/sgutstei/Projects/opt-tfer/net_architectures/wide_residual_network_base.py:172: UserWarning: Update your `Dense` call to the Keras 2 API: `Dense(65, activation="softmax", kernel_regularizer=<keras.reg...)`
+  x = Dense(nb_classes, W_regularizer=l2(weight_decay), activation='softmax')(x)
+Wide Residual Network-28-10 created.
+Starting with weights from epoch 180
+   Loading wts from results/opt_tfer_expts/cifar_100_living_notliving_expts/wide_resnet_28_10_arch/src_nets/workshop_expts/alt10.arl.army.mil_v0/checkpoints/checkpoint_weights_180.h5
+Popping  dense_1  .....  Popped
+Compiling model ...
+Failed to import `pydot`. Please install `pydot`. For example with `pip install pydot`.
+Not saving graphical image of net
+
+============================================================
+
+Expt Info:
+
+NB Epochs: 200
+Expt Dir: results/opt_tfer_expts/cifar_100_living_notliving_expts/wide_resnet_28_10_arch/tfer_nets/spc_5/src_epoch_180/alt10.arl.army.mil_v0/tr_set_b/alt12.arl.army.mil_v0
+Expt Prefix: alt12.arl.army.mil_v0
+
+Model:
+Model: "model_2"
+__________________________________________________________________________________________________
+Layer (type)                    Output Shape         Param #     Connected to                     
+==================================================================================================
+input_1 (InputLayer)            (None, 32, 32, 3)    0                                            
+__________________________________________________________________________________________________
+conv2d_1 (Conv2D)               (None, 32, 32, 16)   432         input_1[0][0]                    
+__________________________________________________________________________________________________
+batch_normalization_1 (BatchNor (None, 32, 32, 16)   64          conv2d_1[0][0]                   
+__________________________________________________________________________________________________
+activation_1 (Activation)       (None, 32, 32, 16)   0           batch_normalization_1[0][0]      
+__________________________________________________________________________________________________
+conv2d_2 (Conv2D)               (None, 32, 32, 160)  23040       activation_1[0][0]               
+__________________________________________________________________________________________________
+batch_normalization_2 (BatchNor (None, 32, 32, 160)  640         conv2d_2[0][0]                   
+__________________________________________________________________________________________________
+activation_2 (Activation)       (None, 32, 32, 160)  0           batch_normalization_2[0][0]      
+__________________________________________________________________________________________________
+conv2d_3 (Conv2D)               (None, 32, 32, 160)  230400      activation_2[0][0]               
+__________________________________________________________________________________________________
+conv2d_4 (Conv2D)               (None, 32, 32, 160)  2560        activation_1[0][0]               
+__________________________________________________________________________________________________
+add_1 (Add)                     (None, 32, 32, 160)  0           conv2d_3[0][0]                   
+                                                                 conv2d_4[0][0]                   
+__________________________________________________________________________________________________
+batch_normalization_3 (BatchNor (None, 32, 32, 160)  640         add_1[0][0]                      
+__________________________________________________________________________________________________
+activation_3 (Activation)       (None, 32, 32, 160)  0           batch_normalization_3[0][0]      
+__________________________________________________________________________________________________
+conv2d_5 (Conv2D)               (None, 32, 32, 160)  230400      activation_3[0][0]               
+__________________________________________________________________________________________________
+batch_normalization_4 (BatchNor (None, 32, 32, 160)  640         conv2d_5[0][0]                   
+__________________________________________________________________________________________________
+activation_4 (Activation)       (None, 32, 32, 160)  0           batch_normalization_4[0][0]      
+__________________________________________________________________________________________________
+conv2d_6 (Conv2D)               (None, 32, 32, 160)  230400      activation_4[0][0]               
+__________________________________________________________________________________________________
+add_2 (Add)                     (None, 32, 32, 160)  0           add_1[0][0]                      
+                                                                 conv2d_6[0][0]                   
+__________________________________________________________________________________________________
+batch_normalization_5 (BatchNor (None, 32, 32, 160)  640         add_2[0][0]                      
+__________________________________________________________________________________________________
+activation_5 (Activation)       (None, 32, 32, 160)  0           batch_normalization_5[0][0]      
+__________________________________________________________________________________________________
+conv2d_7 (Conv2D)               (None, 32, 32, 160)  230400      activation_5[0][0]               
+__________________________________________________________________________________________________
+batch_normalization_6 (BatchNor (None, 32, 32, 160)  640         conv2d_7[0][0]                   
+__________________________________________________________________________________________________
+activation_6 (Activation)       (None, 32, 32, 160)  0           batch_normalization_6[0][0]      
+__________________________________________________________________________________________________
+conv2d_8 (Conv2D)               (None, 32, 32, 160)  230400      activation_6[0][0]               
+__________________________________________________________________________________________________
+add_3 (Add)                     (None, 32, 32, 160)  0           add_2[0][0]                      
+                                                                 conv2d_8[0][0]                   
+__________________________________________________________________________________________________
+batch_normalization_7 (BatchNor (None, 32, 32, 160)  640         add_3[0][0]                      
+__________________________________________________________________________________________________
+activation_7 (Activation)       (None, 32, 32, 160)  0           batch_normalization_7[0][0]      
+__________________________________________________________________________________________________
+conv2d_9 (Conv2D)               (None, 32, 32, 160)  230400      activation_7[0][0]               
+__________________________________________________________________________________________________
+batch_normalization_8 (BatchNor (None, 32, 32, 160)  640         conv2d_9[0][0]                   
+__________________________________________________________________________________________________
+activation_8 (Activation)       (None, 32, 32, 160)  0           batch_normalization_8[0][0]      
+__________________________________________________________________________________________________
+conv2d_10 (Conv2D)              (None, 32, 32, 160)  230400      activation_8[0][0]               
+__________________________________________________________________________________________________
+add_4 (Add)                     (None, 32, 32, 160)  0           add_3[0][0]                      
+                                                                 conv2d_10[0][0]                  
+__________________________________________________________________________________________________
+batch_normalization_9 (BatchNor (None, 32, 32, 160)  640         add_4[0][0]                      
+__________________________________________________________________________________________________
+activation_9 (Activation)       (None, 32, 32, 160)  0           batch_normalization_9[0][0]      
+__________________________________________________________________________________________________
+conv2d_11 (Conv2D)              (None, 16, 16, 320)  460800      activation_9[0][0]               
+__________________________________________________________________________________________________
+batch_normalization_10 (BatchNo (None, 16, 16, 320)  1280        conv2d_11[0][0]                  
+__________________________________________________________________________________________________
+activation_10 (Activation)      (None, 16, 16, 320)  0           batch_normalization_10[0][0]     
+__________________________________________________________________________________________________
+conv2d_12 (Conv2D)              (None, 16, 16, 320)  921600      activation_10[0][0]              
+__________________________________________________________________________________________________
+conv2d_13 (Conv2D)              (None, 16, 16, 320)  51200       activation_9[0][0]               
+__________________________________________________________________________________________________
+add_5 (Add)                     (None, 16, 16, 320)  0           conv2d_12[0][0]                  
+                                                                 conv2d_13[0][0]                  
+__________________________________________________________________________________________________
+batch_normalization_11 (BatchNo (None, 16, 16, 320)  1280        add_5[0][0]                      
+__________________________________________________________________________________________________
+activation_11 (Activation)      (None, 16, 16, 320)  0           batch_normalization_11[0][0]     
+__________________________________________________________________________________________________
+conv2d_14 (Conv2D)              (None, 16, 16, 320)  921600      activation_11[0][0]              
+__________________________________________________________________________________________________
+batch_normalization_12 (BatchNo (None, 16, 16, 320)  1280        conv2d_14[0][0]                  
+__________________________________________________________________________________________________
+activation_12 (Activation)      (None, 16, 16, 320)  0           batch_normalization_12[0][0]     
+__________________________________________________________________________________________________
+conv2d_15 (Conv2D)              (None, 16, 16, 320)  921600      activation_12[0][0]              
+__________________________________________________________________________________________________
+add_6 (Add)                     (None, 16, 16, 320)  0           add_5[0][0]                      
+                                                                 conv2d_15[0][0]                  
+__________________________________________________________________________________________________
+batch_normalization_13 (BatchNo (None, 16, 16, 320)  1280        add_6[0][0]                      
+__________________________________________________________________________________________________
+activation_13 (Activation)      (None, 16, 16, 320)  0           batch_normalization_13[0][0]     
+__________________________________________________________________________________________________
+conv2d_16 (Conv2D)              (None, 16, 16, 320)  921600      activation_13[0][0]              
+__________________________________________________________________________________________________
+batch_normalization_14 (BatchNo (None, 16, 16, 320)  1280        conv2d_16[0][0]                  
+__________________________________________________________________________________________________
+activation_14 (Activation)      (None, 16, 16, 320)  0           batch_normalization_14[0][0]     
+__________________________________________________________________________________________________
+conv2d_17 (Conv2D)              (None, 16, 16, 320)  921600      activation_14[0][0]              
+__________________________________________________________________________________________________
+add_7 (Add)                     (None, 16, 16, 320)  0           add_6[0][0]                      
+                                                                 conv2d_17[0][0]                  
+__________________________________________________________________________________________________
+batch_normalization_15 (BatchNo (None, 16, 16, 320)  1280        add_7[0][0]                      
+__________________________________________________________________________________________________
+activation_15 (Activation)      (None, 16, 16, 320)  0           batch_normalization_15[0][0]     
+__________________________________________________________________________________________________
+conv2d_18 (Conv2D)              (None, 16, 16, 320)  921600      activation_15[0][0]              
+__________________________________________________________________________________________________
+batch_normalization_16 (BatchNo (None, 16, 16, 320)  1280        conv2d_18[0][0]                  
+__________________________________________________________________________________________________
+activation_16 (Activation)      (None, 16, 16, 320)  0           batch_normalization_16[0][0]     
+__________________________________________________________________________________________________
+conv2d_19 (Conv2D)              (None, 16, 16, 320)  921600      activation_16[0][0]              
+__________________________________________________________________________________________________
+add_8 (Add)                     (None, 16, 16, 320)  0           add_7[0][0]                      
+                                                                 conv2d_19[0][0]                  
+__________________________________________________________________________________________________
+batch_normalization_17 (BatchNo (None, 16, 16, 320)  1280        add_8[0][0]                      
+__________________________________________________________________________________________________
+activation_17 (Activation)      (None, 16, 16, 320)  0           batch_normalization_17[0][0]     
+__________________________________________________________________________________________________
+conv2d_20 (Conv2D)              (None, 8, 8, 640)    1843200     activation_17[0][0]              
+__________________________________________________________________________________________________
+batch_normalization_18 (BatchNo (None, 8, 8, 640)    2560        conv2d_20[0][0]                  
+__________________________________________________________________________________________________
+activation_18 (Activation)      (None, 8, 8, 640)    0           batch_normalization_18[0][0]     
+__________________________________________________________________________________________________
+conv2d_21 (Conv2D)              (None, 8, 8, 640)    3686400     activation_18[0][0]              
+__________________________________________________________________________________________________
+conv2d_22 (Conv2D)              (None, 8, 8, 640)    204800      activation_17[0][0]              
+__________________________________________________________________________________________________
+add_9 (Add)                     (None, 8, 8, 640)    0           conv2d_21[0][0]                  
+                                                                 conv2d_22[0][0]                  
+__________________________________________________________________________________________________
+batch_normalization_19 (BatchNo (None, 8, 8, 640)    2560        add_9[0][0]                      
+__________________________________________________________________________________________________
+activation_19 (Activation)      (None, 8, 8, 640)    0           batch_normalization_19[0][0]     
+__________________________________________________________________________________________________
+conv2d_23 (Conv2D)              (None, 8, 8, 640)    3686400     activation_19[0][0]              
+__________________________________________________________________________________________________
+batch_normalization_20 (BatchNo (None, 8, 8, 640)    2560        conv2d_23[0][0]                  
+__________________________________________________________________________________________________
+activation_20 (Activation)      (None, 8, 8, 640)    0           batch_normalization_20[0][0]     
+__________________________________________________________________________________________________
+conv2d_24 (Conv2D)              (None, 8, 8, 640)    3686400     activation_20[0][0]              
+__________________________________________________________________________________________________
+add_10 (Add)                    (None, 8, 8, 640)    0           add_9[0][0]                      
+                                                                 conv2d_24[0][0]                  
+__________________________________________________________________________________________________
+batch_normalization_21 (BatchNo (None, 8, 8, 640)    2560        add_10[0][0]                     
+__________________________________________________________________________________________________
+activation_21 (Activation)      (None, 8, 8, 640)    0           batch_normalization_21[0][0]     
+__________________________________________________________________________________________________
+conv2d_25 (Conv2D)              (None, 8, 8, 640)    3686400     activation_21[0][0]              
+__________________________________________________________________________________________________
+batch_normalization_22 (BatchNo (None, 8, 8, 640)    2560        conv2d_25[0][0]                  
+__________________________________________________________________________________________________
+activation_22 (Activation)      (None, 8, 8, 640)    0           batch_normalization_22[0][0]     
+__________________________________________________________________________________________________
+conv2d_26 (Conv2D)              (None, 8, 8, 640)    3686400     activation_22[0][0]              
+__________________________________________________________________________________________________
+add_11 (Add)                    (None, 8, 8, 640)    0           add_10[0][0]                     
+                                                                 conv2d_26[0][0]                  
+__________________________________________________________________________________________________
+batch_normalization_23 (BatchNo (None, 8, 8, 640)    2560        add_11[0][0]                     
+__________________________________________________________________________________________________
+activation_23 (Activation)      (None, 8, 8, 640)    0           batch_normalization_23[0][0]     
+__________________________________________________________________________________________________
+conv2d_27 (Conv2D)              (None, 8, 8, 640)    3686400     activation_23[0][0]              
+__________________________________________________________________________________________________
+batch_normalization_24 (BatchNo (None, 8, 8, 640)    2560        conv2d_27[0][0]                  
+__________________________________________________________________________________________________
+activation_24 (Activation)      (None, 8, 8, 640)    0           batch_normalization_24[0][0]     
+__________________________________________________________________________________________________
+conv2d_28 (Conv2D)              (None, 8, 8, 640)    3686400     activation_24[0][0]              
+__________________________________________________________________________________________________
+add_12 (Add)                    (None, 8, 8, 640)    0           add_11[0][0]                     
+                                                                 conv2d_28[0][0]                  
+__________________________________________________________________________________________________
+batch_normalization_25 (BatchNo (None, 8, 8, 640)    2560        add_12[0][0]                     
+__________________________________________________________________________________________________
+activation_25 (Activation)      (None, 8, 8, 640)    0           batch_normalization_25[0][0]     
+__________________________________________________________________________________________________
+average_pooling2d_1 (AveragePoo (None, 1, 1, 640)    0           activation_25[0][0]              
+__________________________________________________________________________________________________
+flatten_1 (Flatten)             (None, 640)          0           average_pooling2d_1[0][0]        
+__________________________________________________________________________________________________
+dense_2 (Dense)                 (None, 35)           22435       flatten_1[0][0]                  
+__________________________________________________________________________________________________
+softmax_tfer_out (Activation)   (None, 35)           0           dense_2[0][0]                    
+==================================================================================================
+Total params: 36,513,171
+Trainable params: 36,495,219
+Non-trainable params: 17,952
+__________________________________________________________________________________________________
+
+============================================================
+
+
+5: +  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+   -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+8: -  +  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+   -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+9: -  -  +  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+   -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+10: -  -  -  +  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+12: -  -  -  -  +  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+13: -  -  -  -  -  +  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+16: -  -  -  -  -  -  +  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+17: -  -  -  -  -  -  -  +  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+20: -  -  -  -  -  -  -  -  +  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+22: -  -  -  -  -  -  -  -  -  +  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+23: -  -  -  -  -  -  -  -  -  -  +  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+25: -  -  -  -  -  -  -  -  -  -  -  +  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+28: -  -  -  -  -  -  -  -  -  -  -  -  +  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+33: -  -  -  -  -  -  -  -  -  -  -  -  -  +  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+37: -  -  -  -  -  -  -  -  -  -  -  -  -  -  +  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+39: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  +  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+40: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  +  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+41: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  +  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+48: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  +  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+49: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  +  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+58: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    +  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+60: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  +  -  -  -  -  -  -  -  -  -  -  -  -  -  
+61: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  +  -  -  -  -  -  -  -  -  -  -  -  -  
+68: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  +  -  -  -  -  -  -  -  -  -  -  -  
+69: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  +  -  -  -  -  -  -  -  -  -  -  
+71: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  +  -  -  -  -  -  -  -  -  -  
+76: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  +  -  -  -  -  -  -  -  -  
+81: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  +  -  -  -  -  -  -  -  
+84: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  +  -  -  -  -  -  -  
+85: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  +  -  -  -  -  -  
+86: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  +  -  -  -  -  
+87: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  +  -  -  -  
+89: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  +  -  -  
+90: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  +  -  
+94: -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+    -  -  -  -  -  -  -  -  -  -  -  -  -  -  +  
+
+
+
+
+
+Total Classes: 35
+
+5:bed -- 8:bike -- 9:bottles -- 10:bowls -- 12:bridge -- 
+13:bus -- 16:cans -- 17:castle -- 20:chair -- 22:clock -- 
+23:cloud -- 25:couch -- 28:cups -- 33:forest -- 37:house -- 
+39:computer keyboard -- 40:lamp -- 41:lawn-mower -- 48:motorcycle -- 49:mountain -- 
+58:pickup truck -- 60:plain -- 61:plates -- 68:road -- 69:rocket -- 
+71:sea -- 76:skyscraper -- 81:streetcar -- 84:table -- 85:tank -- 
+86:telephone -- 87:television -- 89:tractor -- 90:train -- 94:wardrobe -- 
+
+Built Net Manager
+Start Time: 01:27:33 AM Tuesday 2020-08-04
+Stop Time : 01:52:28 AM Tuesday 2020-08-04
+Run Time  : 0:24:55
+
+Data Modifications:
+  width_shift_range: 4.0
+  height_shift_range: 4.0
+  horizontal_flip: True
+  featurewise_center: True
+  featurewise_std_normalization: True
+
+Notes:
+  Expt Notes: Autogenerated file to generate tfer learn notliving CIFAR100 from living CIFAR100
+
+Peak Accuracy: 28.46% at epoch 8
