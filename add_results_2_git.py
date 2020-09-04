@@ -1,5 +1,7 @@
+import argparse
 from git import Repo
 import os
+import subprocess
 
 
 def find_files(curr_dir, found_files=None):
@@ -25,18 +27,41 @@ def git_add(add_files):
     repo = Repo('.')
     for curr_file in add_files:
         repo.git.add('-f', curr_file)
+        print("Added: ", curr_file)
 
 def git_commit():
     repo = Repo('.')
     repo.git.commit('-m','adding results to tfer to/from BIERS cluster')
 
-#result_root_list = ['./results/opt_tfer_expts/cifar_100_living_notliving_expts/wide_resnet_28_10_arch/src_nets/workshop_expts',
-#                    './results/opt_tfer_expts/cifar_100_living_notliving_2_expts/wide_resnet_28_10_arch/tfer_nets']
+def add_results_to_repo(root_dir):
 
-result_root_list =['./results/opt_tfer_expts/cifar_100_living_living_expts/wide_resnet_28_10_arch/tfer_nets']
+    found_files = find_files(root_dir)
+    print("Found Files:")
+    for found_file in sorted(found_files):
+        print("    ",found_file)
 
-for curr_result_root in result_root_list:
-    found_files = find_files(curr_result_root)    
+
+    subprocess.run(["git", "stash", "push"], check=True)
+    subprocess.run(["git", "checkout", "result_branch"], check=True)
     git_add(found_files)
+    git_commit()
+    subprocess.run(["git", "checkout", "master"], check=True)
+    subprocess.run(["git", "stash", "pop"], check=True)
 
-git_commit()
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Get root dir for expt results')
+    parser.add_argument('root_dir', type=str,
+                         help='Get root dir for expt results')
+    args = parser.parse_args()
+    res_dir = args.root_dir
+
+    try:
+        add_results_to_repo(res_dir)
+    except Exception as e:
+        print("\nError adding results to repo. Returning to master branch")
+        subprocess.run(["git", "checkout", "master"], check=True)
+        print("\n\n")
+        print(e)
+        raise e
+    
+# python add_results_2_git.py ./results/opt_tfer_expts/tinyimagenet200_notliving_living_expts/wide_resnet_28_10_arch/tfer_nets
