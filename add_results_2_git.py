@@ -38,11 +38,11 @@ def add_results_to_repo(root_dir):
     print("Found Files:")
     for found_file in sorted(found_files):
         print("    ",found_file)
-    #git_add(found_files)
+    git_add(found_files)
 
     subprocess.run(["git", "stash", "push"], check=True)
     subprocess.run(["git", "checkout", "result_branch"], check=True)
-    #git_commit()
+    git_commit()
     subprocess.run(["git", "checkout", "master"], check=True)
     subprocess.run(["git", "stash", "pop"], check=True)
 
