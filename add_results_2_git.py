@@ -5,6 +5,7 @@ import subprocess
 
 
 def find_files(curr_dir, found_files=None):
+    print("Searching ....", curr_dir)
     if found_files is None:
         found_files = []
     curr_sub_dirs = [x for x in os.listdir(curr_dir)
@@ -36,6 +37,8 @@ def git_commit():
 
 def add_results_to_repo(root_dir):
 
+    #import pdb
+    #pdb.set_trace()
     found_files = find_files(root_dir)
     print("Found Files:")
     for found_file in sorted(found_files):
