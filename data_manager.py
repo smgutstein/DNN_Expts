@@ -6,7 +6,6 @@ import pickle
 import sys
 import types
 
-#from display_data.data_display import Data_Display
 from keras.preprocessing.image import ImageDataGenerator
 
 ImageDataGen_args = {'featurewise_center': False, 'samplewise_center': False,
@@ -25,6 +24,7 @@ ImageDataGen_args = {'featurewise_center': False, 'samplewise_center': False,
                      'preprocessing_function': None,
                      'validation_split': 0,
                      'dtype': 'float32'}
+
 
 class DataManager(object):
 
@@ -79,7 +79,6 @@ class DataManager(object):
         joint_dict = epd.copy()
         joint_dict.update(empd)
         joint_dict['encoding_activation_fnc'] = eaf
-            
 
         # Set encoding module
         # If recovering saved net, ensure that the encoding used for that net is recovered
@@ -270,8 +269,6 @@ class DataManager(object):
             out_str += str(curr_class) +  ":" + self.label_dict[curr_class] + " -- "
         out_str += "\n"
         return out_str
-
-        
 
 
 if __name__ == '__main__':
