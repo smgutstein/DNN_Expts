@@ -6,7 +6,6 @@ import pickle
 import sys
 import types
 
-#from display_data.data_display import Data_Display
 from keras.preprocessing.image import ImageDataGenerator
 
 ImageDataGen_args = {'featurewise_center': False, 'samplewise_center': False,
@@ -25,6 +24,7 @@ ImageDataGen_args = {'featurewise_center': False, 'samplewise_center': False,
                      'preprocessing_function': None,
                      'validation_split': 0,
                      'dtype': 'float32'}
+
 
 class DataManager(object):
 
@@ -50,6 +50,9 @@ class DataManager(object):
         epd = encoding_param_dict
         empd = encoding_module_param_dict
         eaf = encoding_activation_fnc
+
+        # Get path to data
+        self.data_path = fpd.get('data_path', None)
         
         # Get data loader
         self.data_loading_module = fpd.get('data_loader', None)
@@ -76,10 +79,9 @@ class DataManager(object):
         if len(trgt_task_param_dict) != 0:            
             epd = tpd['_EncodingParamDict']
             empd = tpd['_EncodingModuleParamDict']
-        joint_dict = epd.copy()
-        joint_dict.update(empd)
-        joint_dict['encoding_activation_fnc'] = eaf
-            
+        self.joint_dict = epd.copy()
+        self.joint_dict.update(empd)
+        self.joint_dict['encoding_activation_fnc'] = eaf
 
         # Set encoding module
         # If recovering saved net, ensure that the encoding used for that net is recovered
@@ -91,7 +93,7 @@ class DataManager(object):
         elif len(saved_param_dict) > 0:
             # Recover encoding from saved task
             self.encoding_module = "recover_encoding"
-            joint_dict['saved_encodings'] = \
+            self.joint_dict['saved_encodings'] = \
                 os.path.join(saved_param_dict['saved_set_dir'],
                              saved_param_dict['saved_dir'],
                              'checkpoint_encodings_' +
@@ -101,119 +103,61 @@ class DataManager(object):
             # Fresh encoding for new src task
             self.encoding_module = empd['encoding_module']
             
-        # Load data 
+        # Load data
+        self.ImageDataGen_args = ImageDataGen_args
         self.preprocess_param_dict = preprocess_param_dict
         self.augment_param_dict = augment_param_dict
-        self._load_data()
-
-        # Create encodings
-        print("Encoding data")
-        temp = importlib.import_module(self.encoding_module)
-        self.make_encoding_dict = types.MethodType(temp.make_encoding_dict, self)
-        self.make_encoding_dict(**joint_dict)
-        self.encode_labels()
-
-        # Build generator for preprocessing & augmentation
-        self._make_data_generators()
+        self.train_data_gen, self.train_batches_per_epoch = self._load_data('train')
+        self.test_data_gen, self.test_batches_per_epoch = self._load_data('test')
 
         self.curr_encoding_info = dict()
         self.curr_encoding_info['label_dict'] = {}
         self.curr_encoding_info['encoding_dict'] = {}
         #######################################################################################
         
-        # Might not need/want this anymore
-        #self.data_display = Data_Display(self.X_test,
-        #                                 self.y_test_classnum,
-        #                                 self.label_dict)
-        
     def _init_num_name_dicts(self, category_name_file):
         # Make class_num/class_name dictionaries
         with open(category_name_file, "rb") as f:
             self.label_dict = pickle.load(f)
 
-    def _load_data(self):
+    def _load_data(self, trvate='train'):
         # Load data
         data_load_module = importlib.import_module("dataset_loaders." + self.data_loading_module)
-        print("Loading data from", os.path.join("dataset_loaders",  self.data_loading_module))
-        (self.X_train, self.y_train_classnum), \
-        (self.X_test, self.y_test_classnum) = data_load_module.load_data()
+        self.load_data = types.MethodType(data_load_module.load_data, self)
 
-        # Set batches (i.e. steps) per epoch
-        self.train_batches_per_epoch = self.y_train_classnum.shape[0] // self.batch_size + 1
-        self.test_batches_per_epoch = self.y_test_classnum.shape[0] // self.batch_size + 1
-        
-        # Get rows, cols and channels. Assume smallest dim, other than 0th
-        # is channel dim
-        _, temp1, temp2, temp3 = self.X_train.shape
-        if min(temp1, temp2, temp3) == temp3:
-            # Data channels last
-            _, self.img_rows, self.img_cols, self.img_channels = self.X_train.shape
-        elif min(temp1, temp2, temp3) == temp1:
-            # Data channels first
-            _, self.img_channels, self.img_rows, self.img_cols = self.X_train.shape
+        print("Loading data from",
+              os.path.join("dataset_loaders",
+                           self.data_loading_module))
+        # Adding encoding
+        encoding_module = importlib.import_module(self.encoding_module)
+        self.make_encoding_dict = types.MethodType(encoding_module.make_encoding_dict, self)
 
+        data_gen, batches_per_epoch = self.load_data(trvate)
+        return data_gen, batches_per_epoch
+
+    def get_encoding_dict(self, class_nums):
         # Get sorted list of class numbers (np.unique returns sorted list)
-        self.class_nums = list(np.unique(self.y_train_classnum))
+        self.class_nums = class_nums
+        # Note: All below involves getting/making global properties to be
+        #       used with data. Current implementation assumes all data can
+        #       be read in at once. After creating hdf5 generators, will
+        #       see if following code can be moved to other modules, so
+        #       that "load_data" will *ONLY* load data.
 
-    def _make_data_generators(self):
-        # Overwrite default args for ImageDataGenerator with those from cfg files
-        # (This might just be a little silly - could just combine dicts created from
-        # cfg files and not explicitly state default values, but for now helps me keep
-        # track of what default values are)
-        for x in self.preprocess_param_dict:
-            ImageDataGen_args[x] = self.preprocess_param_dict[x]
-        for x in self.augment_param_dict:
-            ImageDataGen_args[x] = self.augment_param_dict[x]
-
-        print("Preprocessing Train Images")
-        self.train_image_gen = ImageDataGenerator(**ImageDataGen_args)
-        self.train_image_gen.fit(self.X_train)
-        self.train_data_gen = self.train_image_gen.flow(self.X_train,
-                                                        self.Y_train_encoded,
-                                                        self.batch_size)
-        
-        print("Preprocessing Test Images")
-        self.test_image_gen = ImageDataGenerator(**ImageDataGen_args)
-        self.test_image_gen.fit(self.X_test)
-        self.test_data_gen = self.test_image_gen.flow(self.X_test,
-                                                      self.Y_test_encoded,
-                                                      self.batch_size)
-
-    def encode_labels(self):
-        """Convert array of class nums to arrays of encodings"""
-
-        print("Creating encoding matrices for train & test data")      
-        # Make array of encodings
+        self.make_encoding_dict(**self.joint_dict)
         self.encodings = np.asarray([self.encoding_dict[x]
                                      for x in sorted(self.encoding_dict)])
-        
-        # Convert labels from class nums to class encodings
-        self.Y_train_encoded = self.convert_class_num_to_encoding(self.y_train_classnum,
-                                                          self.encoding_dict)
-        self.Y_test_encoded = self.convert_class_num_to_encoding(self.y_test_classnum,
-                                                         self.encoding_dict)
 
-    def convert_class_num_to_encoding(self, y, nb_2_encoding_dict):
-        """Take vector of class numbers and convert to array
-           of target output codes for each class"""
-
-        # Find number of output bits by looking at arbitrary
-        # code word
-        temp = sorted(list(nb_2_encoding_dict.keys()))[0]
-        nb_outputs = len(nb_2_encoding_dict[temp])
-
-        # Turn 2D array into 1D list of class numbers    
-        y = y.ravel()
-        Y = np.empty((len(y), nb_outputs))
-
-        # Create encoding matrix - ith row is
-        # code word for ith datum
-        for i in range(len(y)):
-            Y[i, :] = nb_2_encoding_dict[y[i]]
-        return Y
-
-    #def display(self):
-    #    self.data_display.start_display()
+    def get_input_shape(self, x_shape):
+        # Get rows, cols and channels. Assume smallest dim, other than 0th
+        # is channel dim
+        _, temp1, temp2, temp3 = x_shape
+        if min(temp1, temp2, temp3) == temp3:
+            # Data channels last
+            _, self.img_rows, self.img_cols, self.img_channels = x_shape
+        elif min(temp1, temp2, temp3) == temp1:
+            # Data channels first
+            _, self.img_channels, self.img_rows, self.img_cols = x_shape
 
     def get_targets_str(self):
         nums_per_row = 20
@@ -270,8 +214,6 @@ class DataManager(object):
             out_str += str(curr_class) +  ":" + self.label_dict[curr_class] + " -- "
         out_str += "\n"
         return out_str
-
-        
 
 
 if __name__ == '__main__':

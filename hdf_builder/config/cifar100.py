@@ -13,11 +13,14 @@ TEST_IMAGES = os.path.join(ROOT_DIR,"test")
 NUM_CLASSES = 100
 NUM_TEST_IMAGES = 10000
 
-# define the path to the output training, testidation, and testing
+# define the path to the output training, validation, and testing
 # HDF5 files
-TRAIN_HDF5 = os.path.join(ROOT_DIR,"hdf5/train.hdf5")
-TEST_HDF5 = os.path.join(ROOT_DIR,"hdf5/test.hdf5")
+TRAIN_HDF5 = os.path.join(ROOT_DIR, "hdf5/train.hdf5")
+TEST_HDF5 = os.path.join(ROOT_DIR, "hdf5/test.hdf5")
 
 # define the path to the dataset mean
-DATASET_MEAN = os.path.join(ROOT_DIR,"output/cifar100-mean.json")
+DATASET_MEAN = os.path.join(ROOT_DIR, "hdf5/cifar100-mean.json")
+
+# define the path to the sorted list of class numbers
+CLASS_NUMS = os.path.join(ROOT_DIR, "hdf5/class_nums.pkl")
 

@@ -1,0 +1,13 @@
+  batch_src_epoch_best.sh Sun Aug 16 23:31:56 EDT 2020
+    batch_src_net_alt08.arl.army.mil_v0.sh Sun Aug 16 23:31:56 EDT 2020
+          spc_10_src_epoch_best_tr_set_a Sun Aug 16 23:31:56 EDT 2020
+          spc_10_src_epoch_best_tr_set_b Mon Aug 17 00:22:40 EDT 2020
+          spc_10_src_epoch_best_tr_set_c Mon Aug 17 01:13:37 EDT 2020
+    batch_src_net_alt09.arl.army.mil_v0.sh Mon Aug 17 02:04:31 EDT 2020
+          spc_10_src_epoch_best_tr_set_a Mon Aug 17 02:04:31 EDT 2020
+          spc_10_src_epoch_best_tr_set_b Mon Aug 17 02:55:38 EDT 2020
+          spc_10_src_epoch_best_tr_set_c Mon Aug 17 03:46:36 EDT 2020
+    batch_src_net_alt10.arl.army.mil_v0.sh Mon Aug 17 04:37:34 EDT 2020
+          spc_10_src_epoch_best_tr_set_a Mon Aug 17 04:37:34 EDT 2020
+          spc_10_src_epoch_best_tr_set_b Mon Aug 17 05:28:29 EDT 2020
+          spc_10_src_epoch_best_tr_set_c Mon Aug 17 06:19:20 EDT 2020

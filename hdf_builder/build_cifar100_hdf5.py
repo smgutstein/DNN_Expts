@@ -7,16 +7,15 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from cifar import load_batch
 from config import cifar100 as config
-import cv2
-from external_dir.utils import HDF5DatasetWriter
-from external_dir.imutils import paths
+from hdf5_dataset_writer import HDF5DatasetWriter
 import json
 from keras import backend as K
 from keras.utils.data_utils import get_file
 import numpy as np
+import os
+import pickle
 import progressbar
-from sklearn.preprocessing import LabelEncoder
-from sklearn.model_selection import train_test_split
+
 
 def load_data(label_mode='fine'):
     """Loads CIFAR100 dataset.
@@ -60,54 +59,59 @@ def load_data(label_mode='fine'):
     return (x_train, y_train), (x_test, y_test)
 
 
-
 # construct a list pairing the training, validation, and testing
 # image paths along with their corresponding labels and output HDF5
 # files
 (x_train, y_train), (x_test, y_test) = load_data()
+class_nums = sorted(np.unique(y_train))
 datasets = [
-	("train", x_train, y_train, config.TRAIN_HDF5),
-	("test", x_test, y_test, config.TEST_HDF5)]
+    ("train", x_train, y_train, config.TRAIN_HDF5),
+    ("test", x_test, y_test, config.TEST_HDF5)]
 
 # initialize the lists of RGB channel averages
 (R, G, B) = ([], [], [])
 
 # loop over the dataset tuples
 for (dType, data, labels, outputPath) in datasets:
-	# create HDF5 writer
-	print("[INFO] building {}...".format(outputPath))
-	writer = HDF5DatasetWriter(data.shape, outputPath)
+    # create HDF5 writer
+    print("[INFO] building {}...".format(outputPath))
+    os.makedirs(os.path.dirname(outputPath), exist_ok=True)
+    writer = HDF5DatasetWriter(data.shape, outputPath)
 
-	# initialize the progress bar
-	widgets = ["Building Dataset: ", progressbar.Percentage(), " ",
-		progressbar.Bar(), " ", progressbar.ETA()]
-	pbar = progressbar.ProgressBar(maxval=data.shape[0],
-		widgets=widgets).start()
+    # initialize the progress bar
+    widgets = ["Building Dataset: ", progressbar.Percentage(), " ",
+        progressbar.Bar(), " ", progressbar.ETA()]
+    pbar = progressbar.ProgressBar(maxval=data.shape[0],
+        widgets=widgets).start()
 
-        for (i, (datum, label)) in enumerate(zip(data, labels)):
-            # if we are building the training dataset, then compute the
-            # mean of each channel in the image, then update the
-            # respective lists
-            if dType == "train":
-                (r, g, b) = np.mean(np.mean(datum,0),0)
-                R.append(r)
-                G.append(g)
-                B.append(b)
+    for (i, (datum, label)) in enumerate(zip(data, labels)):
+        # if we are building the training dataset, then compute the
+        # mean of each channel in the image, then update the
+        # respective lists
+        if dType == "train":
+            (r, g, b) = np.mean(np.mean(datum,0),0)
+            R.append(r)
+            G.append(g)
+            B.append(b)
 
-            # add the image and label to the HDF5 dataset
-            writer.add([datum], [label[0]])
-            pbar.update(i)
+        # add the image and label to the HDF5 dataset
+        writer.add([datum], [label[0]])
+        pbar.update(i)
 
-	# close the HDF5 writer
-	pbar.finish()
-	writer.close()
+    # close the HDF5 writer
+    pbar.finish()
+    writer.close()
 
 # construct a dictionary of averages, then serialize the means to a
 # JSON file
 print("[INFO] serializing means...")
 D = {"R": float(np.mean(R)), "G": float(np.mean(G)), "B": float(np.mean(B))}
-print D
+print(D)
 
+os.makedirs(os.path.dirname(config.DATASET_MEAN), exist_ok=True)
 f = open(config.DATASET_MEAN, "w")
 f.write(json.dumps(D))
 f.close()
+
+os.makedirs(os.path.dirname(config.CLASS_NUMS), exist_ok=True)
+pickle.dump(class_nums, open(config.CLASS_NUMS, "wb"))

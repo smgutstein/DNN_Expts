@@ -10,6 +10,9 @@ import os
 import shutil
 import socket
 import sys
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+warnings.simplefilter(action='ignore', category=UserWarning)
 
 # Hmmm....think this might not be needed
 from io import StringIO
@@ -18,9 +21,9 @@ from io import StringIO
 libc = ctypes.CDLL(None)
 c_stdout = ctypes.c_void_p.in_dll(libc, 'stdout')
 
-
 # Capture output with theano/keras & gpu info
 expt_log = Logger()
+
 
 def is_number(in_str):
     try:
@@ -36,21 +39,25 @@ class Runner(object):
         self.config = configparser.ConfigParser()
         self.cmd_line_args = self.get_cmd_line_args()
         self.host_machine = socket.gethostname()
+        self.ran_one_expt = False
 
     def set_params(self):
         try:
-            if sys.version_info < (3,0):
+            if sys.version_info < (3, 0):
                 self.expt_file_name = self.cmd_line_args.next()
             else:
                 self.expt_file_name = self.cmd_line_args.__next__()
         except StopIteration as exception:
+            if not self.ran_one_expt:
+                print("\nNeed to specify cfg file with expt params\n")
+                sys.exit()
             return False
 
         self.notes_dict = dict()
-        
+
         # Get Expt Params
         self.config.read(self.expt_file_name)
-        self.file_param_dict = self.get_param_dict('ExptFiles')        
+        self.file_param_dict = self.get_param_dict('ExptFiles')
         self.net_param_dict = self.get_param_dict('NetParams')
         self.expt_param_dict = self.get_param_dict('ExptParams')
         self.saved_param_dict = self.get_param_dict('SavedParams')
@@ -63,7 +70,7 @@ class Runner(object):
         if 'notes' in temp_dict:
             self.notes_dict["Expt Notes"] = temp_dict['notes']
             self.config.remove_section('Notes')
-        
+
         # To allow quick testing without needing to change specified
         # epochs in cfg files
         if self.override_epochs > 0:
@@ -131,11 +138,10 @@ class Runner(object):
         # Possibly a bad idea, but I'm going to have output dir for tfer expts
         # automatically record which src task iteration was used, instead of
         # assigning that feature of the sub-dir name in a cfg file
-        #if 'saved_iter' in self.saved_param_dict:
+        # if 'saved_iter' in self.saved_param_dict:
         #     net_dir = os.path.join(self.saved_param_dict['saved_set_dir'],
         #                            self.saved_param_dict['saved_dir'])
 
-             
         #     if self.saved_param_dict['saved_iter'] == 'best':
         #         self.expt_set_dir = os.path.join(self.expt_set_dir,'best')
         #         best_file = [x for x in os.listdir(net_dir) if 'best' in x][0]
@@ -147,30 +153,30 @@ class Runner(object):
         #                                      str(self.saved_param_dict['saved_iter']))
 
         # Make output_dir, if necessary        
-        self.expt_dir = self.host_machine #+ "_" + self.file_param_dict['expt_dir']
+        self.expt_dir = self.host_machine
         if not hasattr(self, 'outdir'):
             self.outdir = self.make_outdir(self.expt_set_dir, self.expt_dir)
-            
+
         # Make outdir for config/metadata
         self.metadata_dir = os.path.join(self.outdir, 'metadata')
         self.make_sure_outdir_exists(self.metadata_dir)
         checkpoint_dir = os.path.join(self.outdir, 'checkpoints')
-        self.make_sure_outdir_exists(checkpoint_dir) # Used by net_manager
-            
+        self.make_sure_outdir_exists(checkpoint_dir)  # Used by net_manager
+
         # Copy files with metadata (cfg files) to output dir
         shutil.copy(self.expt_file_name,
                     os.path.join(self.metadata_dir,
                                  os.path.basename(self.expt_file_name)))
         if 'encoding_cfg' in self.file_param_dict:
-            shutil.copy(self.file_param_dict['encoding_cfg'],    
+            shutil.copy(self.file_param_dict['encoding_cfg'],
                         os.path.join(self.metadata_dir, 'encoding.cfg'))
-            
+
         if 'optimizer_cfg' in self.file_param_dict:
-            shutil.copy(self.file_param_dict['optimizer_cfg'],    
+            shutil.copy(self.file_param_dict['optimizer_cfg'],
                         os.path.join(self.metadata_dir, 'optimizer.cfg'))
-            
+
         if 'encoding_cfg' in self.trgt_task_param_dict:
-            shutil.copy(self.file_param_dict['encoding_cfg'],    
+            shutil.copy(self.file_param_dict['encoding_cfg'],
                         os.path.join(self.metadata_dir, 'encoding.cfg'))
 
             # Need to overwrite source task encoding
@@ -180,7 +186,7 @@ class Runner(object):
             self.trgt_task_param_dict['_MetricParams'] = self.get_param_dict('MetricParams')
 
             if 'encoding_cfg' in self.file_param_dict:
-                shutil.copy(self.file_param_dict['encoding_cfg'],    
+                shutil.copy(self.file_param_dict['encoding_cfg'],
                             os.path.join(self.metadata_dir, 'orig_encoding.cfg'))
 
         shutil.copy(self.net_param_dict['optimizer_cfg'],
@@ -198,7 +204,6 @@ class Runner(object):
                                    self.augment_param_dict)
         print("Built Data Manager")
 
-
         self.expt_net = NetManager(self.expt_dm, self.outdir,
                                    self.metadata_dir,
                                    self.net_param_dict,
@@ -212,7 +217,7 @@ class Runner(object):
                                    self.nocheckpoint)
         print("Built Net Manager")
         return True
-        
+
     def get_cmd_line_args(self):
 
         # Get config file from cmd line
@@ -235,12 +240,12 @@ class Runner(object):
 
         # Turn off printing if requested (i.e. for batch jobs)
         if cmd_line_args.silent:
-            sys.stdout = open(os.devnull,'w')
-            
-        print ("CMD LINE ARGS:")
+            sys.stdout = open(os.devnull, 'w')
+
+        print("CMD LINE ARGS:")
         temp = vars(cmd_line_args)
         for temp_arg in temp:
-            print(temp_arg,":",temp[temp_arg])
+            print(temp_arg, ":", temp[temp_arg])
 
         # Choose specific GPU
         os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
@@ -263,9 +268,9 @@ class Runner(object):
 
         # Enable tensorflow debugger
         if cmd_line_args.dbg == True:
-            print ("\n==========================\n")
-            print ("DEBUG ENABLED")
-            print ("\n==========================\n")
+            print("\n==========================\n")
+            print("DEBUG ENABLED")
+            print("\n==========================\n")
             import tensorflow as tf
             from tensorflow.python import debug as tf_debug
             import keras.backend as K
@@ -291,10 +296,10 @@ class Runner(object):
                 param_dict[curr_pair[0]] = curr_pair[1]
 
             # Convert numeric strings to float
-            param_dict = {x:float(param_dict[x])
-                               if is_number(param_dict[x])
-                                 else param_dict[x]
-                               for x in param_dict}
+            param_dict = {x: float(param_dict[x])
+                          if is_number(param_dict[x])
+                          else param_dict[x]
+                          for x in param_dict}
 
             # Convert non-numeric strings to correct variable types
             for x in param_dict:
@@ -312,15 +317,15 @@ class Runner(object):
                 if isinstance(param_dict[x], str):
                     temp = param_dict[x].strip()
                     if (len(temp) > 0 and
-                        ((temp[0] == '[' and temp[-1] == ']') or
-                         (temp[0] == '(' and temp[-1] == ')'))):
-                        
+                            ((temp[0] == '[' and temp[-1] == ']') or
+                             (temp[0] == '(' and temp[-1] == ')'))):
+
                         # data is list or tuple
                         data_type = ""
-                        if (temp[0] == '[' and temp[-1] == ']'):
+                        if temp[0] == '[' and temp[-1] == ']':
                             data_type = 'list'
                             empty_data = []
-                        elif (temp[0] == '(' and temp[-1] == ')'):
+                        elif temp[0] == '(' and temp[-1] == ')':
                             data_type = 'tuple'
                             empty_data = ()
                         else:
@@ -329,7 +334,7 @@ class Runner(object):
                         # Convert string to desired data container of float
                         #  Remove container brackets
                         temp = temp[1:-1]
-                        
+
                         if len(temp) == 0:
                             temp = empty_data
                         else:
@@ -337,7 +342,7 @@ class Runner(object):
                             temp = [float(y) for y in temp]
                             if data_type == 'tuple':
                                 temp = tuple(temp)
-                                
+
                         param_dict[x] = temp
 
         except configparser.NoSectionError:
@@ -361,14 +366,14 @@ class Runner(object):
         done = False
         suffix = '_v0'
         while not done:
-            curr_output_dir = os.path.join(main_dir, expt_dir + suffix) # + '_' + self.gpu)
+            curr_output_dir = os.path.join(main_dir, expt_dir + suffix)  # + '_' + self.gpu)
             if not os.path.isdir(curr_output_dir):
                 self.make_sure_outdir_exists(curr_output_dir)
                 done = True
             else:
                 version = int(suffix[2:]) + 1
                 suffix = '_v' + str(version)
-        print ("Saving results to %s" % curr_output_dir)
+        print("Saving results to %s" % curr_output_dir)
         return curr_output_dir
 
     def store_git_meta_data(self):
@@ -437,14 +442,14 @@ class Runner(object):
     def store_env_data(self):
 
         major, minor, micro, rlease, cereal = sys.version_info
-        vers = '.'.join([str(x) for x in [major, minor, micro]]) 
-        out_str = "Python: " + vers + "  Release: " + rlease + "  Serial: " + str(cereal) + "\n" 
+        vers = '.'.join([str(x) for x in [major, minor, micro]])
+        out_str = "Python: " + vers + "  Release: " + rlease + "  Serial: " + str(cereal) + "\n"
         indent_str = "    "
-        
+
         if os.path.exists(os.path.join(sys.prefix, 'conda-meta')):
             out_str += "Found Anaconda Environment:\n"
             env_name = os.path.basename(sys.prefix)
-            out_str += indent_str + "Name: " + env_name + '\n'            
+            out_str += indent_str + "Name: " + env_name + '\n'
         else:
             out_str += "Did Not Find Anaconda Environment:\n"
 
@@ -456,13 +461,13 @@ class Runner(object):
         out_str += indent_str + "Installed Packages:\n"
         installed_packages = os.listdir(site_pack_dir)
         for curr_pack in sorted(installed_packages):
-            out_str += 2*indent_str + curr_pack + '\n'
+            out_str += 2 * indent_str + curr_pack + '\n'
 
         with open(os.path.join(self.metadata_dir, 'env_info.txt'), 'w') as f:
             f.write(out_str)
 
         return
-            
+
     def run_expt(self):
 
         # Run Expt
@@ -471,12 +476,11 @@ class Runner(object):
         expt_log.switch_log_file(self.metadata_dir)
         self.expt_net.train()
         self.expt_net.model.fit_generator(self.expt_dm.train_data_gen,
-                                          steps_per_epoch = self.expt_dm.train_batches_per_epoch,
+                                          steps_per_epoch=self.expt_dm.train_batches_per_epoch,
                                           epochs=self.expt_net.epochs,
                                           validation_data=self.expt_dm.test_data_gen,
-                                          validation_steps=\
-                                                 self.expt_dm.test_batches_per_epoch,
-                                          callbacks = self.expt_net.callbacks,
+                                          validation_steps=self.expt_dm.test_batches_per_epoch,
+                                          callbacks=self.expt_net.callbacks,
                                           shuffle=True,
                                           verbose=2)
         self.expt_net.training_monitor.record_stop_time()
@@ -493,28 +497,30 @@ class Runner(object):
         stop_str = "Stop Time : %s" % (stop_time.strftime("%H:%M:%S %p %A %Y-%m-%d"))
         tot_str = "Run Time  : {:d}:{:02d}:{:02d}".format(hours, minutes, seconds)
         timing_info = '\n'.join([start_str, stop_str, tot_str])
-        print (timing_info)
+        print(timing_info)
         expt_log.write(timing_info + '\n')
-        score_str = "{:5.2f}%".format(best_score*100).strip()
+        score_str = "{:5.2f}%".format(best_score * 100).strip()
         epoch_str = "{:4d}".format(best_epoch).strip()
         result_str = "Peak Accuracy: " + score_str + " at epoch " + epoch_str + '\n'
         print(self.data_mod_str)
         print(self.notes_str)
         print(result_str)
-        expt_log.write(self.data_mod_str+'\n')
-        expt_log.write(self.notes_str+'\n')
+        expt_log.write(self.data_mod_str + '\n')
+        expt_log.write(self.notes_str + '\n')
         expt_log.write(result_str)
-        #expt_log.close_log(self.outdir)
+        # expt_log.close_log(self.outdir)
         self.store_git_meta_data()
         self.store_env_data()
 
-        return 
+        return
+
 
 if __name__ == '__main__':
 
     x = Runner()
     while x.set_params():
         x.run_expt()
-    print ("Closing log " + x.metadata_dir)
+        x.ran_one_expt = True
+    print("Closing log " + x.metadata_dir)
     expt_log.close_log(x.metadata_dir)
     sys.stdout = sys.__stdout__

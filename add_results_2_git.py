@@ -36,9 +36,6 @@ def git_commit():
     repo.git.commit('-m','adding results to tfer to/from BIERS cluster')
 
 def add_results_to_repo(root_dir):
-
-    #import pdb
-    #pdb.set_trace()
     found_files = find_files(root_dir)
     print("Found Files:")
     for found_file in sorted(found_files):
