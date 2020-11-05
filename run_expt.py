@@ -153,7 +153,7 @@ class Runner(object):
         #                                      str(self.saved_param_dict['saved_iter']))
 
         # Make output_dir, if necessary        
-        self.expt_dir = self.host_machine 
+        self.expt_dir = self.host_machine
         if not hasattr(self, 'outdir'):
             self.outdir = self.make_outdir(self.expt_set_dir, self.expt_dir)
 
