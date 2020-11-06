@@ -128,6 +128,16 @@ class DataManager(object):
         print("Loading data from",
               os.path.join("dataset_loaders",
                            self.data_loading_module))
+
+        # Overwrite default args for ImageDataGenerator with those from cfg files
+        # (This might just be a little silly - could just combine dicts created from
+        # cfg files and not explicitly state default values, but for now helps me keep
+        # track of what default values are)
+        for temp in self.preprocess_param_dict:
+            self.ImageDataGen_args[temp] = self.preprocess_param_dict[temp]
+        for temp in self.augment_param_dict:
+            self.ImageDataGen_args[temp] = self.augment_param_dict[temp]
+
         # Adding encoding
         encoding_module = importlib.import_module(self.encoding_module)
         self.make_encoding_dict = types.MethodType(encoding_module.make_encoding_dict, self)
