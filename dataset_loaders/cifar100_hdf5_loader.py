@@ -62,7 +62,6 @@ def load_data(self, trvate='train', label_mode='fine'):
 
     image_gen.fit(x)
     data_gen = image_gen.flow(x, Y_encoded, hdf_gen.batchSize)
-    batches_per_epoch = len(y_classnum.ravel()) // hdf_gen.batchSize + 1
     return data_gen, hdf_gen.batches_per_epoch
 
     '''
