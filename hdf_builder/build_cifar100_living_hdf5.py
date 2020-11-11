@@ -10,17 +10,13 @@ from os.path import expanduser
 from collections import defaultdict
 from cifar import load_batch
 from config import cifar100_living as config
-import cv2
 from external_dir.utils import HDF5DatasetWriter
-from external_dir.imutils import paths
 import json
 from keras import backend as K
-from keras.utils.data_utils import get_file
 import numpy as np
 import pickle
 import progressbar
-from sklearn.preprocessing import LabelEncoder
-from sklearn.model_selection import train_test_split
+
 
 home = expanduser("~")
 dict_path = '../dataset_info/cifar100_dicts_all.pkl'
@@ -44,7 +40,7 @@ def load_data(label_mode='fine'):
         raise ValueError('`label_mode` must be one of `"fine"`, `"coarse"`.')
 
     path = os.path.join(home,'.keras/datasets/', 'cifar-100-python',
-                        'Living_vs_Not_Living', 'src_tasks') 
+                        'cifar100_living_notliving', 'src_tasks') 
 
     fpath = os.path.join(path, 'train')
     x_train, y_train = load_batch(fpath, label_key=label_mode + '_labels')
@@ -112,24 +108,28 @@ for (dType, data, labels, outputPath) in datasets:
         pbar.finish()
         writer.close()
 
-# construct a dictionary of averages, then serialize the means to a
-# JSON file
-print("[INFO] serializing means...")
-MI = {"R": float(np.min(R)), "G": float(np.min(G)), "B": float(np.min(B))}
-D = {"R": float(np.mean(R)), "G": float(np.mean(G)), "B": float(np.mean(B))}
-MA = {"R": float(np.max(R)), "G": float(np.max(G)), "B": float(np.max(B))}
-print ("Min: ",MI)
-print ("Mean: ",D)
-print ("Max: ",MA)
+        # construct a dictionary of averages, then serialize the means to a
+        # JSON file
+        print("[INFO] serializing means...")
+        MI = {"R": float(np.min(R)), "G": float(np.min(G)), "B": float(np.min(B))}
+        D = {"R": float(np.mean(R)), "G": float(np.mean(G)), "B": float(np.mean(B))}
+        MA = {"R": float(np.max(R)), "G": float(np.max(G)), "B": float(np.max(B))}
+        print ("Min: ",MI)
+        print ("Mean: ",D)
+        print ("Max: ",MA)
 
-saved_classes = defaultdict(int)
-for curr in labels:
-    saved_classes[curr[0]] +=1
-for x in sorted(saved_classes.keys()):
-    print(label_dict[x], saved_classes[x])
-print()
-print("Total Classes:",len(saved_classes))
+        saved_classes = defaultdict(int)
+        for curr in labels:
+            saved_classes[curr[0]] +=1
+        for x in sorted(saved_classes.keys()):
+            print(x, ":", label_dict[x], saved_classes[x])
+        print()
+        print("Total Classes:", len(saved_classes))
+        class_nums = sorted(list(saved_classes.keys()))
 
 f = open(config.DATASET_MEAN, "w")
 f.write(json.dumps(D))
 f.close()
+
+os.makedirs(os.path.dirname(config.CLASS_NUMS), exist_ok=True)
+pickle.dump(class_nums, open(config.CLASS_NUMS, "wb"))
