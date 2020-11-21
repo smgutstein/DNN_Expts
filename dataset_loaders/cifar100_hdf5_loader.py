@@ -45,15 +45,15 @@ def load_data(self, trvate='train', label_mode='fine'):
     # Get Encoding Dict
     self.get_encoding_dict(class_nums)
     hdf_gen.set_encoding_dict(self.encoding_dict)
-
-
+    
+    '''
+    ############################################################
     # Test creating data_gen using info stored in hdf5 database 
     # (Sample trial got 5 epochs 42.95% val acc)
     x = hdf_gen.db["images"]
     y_classnum = hdf_gen.db["labels"]
     y_classnum = np.reshape(y_classnum, (len(y_classnum), 1))
 
-    '''
     # Encode Class Numbers
     y_temp = y_classnum.ravel()
     Y_encoded = np.empty((len(y_temp), hdf_gen.nb_code_bits))
@@ -63,9 +63,10 @@ def load_data(self, trvate='train', label_mode='fine'):
     image_gen.fit(x)
     data_gen = image_gen.flow(x, Y_encoded, hdf_gen.batchSize)
     return data_gen, hdf_gen.batches_per_epoch
-
+    ############################################################
     '''
-    # Using hdf5 gen - (Sample trial got 5 epochs 39.74% val acc)
+
     return hdf_gen.generator(), hdf_gen.batches_per_epoch
+
 
 
