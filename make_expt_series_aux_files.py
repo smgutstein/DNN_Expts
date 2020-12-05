@@ -2,53 +2,6 @@ import argparse
 import configparser
 import itertools
 import os
-import sys
-
-
-'''
-def make_config():
-    # Create base configparser used
-    # to create cfg files for each expt  
-    config = configparser.ConfigParser()
-
-    config.add_section('ExptFiles')
-    config.add_section('NetParams')
-    config.add_section('ExptParams')
-    config.add_section('SavedParams')
-    config.add_section('TrgtTaskParams')
-
-    config['ExptFiles']["data_loader"] = "cifar100_src_living_vs_notliving"
-    config['ExptFiles']["class_names"] = "dataset_info/cifar100_dicts_all.pkl"
-    config['ExptFiles']["encoding_cfg"] = "cfg_dir/enc_cfg/softmax_encoding_65.cfg"
-    config['ExptFiles']["root_expt_dir"] = "opt_tfer_expt_series_prelim_2"
-    config['ExptFiles']["expt_dir"] = "cifar_100_expts"
-    config['ExptFiles']["expt_subdir"] = "" # Specify SPC
-
-    config['NetParams']["arch_module"] = "cifar100_keras_net"
-    config['NetParams']["output_activation"] = "softmax"
-    config['NetParams']["optimizer_cfg"] = "cfg_dir/opt_cfg/optimizer_tfer_cifar_src_1.cfg"
-    config['NetParams']["loss_fnc"] = "categorical_crossentropy"
-
-    config['ExptParams']['epochs'] = '500'
-    config['ExptParams']['batch_size'] = '32'
-    config['ExptParams']['epochs_per_recording'] = '100'
-
-    config['SavedParams']['saved_set_dir'] = 'opt_tfer_expt_series/cifar_100_expts/keras_cifar_net/src_tasks'
-    config['SavedParams']['saved_dir'] = '' # Specify 0/checkpoints'
-    config['SavedParams']['saved_arch'] = 'init_arch.json'
-    config['SavedParams']['saved_iter'] = '' # Specify Source Epoch Training Iters
-    config['SavedParams']['saved_encodings_iter'] = '1'
-
-    config['TrgtTaskParams']['num_reset_layers'] = '1'
-    config['TrgtTaskParams']['penultimate_node_list'] = '[]'
-    config['TrgtTaskParams']['output_activation'] = 'softmax'
-    config['TrgtTaskParams']['data_loader'] = '' # Specify Trgt Train Set
-
-    config['TrgtTaskParams']['class_names'] = 'dataset_info/cifar100_dicts_all.pkl'
-    config['TrgtTaskParams']['encoding_cfg'] = 'cfg_dir/enc_cfg/softmax_encoding_35.cfg'
-
-    return config
-'''
 
 head_str = '''
 from __future__ import absolute_import
@@ -63,7 +16,6 @@ from keras import backend as K
 import numpy as np
 from os.path import expanduser
 home = expanduser("~")
-
 
 def load_data(label_mode='fine'):
     \"\"\"Loads trgt tasks for CIFAR100 living_vs_notliving datasets.
@@ -111,7 +63,6 @@ tail_str = ''' )
 
 def write_cfg_files(config_infile, config_outfile):
     # Write cfg files used for all expts in batch
-
     # Initialize/Get file structure data
     src_net_root_dir =  config_infile['RootDirs']['src_net_root_dir']
     trgt_cfg_root_dir = config_infile['RootDirs']['trgt_cfg_root_dir']
@@ -137,7 +88,6 @@ def write_cfg_files(config_infile, config_outfile):
     trgt_train_id_list = [x.strip('[] ') for x in trgt_train_id_list]
     param_lists = [src_net_list, spc_list, src_epoch_list, trgt_train_id_list]
 
-
     # Write all cfg files
     for curr_SRC_NET, curr_SPC, curr_SRC_EPOCH, curr_TR_ID in list(itertools.product(*param_lists)):
         file_name = file_name_prefix + file_name_midfix + curr_SRC_EPOCH + '_' + curr_TR_ID + file_name_suffix
@@ -156,6 +106,7 @@ def write_cfg_files(config_infile, config_outfile):
 
         config_outfile.write(open(cfg_file_path,'w'))
         print(cfg_file_path)
+
 
 def write_shell_scripts(config_infile):
     # Write nested shell scripts used to run full batch of expts
