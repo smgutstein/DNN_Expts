@@ -8,8 +8,10 @@ from keras import backend as K
 from keras.initializers import glorot_uniform
 from keras.models import model_from_json, model_from_yaml
 from keras_loggers import TrainingMonitor, ModelCheckpoint
+from keras_pruner_callback import PrunerCallback
 from keras.models import Model
 from keras.layers import Dense
+from lottery_ticket_pruner_abd import LotteryTicketPruner
 from net_architectures.sgActivation import Activation
 from net_architectures.AddRegularizer import add_regularizer
 import local_regularizer
@@ -41,11 +43,13 @@ class NetManager(object):
                  regularizer_param_dict,
                  saved_param_dict,
                  trgt_task_param_dict,
+                 lth_param_dict,
                  nocheckpoint,
                  data_augmentation=True,
                  save_iters=True,
                  save_best_n=5):
 
+        # Initialize class members
         self.init_epoch = 0
         self.epochs = int(expt_param_dict['epochs'])
         self.data_manager = data_manager
@@ -53,6 +57,7 @@ class NetManager(object):
         self.metadata_dir = metadata_dir
         self.expt_prefix = os.path.basename(expt_dir)
         self.data_augmentation = data_augmentation
+        self.lth_param_dict = lth_param_dict
         self.nocheckpoint = nocheckpoint
         self.save_iters = save_iters
         if self.save_iters:
@@ -72,7 +77,7 @@ class NetManager(object):
                 if not os.path.isdir(expt_dir):
                     raise
 
-        # Make optimizer
+        # Set learning rate schedule
         if lr_schedule_param_dict is not None and len(lr_schedule_param_dict) > 0:
             lr_sched_module = lr_schedule_param_dict.pop('lr_schedule')
             lr_orig = optimizer_param_dict['lr']
@@ -109,6 +114,7 @@ class NetManager(object):
         else:
             self.reg_func = None
 
+        # Load optimizer function
         optimizer_module = optimizer_param_dict.pop('optimizer_module')
         optimizer = optimizer_param_dict.pop('optimizer')
         temp = importlib.import_module(optimizer_module)
@@ -150,7 +156,8 @@ class NetManager(object):
         temp = importlib.import_module(metric_param_dict['metrics_module'])
         metric_fnc = getattr(temp, metric_param_dict['accuracy_metric'])
         metric_fnc_args = inspect.getargspec(metric_fnc)
-        # NOTE: Need top ensure correct acc fnc is obtained whjen recovering
+
+        # NOTE: Need top ensure correct acc fnc is obtained when recovering
         # previous encoding
         if metric_fnc_args.args == ['y_encode']:
             metric_fnc = metric_fnc(self.data_manager.encoding_matrix)
@@ -168,6 +175,7 @@ class NetManager(object):
                                                   saved_param_dict)
         self.check_for_saved_model_weights(net_param_dict,
                                            saved_param_dict)
+        #Check if tfer learning expt
         self.check_for_transfer(trgt_task_param_dict,
                                 net_param_dict)
 
@@ -178,6 +186,8 @@ class NetManager(object):
                      os.path.join(self.metadata_dir, arch_file_name))
         #  Copies net architecture to json file
         json_str = self.model.to_json()
+        os.makedirs(os.path.join(self.expt_dir, "checkpoints"),
+                    exist_ok=True)
         model_file = os.path.join(self.expt_dir, "checkpoints",
                                   "init_architecture.json")
         open(model_file, "w").write(json_str)
@@ -188,6 +198,7 @@ class NetManager(object):
                            optimizer=self.opt,
                            metrics=[metric_fnc])
 
+        # Make image of net
         try:
             from keras.utils import plot_model
             # Write the network architecture visualization graph to disk
@@ -421,7 +432,9 @@ class NetManager(object):
 
             orig_expt_files = os.listdir(net_dir)
             dup_files = [x for x in orig_expt_files
-                         if 'h5' not in x or x == wt_file.split('/')[-1]]
+                         if ('h5' not in x or
+                             x == wt_file.split('/')[-1]) and
+                             os.path.isfile(os.path.join(net_dir,x))]
             for curr_file in dup_files:
                 # If nocheckpoint is True, don't save copy of source net
                 # (i.e. init condits for trgt net)
@@ -432,6 +445,23 @@ class NetManager(object):
                     curr_src = os.path.abspath(os.path.join(net_dir, curr_file))
                     curr_trgt = os.path.join(orig_expt_copy_dir, curr_file)
                     os.symlink(curr_src, curr_trgt)
+
+    def recover_lottery_ticket_base(self, epoch_num):
+        self.init_epoch = epoch_num
+        wt_file = os.path.join(self.lth_param_dict['root_expt_dir'],
+                               self.lth_param_dict['expt_dir'],
+                               self.lth_param_dict['expt_subdir'],
+                               'checkpoints',
+                               'checkpoint_weights_' + str(epoch_num) + '.h5')
+
+        print("Starting with weights from epoch %d" % self.init_epoch)
+        if os.path.isfile(wt_file):
+            print("   Loading wts from %s" % wt_file)
+        else:
+            print("Can't find {}".format(wt_file))
+            sys.exit()
+        self.model.load_weights(wt_file)
+
 
     def get_init_condits(self, train_data_generator,
                          test_data_generator):
@@ -454,6 +484,7 @@ class NetManager(object):
 
     def train(self, data_augmentation=True):
 
+        # Set output paths/files
         checkpoint_dir = os.path.join(self.expt_dir, "checkpoints", "checkpoint")
         results_path = os.path.join(self.expt_dir, 'results.txt')
         fig_path = [os.path.join(self.expt_dir, 'results_acc.png'),
@@ -476,11 +507,22 @@ class NetManager(object):
                                             period=self.epochs_per_recording,
                                             nocheckpoint=self.nocheckpoint)
 
+        #Set lth pruning information, if necessary
+        if len(self.lth_param_dict) != 0:
+            self.pruner = LotteryTicketPruner(self.model)
+            self.pruner_callback = PrunerCallback(self.pruner,
+                                                  use_dwr=False)
+        else:
+            self.pruner = None
+            self.pruner_callback = None
+
         # Get results for initialized net
         self.training_monitor.record_start_time()
         (init_train_loss, init_train_acc,
          init_test_loss, init_test_acc) = self.get_init_condits(dm.train_data_gen,
                                                                 dm.test_data_gen)
+
+        # Store/Record results of initialized net
         self.training_monitor.on_train_begin()
         log_dir = {'loss': init_train_loss,
                    'val_loss': init_test_loss,
@@ -491,10 +533,17 @@ class NetManager(object):
         self.checkpointer.set_model(self.model)
         self.checkpointer.on_epoch_end(epoch=-1, logs=log_dir)
 
+        # Set callbacks
+        #   Std. callbacks
         self.callbacks = [self.training_monitor, self.checkpointer]
-        # Add lr scheduler
+
+        #   Add lr scheduler callback
         if self.lr_schedule:
             self.callbacks.append(self.lr_schedule)
+
+        #   Add LTH pruner callback
+        if self.pruner:
+            self.callbacks.append(self.pruner_callback)
 
         # Train Model: TBD - Move this code to run_expt.py
         # dm = self.data_manager
