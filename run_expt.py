@@ -5,6 +5,8 @@ import ctypes
 import datetime
 import errno
 from expt_logger import Logger
+import importlib
+from lottery_ticket_pruner_abd import LotteryTicketPruner
 from operator import itemgetter
 import os
 import shutil
@@ -64,6 +66,7 @@ class Runner(object):
         self.trgt_task_param_dict = self.get_param_dict('TrgtTaskParams')
         self.preprocess_param_dict = self.get_param_dict('DataPreprocessParams')
         self.augment_param_dict = self.get_param_dict('DataAugmentParams')
+        self.lth_param_dict = self.get_param_dict('LTHParams') #Lottery Ticket Hypothesis dict
 
         # Get notes from expt cfg file
         temp_dict = self.get_param_dict('Notes')
@@ -161,7 +164,6 @@ class Runner(object):
         self.metadata_dir = os.path.join(self.outdir, 'metadata')
         self.make_sure_outdir_exists(self.metadata_dir)
         checkpoint_dir = os.path.join(self.outdir, 'checkpoints')
-        self.make_sure_outdir_exists(checkpoint_dir)  # Used by net_manager
 
         # Copy files with metadata (cfg files) to output dir
         shutil.copy(self.expt_file_name,
@@ -214,6 +216,7 @@ class Runner(object):
                                    self.regularizer_param_dict,
                                    self.saved_param_dict,
                                    self.trgt_task_param_dict,
+                                   self.lth_param_dict,
                                    self.nocheckpoint)
         print("Built Net Manager")
         return True
@@ -274,6 +277,7 @@ class Runner(object):
             import tensorflow as tf
             from tensorflow.python import debug as tf_debug
             import keras.backend as K
+
             K.set_session(tf_debug.LocalCLIDebugWrapperSession(tf.Session()))
 
         # Check if number of desired epochs different than in cfg file
@@ -468,13 +472,14 @@ class Runner(object):
 
         return
 
-    def run_expt(self):
-
-        # Run Expt
-        start_time = datetime.datetime.now()
+    def start_timestamp(self):
+        self.start_time = datetime.datetime.now()
         expt_log.stop_log()
         expt_log.switch_log_file(self.metadata_dir)
-        self.expt_net.train()
+
+    def run_expt(self):
+        # Run Expt
+        self.expt_net.train()  # Set outputs and callbacks
         self.expt_net.model.fit_generator(self.expt_dm.train_data_gen,
                                           steps_per_epoch=self.expt_dm.train_batches_per_epoch,
                                           epochs=self.expt_net.epochs,
@@ -483,18 +488,107 @@ class Runner(object):
                                           callbacks=self.expt_net.callbacks,
                                           shuffle=True,
                                           verbose=2)
+
+    def run_lth_expt(self):
+        from keras.models import model_from_json
+
+        # 0. Get result dir for pre-lottery ticket net
+        orig_results_dir = os.path.join(self.saved_param_dict['saved_set_dir'],
+                                        self.saved_param_dict['saved_dir'])
+
+        # Get path to fully trained net without masking
+        saved_nets = [y for y in os.listdir(orig_results_dir) if 'h5' in y]
+        saved_nets = sorted(saved_nets, key=lambda x: int(x.split('_')[-1].split('.')[0]))
+        mask_net_name = saved_nets[-1]
+        mask_net_path = os.path.join(orig_results_dir, mask_net_name)
+
+        # Note: Source net epochs assumes a naming convention of
+        # #     "*_<number_of_training_epochs>.h5
+        mask_net_epochs = int(mask_net_name.split('_')[-1].split('.')[0])
+        lth_epoch = int(self.saved_param_dict['saved_iter'].split('_')[0])
+
+        # Get path to lottery ticket hypothesis (lth) net
+        lth_net = [x for x in saved_nets
+                           if lth_epoch ==
+                              int(x.split('_')[-1].split('.')[0])][0]
+        lth_net_path = os.path.join(orig_results_dir, lth_net)
+
+
+        # Get path to architecture of source net
+        arch_file = [x for x in os.listdir(orig_results_dir) if "init_architecture" in x][0]
+        arch_file_path = os.path.join(orig_results_dir, arch_file)
+
+        # Recreate final version of source net
+        print("Recreating source net for lottery tickets")
+        with open(arch_file_path, 'r') as f:
+            json_str = f.read()
+            pretrain_model = model_from_json(json_str)
+            pretrain_model.load_weights(mask_net_path)
+
+        num_prunings = int(self.lth_param_dict['num_prune_rounds'])
+
+        # Create output dir for results of applying lth to chosen epoch
+        ticket_dir = "lth_" + str(lth_epoch)
+        self.make_outdir(orig_results_dir, ticket_dir)
+
+        # Set number of training epochs for lth net
+        lth_train_epochs = mask_net_epochs - lth_epoch
+
+        # Set outputs and callbacks
+        self.expt_net.train()
+
+        # Shorten variable name of pruner and set weights that pruner uses
+        # to determine initial mask
+        pruner = self.expt_net.pruner
+        pruner.set_pretrained_weights(pretrain_model)
+
+        # Shorten variable name of pruner and set weights that pruner uses
+        # to determine initial mask. Note pruner is the callback in charge
+        # of lth pruning
+        pruner = self.expt_net.pruner
+        pruner.set_pretrained_weights(pretrain_model)
+
+        # Run for chosen number of pruning/training cycles
+        for curr_pruning in range(num_prunings):
+            # Update prune rates
+            prune_rate = pow(self.lth_param_dict['prune_rate'],
+                             1.0/(curr_pruning + 1))
+
+            # Set net weights to starting values before mask applied
+            self.expt_net.model.load_weights(lth_net_path)
+
+            # Calculate and apply mask for given net
+            # before training (retraining)
+            pruner.calc_prune_mask(self.expt_net.model, prune_rate)
+            # Note: Pruning is applied by callback functions at epoch
+            #       begin and train end
+
+            # Retrain masked net
+            self.expt_net.model.fit_generator(
+                self.expt_dm.train_data_gen,
+                steps_per_epoch=self.expt_dm.train_batches_per_epoch,
+                epochs=lth_train_epochs,
+                validation_data=self.expt_dm.test_data_gen,
+                validation_steps=self.expt_dm.test_batches_per_epoch,
+                callbacks=self.expt_net.callbacks,
+                shuffle=True, verbose=2)
+
+            # Fix weights that pruner uses for next mask
+            pruner.set_pretrained_weights(self.expt_net.model)
+
+    def stop_timestamp(self):
         self.expt_net.training_monitor.record_stop_time()
         best_score = self.expt_net.checkpointer.best_score
         best_epoch = self.expt_net.checkpointer.best_epoch
-        stop_time = datetime.datetime.now()
+        self.stop_time = datetime.datetime.now()
 
         # Show run time (by wall clock)
         run_time = datetime.timedelta
-        seconds = int(round(run_time.total_seconds(stop_time - start_time)))
+        seconds = int(round(run_time.total_seconds(self.stop_time - self.start_time)))
         minutes, seconds = divmod(seconds, 60)
         hours, minutes = divmod(minutes, 60)
-        start_str = "Start Time: %s" % (start_time.strftime("%H:%M:%S %p %A %Y-%m-%d"))
-        stop_str = "Stop Time : %s" % (stop_time.strftime("%H:%M:%S %p %A %Y-%m-%d"))
+        start_str = "Start Time: %s" % (self.start_time.strftime("%H:%M:%S %p %A %Y-%m-%d"))
+        stop_str = "Stop Time : %s" % (self.stop_time.strftime("%H:%M:%S %p %A %Y-%m-%d"))
         tot_str = "Run Time  : {:d}:{:02d}:{:02d}".format(hours, minutes, seconds)
         timing_info = '\n'.join([start_str, stop_str, tot_str])
         print(timing_info)
@@ -519,8 +613,16 @@ if __name__ == '__main__':
 
     x = Runner()
     while x.set_params():
-        x.run_expt()
-        x.ran_one_expt = True
+        x.start_timestamp()
+        if len(x.lth_param_dict) == 0:
+            x.run_expt()
+        else:
+            x.run_lth_expt()
+        x.stop_timestamp()
+        x.ran_one_expt = True # Originally thought multiple expts would be
+                              # run from cmd line. Instead they're run from
+                              # batch files. Need to get rid of code that
+                              # enables multiple expts to be run from cmd line.
     print("Closing log " + x.metadata_dir)
     expt_log.close_log(x.metadata_dir)
     sys.stdout = sys.__stdout__
