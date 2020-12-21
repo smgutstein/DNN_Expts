@@ -227,10 +227,12 @@ class NetWeights(object):
 
 if __name__ == '__main__':
 
-    results_dir = os.path.join('..','results', 'opt_tfer_expts',
-                           'cifar_100_living_notliving_expts', 'wide_resnet_28_10_arch',
-                          'src_nets','workshop_expts','Chanticleer_v2')
+    home = os.path.expanduser('~')
+    results_dir = os.path.join(home, 'Projects/opt-tfer-2/results', 'opt_tfer_expts',
+                           'tinyimagenet200_notliving_living_expts', 'wide_resnet_28_10_arch',
+                          'src_nets','workshop_expts','alt08.arl.army.mil_v0')
 
+    print(os.listdir(results_dir))
     test = NetWeights(results_dir)
     test.make_epoch_mag_dict()
     test.save_epoch_mag_dict()
