@@ -41,5 +41,17 @@ class PrunerCallback(keras.callbacks.Callback):
         super().on_epoch_begin(epoch, logs)
         # End of epoch so prune the weights that we're pruning
         self.pruner.apply_pruning(self.model)
+        perc_pruned = self.pruner.pruned_weights / self.pruner.tot_weights
+        print("{:5.4f} percent of {:.2e} parameters pruned".format(perc_pruned,
+                                                                   self.pruner.tot_weights))
         if self.use_dwr:
             self.pruner.apply_dwr(self.model)
+
+    def on_batch_end(self, batch, logs=None):
+        super().on_train_end(logs)
+        # Prune weights after each batch to ensure
+        # pruned weights don't get trained
+        self.pruner.apply_pruning(self.model)
+        pass
+
+
