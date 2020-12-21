@@ -538,11 +538,6 @@ class Runner(object):
         self.expt_net.train()
 
         # Shorten variable name of pruner and set weights that pruner uses
-        # to determine initial mask
-        pruner = self.expt_net.pruner
-        pruner.set_pretrained_weights(pretrain_model)
-
-        # Shorten variable name of pruner and set weights that pruner uses
         # to determine initial mask. Note pruner is the callback in charge
         # of lth pruning
         pruner = self.expt_net.pruner
