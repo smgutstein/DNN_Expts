@@ -310,6 +310,8 @@ class LotteryTicketPruner(object):
 
     def apply_pruning(self, model):
 
+        self.tot_weights = 0
+        self.pruned_weights = 0
         for tpl in self.prunable_tuples:
             layer_index = tpl[0]
             weight_indices = tpl[1]
@@ -319,5 +321,24 @@ class LotteryTicketPruner(object):
             layer_weights = layer.get_weights()
             for index in weight_indices:
                 assert prune_masks[index] is not None
+                self.tot_weights += np.prod(layer_weights[index].shape)
+                self.pruned_weights += np.count_nonzero(prune_masks[index]==0)
                 layer_weights[index] *= prune_masks[index]
             layer.set_weights(layer_weights)
+
+    def count_pruned_weights(self, model):
+        # Just added for diagnostic purposes
+        self.nonzero_weights_pre = 0
+        self.nonzero_weights_post = 0
+        for tpl in self.prunable_tuples:
+            layer_index = tpl[0]
+            weight_indices = tpl[1]
+            layer = model.layers[layer_index]
+            prune_masks = self.prune_masks_map[tpl]
+
+            layer_weights = layer.get_weights()
+            for index in weight_indices:
+                assert prune_masks[index] is not None
+                self.nonzero_weights_pre = np.count_nonzero(layer_weights[index])
+                layer_weights[index] *= prune_masks[index]
+                self.nonzero_weights_post = np.count_nonzero(layer_weights[index])
