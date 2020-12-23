@@ -513,6 +513,12 @@ class Runner(object):
                               int(x.split('_')[-1].split('.')[0])][0]
         lth_net_path = os.path.join(orig_results_dir, lth_net)
 
+        # Create directory for saving masks
+        lth_src_iter = lth_net.split('.')[0].split("_")[-1]
+        saved_mask_dir = "_".join(["lth", lth_src_iter, "masks"])
+        saved_mask_path = os.path.join(orig_results_dir, saved_mask_dir)
+
+
 
         # Get path to architecture of source net
         arch_file = [x for x in os.listdir(orig_results_dir) if "init_architecture" in x][0]
@@ -538,10 +544,11 @@ class Runner(object):
         self.expt_net.train()
 
         # Shorten variable name of pruner and set weights that pruner uses
-        # to determine initial mask. Note pruner is the callback in charge
+        # to determine initial mask. Note: pruner is the callback in charge
         # of lth pruning
         pruner = self.expt_net.pruner
         pruner.set_pretrained_weights(pretrain_model)
+        pruner.set_saved_mask_dir(saved_mask_path)
 
         # Run for chosen number of pruning/training cycles
         for curr_pruning in range(num_prunings):
@@ -558,6 +565,7 @@ class Runner(object):
             # Note: Pruning is applied by callback functions at epoch
             #       begin and train end
 
+            lth_train_epochs = 2 # TEMP LInE ReMoVe
             # Retrain masked net
             self.expt_net.model.fit_generator(
                 self.expt_dm.train_data_gen,
