@@ -1,3 +1,4 @@
+import os
 import tensorflow.keras as keras
 
 
@@ -34,6 +35,11 @@ class PrunerCallback(keras.callbacks.Callback):
         # Prune weights after training is completed so inference
         # uses pruned weights
         self.pruner.apply_pruning(self.model)
+        # Save mask
+        cpr = int(self.pruner.cumulative_pruning_rate * 10000)
+        mask_name = "_".join(["cpr", str(cpr)]) + ".pkl"
+        mask_path = os.path.join(self.pruner.saved_mask_dir, mask_name)
+        pickle.dump(self.pruner.prune_masks_map, open(mask_path, 'wb'))
         # Don't apply DWR at the end of training since it changes
         # the weights that we just trained so hard to arrive at
 
