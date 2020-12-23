@@ -6,6 +6,94 @@ import numpy as np
 
 logger = logging.getLogger('lottery_ticket_pruner')
 
+def _prune_func_large_final_global(prunables_iterator, update_mask_func,
+                                   prune_percentage=None, prune_count=None):
+    """ Corresponds to 'large_final' from
+        'Deconstructing Lottery Tickets: Zeros, Signs and Supermask'. Will prune
+         (i.e. remove) the smallest N weights across all layers. This is
+         determined by their absolute values. Keeps the weights with largest
+         final absolute values. Note that in some cases more values may be
+         pruned that requested *if* there are >1 occurrences of the
+         `prune_count`th smallest value in all of the weights being pruned.
+        E.g. If there are 5 occurrences of 0.1234 and 0.1234 is the
+        `prune_count`th smallest value then 4 extra values (5 - 1 == 4)
+        will be pruned. This is expected to be a rare occurrence and hence
+        is not accounted for here.
+    See [The Lottery Ticket Hypothesis: Finding Sparse, Trainable Neural Networks]
+    (https://arxiv.org/pdf/1803.03635.pdf)
+
+    :param iterable prunables_iterator: A iterator that returns information about
+        what weights are prunable in the model as tuples:
+        (tpl, layer, index, prune_percentage, initial_weights,
+         current_weights, current_mask)
+
+    :param update_mask_func: A function that can be used to update the mask
+    in the `LotteryTicketPruner` instance :type update_mask_func:
+    def update_mask_func(tpl, index, new_mask)
+
+    :param float prune_percentage: The percentage of all weights to be pruned.
+     If called twice for a model with 100 weights, first with 0.5 then with 0.2
+     then the first call should prune 50 weights, the second call should prune
+     20 weights.
+    :param int prune_count: The number of additional weights to be pruned.
+     If called twice for a model with 100 weights, first with 50 then with 20
+     then the first call should prune 50 weights, the second call should prune 20
+     additional weights.
+    :returns n/a
+    """
+    if prune_percentage is None and prune_count is None:
+        raise ValueError('Either `prune_percentage` or '
+                         '`prune_count` must be specified')
+
+    weight_counts = []
+    all_weights_abs = []
+    current_mask_flat = []
+    prunables_list = list(prunables_iterator)
+    for tpl, layer, index, initial_weights, _, current_weights, \
+        current_mask in prunables_list:
+        all_weights_abs.extend(np.absolute(current_weights.flat))
+        current_mask_flat.extend(current_mask.flat)
+        weight_count = np.prod(current_weights.shape)
+        weight_counts.append(weight_count)
+    total_weight_count = np.sum(weight_counts)
+    if prune_count is None:
+        prune_count = int(total_weight_count * prune_percentage)
+    if prune_count == 0:
+        logger.warning(
+            '{} called with parameters indicating no pruning'
+            ' should be done'.format(sys._getframe().f_code.co_name))
+        return
+
+    logger.info('Pruning {} of {} total weights '
+                '({:.2f}%)'.format(prune_count,
+                                   total_weight_count,
+                                   prune_count / total_weight_count * 100))
+    current_mask_flat = np.array(current_mask_flat)
+    all_weights_abs = np.array(all_weights_abs)
+    # flake8 complains about this but "current_mask_flat is False"
+    # does *not* work
+    all_weights_abs[current_mask_flat == False] = math.inf  # noqa
+    flat_mins = np.argpartition(all_weights_abs, prune_count - 1)
+    max_min = all_weights_abs[flat_mins[prune_count - 1]]
+
+    for tpl, layer, index, initial_weights, _, \
+        current_weights, current_mask in prunables_list:
+        # Just in case `current_weights` isn't in a pruned state
+        current_weights *= current_mask
+        new_mask = np.absolute(current_weights) > max_min
+        pruned_count = np.sum(new_mask == 0)
+        weight_count = np.prod(current_weights.shape)
+        percentage = pruned_count / weight_count * 100
+        logger.debug(
+            'Globally pruned {} of {} ({:.2f}%) '
+            'smallest weights of layer {}/{}'.format(pruned_count,
+                                                     weight_count,
+                                                     percentage,
+                                                     layer.name, index))
+        update_mask_func(tpl, index, new_mask)
+
+
+
 def _prune_func_large_final(prunables_iterator, update_mask_func,
                             prune_percentage=None, prune_count=None):
     """ Prunes weights by keeping those with the largest magnitude from the
@@ -237,6 +325,9 @@ class LotteryTicketPruner(object):
             pretrained_weights_map[tpl] = retained_weights
         self._pretrained_weights = pretrained_weights_map
 
+    def set_saved_mask_dir(self, mask_path):
+        self.saved_mask_dir = mask_path
+
     def reset_masks(self):
         """ Resets the instance's pruning mask to it's
         initial state (so nothing gets pruned). """
@@ -305,8 +396,9 @@ class LotteryTicketPruner(object):
                                   prune_percentage
         self.cumulative_pruning_rate += actual_prune_percentage
 
-        _prune_func_large_final(self.iterate_prunables(model), self._update_mask,
-                              prune_percentage=actual_prune_percentage)
+        _prune_func_large_final_global(self.iterate_prunables(model),
+                                       self._update_mask,
+                                       prune_percentage=actual_prune_percentage)
 
     def apply_pruning(self, model):
 
