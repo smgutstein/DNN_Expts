@@ -565,7 +565,6 @@ class Runner(object):
             # Note: Pruning is applied by callback functions at epoch
             #       begin and train end
 
-            lth_train_epochs = 2 # TEMP LInE ReMoVe
             # Retrain masked net
             self.expt_net.model.fit_generator(
                 self.expt_dm.train_data_gen,
