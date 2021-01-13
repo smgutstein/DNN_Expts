@@ -466,6 +466,10 @@ class NetManager(object):
     def get_init_condits(self, train_data_generator,
                          test_data_generator):
         dm = self.data_manager
+        if not dm.augment_param_dict:
+            # No data generator used
+            print("No data augmentation")
+
         init_train_loss, init_train_acc = \
             self.model.evaluate_generator(dm.train_data_gen,
                                           steps=dm.train_batches_per_epoch)
@@ -482,21 +486,8 @@ class NetManager(object):
         return (init_train_loss, init_train_acc,
                 init_test_loss, init_test_acc)
 
-    def train(self, data_augmentation=True):
-
-        # Set output paths/files
-        checkpoint_dir = os.path.join(self.expt_dir, "checkpoints", "checkpoint")
-        results_path = os.path.join(self.expt_dir, 'results.txt')
-        fig_path = [os.path.join(self.expt_dir, 'results_acc.png'),
-                    os.path.join(self.expt_dir, 'results_loss.png')]
-        json_path = os.path.join(self.expt_dir, 'results.json')
-
-        # Create data_generator - if necessary
-        dm = self.data_manager
-        if not dm.augment_param_dict:
-            # No data generator used
-            print("No data augmentation")
-
+    def init_callbacks(self, checkpoint_dir, results_path,
+                       fig_path, json_path):
         # Assemble Callbacks
         self.training_monitor = TrainingMonitor(fig_path, jsonPath=json_path,
                                                 resultsPath=results_path)
@@ -507,20 +498,23 @@ class NetManager(object):
                                             period=self.epochs_per_recording,
                                             nocheckpoint=self.nocheckpoint)
 
-        #Set lth pruning information, if necessary
-        if len(self.lth_param_dict) != 0:
-            self.pruner = LotteryTicketPruner(self.model)
-            self.pruner_callback = PrunerCallback(self.pruner,
-                                                  use_dwr=False)
-        else:
-            self.pruner = None
-            self.pruner_callback = None
+        # Set callbacks
+        #   Std. callbacks
+        self.callbacks = [self.training_monitor, self.checkpointer]
 
+        #   Add lr scheduler callback
+        if self.lr_schedule:
+            self.callbacks.append(self.lr_schedule)
+
+        return None
+
+    def get_init_net_results(self):
         # Get results for initialized net
         self.training_monitor.record_start_time()
         (init_train_loss, init_train_acc,
-         init_test_loss, init_test_acc) = self.get_init_condits(dm.train_data_gen,
-                                                                dm.test_data_gen)
+         init_test_loss, init_test_acc) = \
+            self.get_init_condits(self.data_manager.train_data_gen,
+                                  self.data_manager.test_data_gen)
 
         # Store/Record results of initialized net
         self.training_monitor.on_train_begin()
@@ -533,19 +527,78 @@ class NetManager(object):
         self.checkpointer.set_model(self.model)
         self.checkpointer.on_epoch_end(epoch=-1, logs=log_dir)
 
-        # Set callbacks
-        #   Std. callbacks
-        self.callbacks = [self.training_monitor, self.checkpointer]
+        return None
 
-        #   Add lr scheduler callback
-        if self.lr_schedule:
-            self.callbacks.append(self.lr_schedule)
+    def train(self): #, data_augmentation=True):
 
-        #   Add LTH pruner callback
-        if self.pruner:
-            self.callbacks.append(self.pruner_callback)
+        # Set output paths/files
+        checkpoint_dir = os.path.join(self.expt_dir, "checkpoints", "checkpoint")
+        results_path = os.path.join(self.expt_dir, 'results.txt')
+        fig_path = [os.path.join(self.expt_dir, 'results_acc.png'),
+                    os.path.join(self.expt_dir, 'results_loss.png')]
+        json_path = os.path.join(self.expt_dir, 'results.json')
 
-        # Train Model: TBD - Move this code to run_expt.py
-        # dm = self.data_manager
+        self.init_callbacks(checkpoint_dir, results_path, fig_path, json_path)
+        self.get_init_net_results()
+
+        # Make best score/epoch results more acessible
+        self.best_score = self.checkpointer.best_score
+        self.best_epoch = self.checkpointer.best_epoch
+
+    def lth_train(self,  mask_epoch, mask_source_model,
+                  mask_path, lottery_net_path):
+        # Create LTH Pruner and callback
+        self.pruner = LotteryTicketPruner(self.model)
+        self.pruner_callback = PrunerCallback(self.pruner,
+                                              use_dwr=False)
+        # Set directory to save masks
+        self.pruner.set_saved_mask_dir(mask_path)
+                
+        # Set model weights used to determine mask
+        self.pruner.set_pretrained_weights(mask_source_model)
+
+        # Determine mask
+        prune_rate = pow(self.lth_param_dict['prune_rate'],
+                         1.0/(mask_epoch + 1))
+        self.pruner.calc_prune_mask(mask_source_model, prune_rate)
+
+        # Express fraction pruned as string
+        mask_frac = float(prune_rate)
+        mask_frac = "{:0.4f}".format(mask_frac)
+        mask_frac = mask_frac[2:]
+
+        # Set output paths/files
+        lth_dir = os.path.join(self.expt_dir, "mask_frac_" + str(mask_frac))
+        print("\n Saving this round of LTH results to {}\n".format(lth_dir))
+        
+        checkpoint_dir = os.path.join(lth_dir, "checkpoints", "checkpoint")
+        os.makedirs(os.path.join(lth_dir, "checkpoints"),
+                    exist_ok=True)
+        results_path = os.path.join(lth_dir, 'results.txt')
+        fig_path = [os.path.join(lth_dir, 'results_acc.png'),
+                    os.path.join(lth_dir, 'results_loss.png')]
+        json_path = os.path.join(lth_dir, 'results.json')
+
+        # Initialize callbacks
+        self.init_callbacks(checkpoint_dir, results_path, fig_path, json_path)
+        self.callbacks.append(self.pruner_callback)
+
+        # Get init results - w/o applyimg mask
+        self.get_init_net_results()
+
+        # Set net weights to starting values before mask applied
+        self.model.load_weights(lottery_net_path)
+
+        # Apply mask before training
+        self.pruner.apply_pruning(self.model)
+        # Print degree of pruning
+        perc_pruned = self.pruner.pruned_weights / self.pruner.tot_weights
+        temp_str = "{:5.4f} percent of {:.2e} parameters pruned"
+        print(temp_str.format(perc_pruned, self.pruner.tot_weights))
+
+        # Get initial results with mask
+        self.get_init_net_results()
+
+        # Initialize  best score/epoch results and make more acessible
         self.best_score = self.checkpointer.best_score
         self.best_epoch = self.checkpointer.best_epoch

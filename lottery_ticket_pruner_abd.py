@@ -232,7 +232,8 @@ class LotteryTicketPruner(object):
                 self.prunable_tuples.append(tpl)
                 self.prune_masks_map[tpl] = prune_masks
                 self._initial_weights_map[tpl] = initial_layer_weights
-            self.layer_input_shapes.append(getattr(layer, 'input_shape', None))
+            self.layer_input_shapes.append(getattr(layer,
+                                                   'input_shape', None))
             self.layer_output_shapes.append(getattr(layer,
                                                     'output_shape', None))
             layer_index += 1
@@ -250,6 +251,7 @@ class LotteryTicketPruner(object):
           the supported keras layers from being
          prunable.
          """
+
         return (len(weights.shape) > 1 and
                 'keras.layers' in type(layer).__module__ and
                 type(layer).__name__ in self.prunable_layer_names)
@@ -357,8 +359,9 @@ class LotteryTicketPruner(object):
             for index in indices:
                 mask = self.prune_masks_map[tpl][index]
                 initial_weights = self._initial_weights_map[tpl][index]
-                pretrained_weights = self._pretrained_weights[tpl][
-                    index] if self._pretrained_weights is not None else None
+                pretrained_weights = self._pretrained_weights[tpl][index] \
+                    if self._pretrained_weights is not None \
+                    else None
                 yield tpl, layer, index, initial_weights, \
                       pretrained_weights, current_weights[index], mask
 
@@ -417,6 +420,12 @@ class LotteryTicketPruner(object):
                 self.pruned_weights += np.count_nonzero(prune_masks[index]==0)
                 layer_weights[index] *= prune_masks[index]
             layer.set_weights(layer_weights)
+
+        # Print degree of pruning
+        #perc_pruned = self.pruned_weights / self.tot_weights
+        #temp_str = "{:5.4f} percent of {:.2e} parameters pruned"
+        #print(temp_str.format(perc_pruned, self.tot_weights))
+
 
     def count_pruned_weights(self, model):
         # Just added for diagnostic purposes

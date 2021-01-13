@@ -492,14 +492,15 @@ class Runner(object):
     def run_lth_expt(self):
         from keras.models import model_from_json
 
-        # 0. Get result dir for pre-lottery ticket net
+        # Get result dir for pre-lottery ticket net
         orig_results_dir = os.path.join(self.saved_param_dict['saved_set_dir'],
                                         self.saved_param_dict['saved_dir'])
 
-        # Get path to fully trained net without masking
+        # Get path to fully trained maskless nets
         saved_nets = [y for y in os.listdir(orig_results_dir) if 'h5' in y]
         saved_nets = sorted(saved_nets, key=lambda x: int(x.split('_')[-1].split('.')[0]))
-        mask_net_name = saved_nets[-1]
+        # Pick out net with most training epochs
+        mask_net_name = saved_nets[-1] 
         mask_net_path = os.path.join(orig_results_dir, mask_net_name)
 
         # Note: Source net epochs assumes a naming convention of
@@ -518,54 +519,37 @@ class Runner(object):
         saved_mask_dir = "_".join(["lth", lth_src_iter, "masks"])
         saved_mask_path = os.path.join(orig_results_dir, saved_mask_dir)
 
-
-
         # Get path to architecture of source net
         arch_file = [x for x in os.listdir(orig_results_dir) if "init_architecture" in x][0]
         arch_file_path = os.path.join(orig_results_dir, arch_file)
 
-        # Recreate final version of source net
+        # Recreate final version of source net - used for initial mask
         print("Recreating source net for lottery tickets")
         with open(arch_file_path, 'r') as f:
             json_str = f.read()
             pretrain_model = model_from_json(json_str)
             pretrain_model.load_weights(mask_net_path)
 
+        # Fix number of rounds of prunings
         num_prunings = int(self.lth_param_dict['num_prune_rounds'])
 
-        # Create output dir for results of applying lth to chosen epoch
-        ticket_dir = "lth_" + str(lth_epoch)
-        self.make_outdir(orig_results_dir, ticket_dir)
-
         # Set number of training epochs for lth net
-        lth_train_epochs = mask_net_epochs - lth_epoch
-
-        # Set outputs and callbacks
-        self.expt_net.train()
-
-        # Shorten variable name of pruner and set weights that pruner uses
-        # to determine initial mask. Note: pruner is the callback in charge
-        # of lth pruning
-        pruner = self.expt_net.pruner
-        pruner.set_pretrained_weights(pretrain_model)
-        pruner.set_saved_mask_dir(saved_mask_path)
+        if 'lth_epochs' in self.lth_param_dict:
+            # User determines number of lth training epochs
+            lth_train_epochs = int(self.lth_param_dict['lth_epochs'])
+        else:
+            # Default to total number of source training epochs
+            lth_train_epochs = mask_net_epochs - lth_epoch
 
         # Run for chosen number of pruning/training cycles
         for curr_pruning in range(num_prunings):
-            # Update prune rates
-            prune_rate = pow(self.lth_param_dict['prune_rate'],
-                             1.0/(curr_pruning + 1))
+            # Initialize callbacks for next lth round. This includes
+            # pruning callback. pretrain_modelis used to calculate mask
+            # Also gets state of initial nt when not pruned andafterpruning,
+            # but before training
+            self.expt_net.lth_train(curr_pruning, pretrain_model,
+                                    saved_mask_path, lth_net_path)
 
-            # Set net weights to starting values before mask applied
-            self.expt_net.model.load_weights(lth_net_path)
-
-            # Calculate and apply mask for given net
-            # before training (retraining)
-            pruner.calc_prune_mask(self.expt_net.model, prune_rate)
-            # Note: Pruning is applied by callback functions at epoch
-            #       begin and train end
-
-            lth_train_epochs = 2 # TEMP LInE ReMoVe
             # Retrain masked net
             self.expt_net.model.fit_generator(
                 self.expt_dm.train_data_gen,
@@ -577,7 +561,7 @@ class Runner(object):
                 shuffle=True, verbose=2)
 
             # Fix weights that pruner uses for next mask
-            pruner.set_pretrained_weights(self.expt_net.model)
+            pretrain_model = self.expt_net.model
 
     def stop_timestamp(self):
         self.expt_net.training_monitor.record_stop_time()

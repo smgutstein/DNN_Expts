@@ -1,4 +1,5 @@
 import os
+import pickle
 import tensorflow.keras as keras
 
 
@@ -39,7 +40,16 @@ class PrunerCallback(keras.callbacks.Callback):
         cpr = int(self.pruner.cumulative_pruning_rate * 10000)
         mask_name = "_".join(["cpr", str(cpr)]) + ".pkl"
         mask_path = os.path.join(self.pruner.saved_mask_dir, mask_name)
+        #  Ensure self.pruner.saved_mask_dir exists
+        if self.pruner.saved_mask_dir is not None:
+            try:
+                os.makedirs(self.pruner.saved_mask_dir)
+            except OSError:
+                if not os.path.isdir(self.pruner.saved_mask_dir):
+                    raise
+
         pickle.dump(self.pruner.prune_masks_map, open(mask_path, 'wb'))
+        print ("Saved cumulative prune rate map:{} to {}".format(cpr, self.pruner.saved_mask_dir))
         # Don't apply DWR at the end of training since it changes
         # the weights that we just trained so hard to arrive at
 
