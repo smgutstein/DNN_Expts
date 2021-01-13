@@ -200,14 +200,15 @@ class TrainingMonitor(BaseLogger):
         self.jsonPath = jsonPath
         self.resultsPath = resultsPath
         self.startAt = startAt
-                
-        self.acc_fig = plt.figure(1)
-        plt.clf()
+
+        plt.ioff() # Stop matplotlib from opening windows
+        self.acc_fig = plt.figure(num=1, clear=True)
         self.acc_ax = self.acc_fig.add_axes([0.15, 0.1, 0.8, 0.8])
                 
-        self.loss_fig = plt.figure(2)
-        plt.clf()
+        self.loss_fig = plt.figure(num=2, clear=True)
+        self.loss_fig.clf()
         self.loss_ax = self.loss_fig.add_axes([0.15, 0.1, 0.8, 0.8])
+        print("Training monitor engaged")
 
     def record_start_time(self):
         start_time = datetime.datetime.now()

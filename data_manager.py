@@ -97,7 +97,7 @@ class DataManager(object):
                 os.path.join(saved_param_dict['saved_set_dir'],
                              saved_param_dict['saved_dir'],
                              'checkpoint_encodings_' +
-                             saved_param_dict['saved_encodings_iter'] +
+                             str(int(saved_param_dict['saved_encodings_iter'])) +
                              '.pkl')
         else:
             # Fresh encoding for new src task
