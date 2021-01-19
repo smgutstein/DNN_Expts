@@ -129,3 +129,4 @@ mag_dict.pkl
 svm_clusters.py
 svm_test.py
 test_batch.sh
+notebooks/
