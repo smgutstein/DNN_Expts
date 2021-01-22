@@ -2,6 +2,8 @@ from __future__ import print_function
 
 import datetime
 from keras.callbacks import BaseLogger, Callback
+import matplotlib as mpl
+mpl.use('Agg') # Stop matplotlib from requiring X-Window
 import matplotlib.pyplot as plt
 import numpy as np
 import json
@@ -195,19 +197,22 @@ class TrainingMonitor(BaseLogger):
     def __init__(self, figPath, jsonPath=None, resultsPath=None, startAt=0):
         # store the output path for the figure, the path to the JSON
         # serialized file, and the starting epoch
+        os.environ["DISPLAY"] = "" # Stop matplotlib from requiring X-Window
         super(TrainingMonitor, self).__init__()
         self.figPath = figPath
         self.jsonPath = jsonPath
         self.resultsPath = resultsPath
         self.startAt = startAt
+        self.makePlots = False # Assume false for now. Too much work using matplotlib without X-Windows
 
-        plt.ioff() # Stop matplotlib from opening windows
-        self.acc_fig = plt.figure(num=1, clear=True)
-        self.acc_ax = self.acc_fig.add_axes([0.15, 0.1, 0.8, 0.8])
-                
-        self.loss_fig = plt.figure(num=2, clear=True)
-        self.loss_fig.clf()
-        self.loss_ax = self.loss_fig.add_axes([0.15, 0.1, 0.8, 0.8])
+        if self.makePlots:
+            plt.ioff() # Stop matplotlib from opening windows
+            self.acc_fig = plt.figure(num=1, clear=True)
+            self.acc_ax = self.acc_fig.add_axes([0.15, 0.1, 0.8, 0.8])
+
+            self.loss_fig = plt.figure(num=2, clear=True)
+            self.loss_fig.clf()
+            self.loss_ax = self.loss_fig.add_axes([0.15, 0.1, 0.8, 0.8])
         print("Training monitor engaged")
 
     def record_start_time(self):
@@ -285,7 +290,7 @@ class TrainingMonitor(BaseLogger):
 
         # ensure at least two epochs have passed before plotting
         # (epoch starts at zero)
-        if len(self.H["loss"]) > 1:
+        if self.makePlots and len(self.H["loss"]) > 1:
             plt.style.use("ggplot")
             self.acc_ax.set_title("Accuracy vs. Epochs [{}]".format(len(self.H["loss"])))
             self.loss_ax.set_title("Loss vs. Epochs [{}]".format(len(self.H["loss"])))
@@ -327,4 +332,7 @@ class TrainingMonitor(BaseLogger):
             plt.title("Loss [Epoch {}]".format(num_epochs))
             plt.legend()
             plt.savefig(self.figPath[1])
+
+        else:
+            pass
 
