@@ -3,7 +3,6 @@ from __future__ import print_function
 from keras.callbacks import BaseLogger, Callback
 from keras import backend as K
 from local_optimizer import SGD_VAR
-import matplotlib.pyplot as plt
 import numpy as np
 import json
 from operator import itemgetter
