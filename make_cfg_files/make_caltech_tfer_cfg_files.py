@@ -177,7 +177,7 @@ if __name__ == '__main__':
                     default="../cfg_dir/gen_cfg/opt_tfer_expts",
                     help="root dir for config files")
     ap.add_argument("-b", "--cfg_branch", type=str,
-                    default="tinyimagenet_200_notliving_living_expts",
+                    default="caltech101_living_notliving_expts",
                     help="dir for config files for set of expts")
     ap.add_argument("-l", "--cfg_leaf", type=str,
                     default="tfer_datasets",
