@@ -76,6 +76,14 @@ def make_cfg_file_text(config_s, config_v,
                                                            src_epoch_dir,
                                                            machine_dir,
                                                            tr_set_dir)
+    temp_config["ExptFiles"]["data_path"] = os.path.join('.keras/datasets',
+                                                         'caltech-101', 
+                                                         'caltech101_living_not_living',
+                                                         'trgt_tasks')
+    temp = temp_config["ExptFiles"]["data_path"]
+    temp_config["ExptFiles"]["data_path"] = '_'.join([temp, str(spc), 
+                                                      str(tr_set)])
+     
 
     saved_set_dir = os.path.join(prefix_dict["res_dir"],
                                  prefix_dict["expt_class"],
