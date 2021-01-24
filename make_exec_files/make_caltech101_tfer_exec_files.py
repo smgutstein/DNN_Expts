@@ -172,7 +172,8 @@ if __name__ == "__main__":
     config_root_dir = "../cfg_dir/gen_cfg/"
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("ExecCfg", help="execute cfg file for series of expts")
+    parser.add_argument("--ExecCfg", type=str, default="exec.cfg",
+                        help="execute cfg file for series of expts")
     parser.add_argument("--Major", type=str, default="opt_tfer_expts",
                         help="Directory for all expts in series")
     parser.add_argument("--Data", type=str, default="caltech101_living_notliving_expts",
