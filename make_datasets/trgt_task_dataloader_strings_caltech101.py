@@ -35,7 +35,7 @@ doc_body_str = '''
 
 path_str = '''
     path = os.path.join(home, self.data_path)
-    fpath = os.path.join(path, trvate)\n\n'''
+    fpath = os.path.join(path, trvate'''
 
 body_str = '''
     if label_mode not in [\'fine\', \'coarse\']:

@@ -42,8 +42,9 @@ if __name__ == '__main__':
     suffix_list = [x.strip() for x in config['Subsets']['suffixes'].split(',')]
 
     for spc, suffix in itertools.product(spc_list, suffix_list):
-        data_path = "_".join([path_str, str(spc), suffix + "'"])
-        data_path += ")"
+        #data_path = path_str + ' + "_" + "' + str(spc) + '" + "_" + "' + str(suffix) + '"'
+        data_path = path_str + ' + "_".join([ "' + str(spc) + '", "' + str(suffix)  + '"])'
+        data_path += ")\n\n"
 
         out_str = import_str + header_str + doc_body_str + data_path + body_str
         out_path = '../dataset_loaders/'
