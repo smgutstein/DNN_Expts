@@ -43,7 +43,7 @@ if __name__ == '__main__':
 
     for spc, suffix in itertools.product(spc_list, suffix_list):
         #data_path = path_str + ' + "_" + "' + str(spc) + '" + "_" + "' + str(suffix) + '"'
-        data_path = path_str + ' + "_".join([ "' + str(spc) + '", "' + str(suffix)  + '"])'
+        data_path = path_str # + ' + "_".join([ "' + str(spc) + '", "' + str(suffix)  + '"])'
         data_path += ")\n\n"
 
         out_str = import_str + header_str + doc_body_str + data_path + body_str

@@ -1,6 +1,6 @@
 from __future__ import print_function
 import argparse
-from collections import defaultdict
+from collections import defaultdict, Counter
 import configparser
 import itertools
 import numpy as np
@@ -20,18 +20,15 @@ def convert(data):
     return data
 
 
-def get_subset(samps_per_class):
+def get_subset(train, samps_per_class):
     """Creates subset of a tiny imagenet 200 training set. 
        New subset will have specified
        number of samples per class"""
 
-    print("Loading training set")
-    train = pickle.load(open(os.path.join(src_path, "train"), 'rb'))
-    train = convert(train)
     num_classes = len(set(train['fine_labels']))
     
     # Initialze info for subset_dict
-    subset_data = np.zeros((samps_per_class*num_classes, 3072))  # 32*32*3=3072
+    subset_data = np.zeros((samps_per_class*num_classes, 3072),dtype=train['data'].dtype)  # 32*32*3=3072
     subset_dict = dict()
     subset_dict['fine_labels'] = []
     subset_dict['coarse_labels'] = []
@@ -109,6 +106,11 @@ if __name__ == '__main__':
     subset_root_path = os.path.join(home, data_root_dir, data_dir,
                                     subset_root_dir)
     src_path = os.path.join(subset_root_path, subset_dir)
+    print("Full Dataset Path:", src_path)
+
+    print("Loading training set")
+    train = pickle.load(open(os.path.join(src_path, "train"), 'rb'))
+    train = convert(train)
 
     spc_list = [x.strip() for x in config['Subsets']['spc'].split(',')]
     suffix_list = [x.strip() for x in config['Subsets']['suffixes'].split(',')]
@@ -121,11 +123,13 @@ if __name__ == '__main__':
         # Note: shutil.copytree calls os.makedirs and will fail if trgt_path exists
         try:
             shutil.copytree(src_path, trgt_path, symlinks=False, ignore=None)
+            print("Copying {} to {}".format(src_path, trgt_path))
         except FileExistsError:
             print("Skipping", trgt_path, ". File Already exists.")
 
+
         # Save training subset
-        sd = get_subset(int(spc))
+        sd = get_subset(train, int(spc))
         pickle.dump(sd, open(os.path.join(trgt_path, 'train'), 'wb'))
         print("Saved to ", trgt_path)
     print("Done")

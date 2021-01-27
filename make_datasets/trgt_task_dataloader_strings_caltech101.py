@@ -7,6 +7,7 @@ if file_dir not in sys.path:
     sys.path.append(file_dir)
 from caltech101 import load_batch
 from keras.utils.data_utils import get_file
+from keras.preprocessing.image import ImageDataGenerator
 from keras import backend as K
 import numpy as np
 from os.path import expanduser

@@ -105,7 +105,7 @@ if __name__ == '__main__':
     # Get cfg file
     ap = argparse.ArgumentParser()
     ap.add_argument("-i", "--infile", type=str,
-                    default="../dataset_info/tinyimagenet200_src_trgt_v1.cfg",
+                    default="../dataset_info/caltech101_src_trgt_v1.cfg",
                     help="file with input parameters")
     args = ap.parse_args()
 
@@ -127,10 +127,10 @@ if __name__ == '__main__':
     source_name = config.get("output_names", "source")
     target_name = config.get("output_names", "target")
 
-    # Get source dir for tiny imagenet 200 data
+    # Get source dir for caltech 101 data
     home = expanduser("~")
     parent_dir = '.keras/datasets/'
-    data_dir = 'tiny-imagenet-200'
+    data_dir = 'caltech-101'
     data_path = os.path.join(home, parent_dir, data_dir)
 
     # Make ouput dirs 
