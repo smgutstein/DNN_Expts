@@ -76,7 +76,14 @@ def make_cfg_file_text(config_s, config_v,
                                                            src_epoch_dir,
                                                            machine_dir,
                                                            tr_set_dir)
-
+    temp_config["ExptFiles"]["data_path"] = os.path.join('.keras/datasets',
+                                                         'tiny-imagenet-200', 
+                                                         'tinyimagenet200_notliving_living',
+                                                         'trgt_tasks')
+    temp = temp_config["ExptFiles"]["data_path"]
+    temp_config["ExptFiles"]["data_path"] = '_'.join([temp, str(spc), 
+                                                      str(tr_set)])
+     
     saved_set_dir = os.path.join(prefix_dict["res_dir"],
                                  prefix_dict["expt_class"],
                                  prefix_dict["expt_datasets"],
@@ -177,7 +184,7 @@ if __name__ == '__main__':
                     default="../cfg_dir/gen_cfg/opt_tfer_expts",
                     help="root dir for config files")
     ap.add_argument("-b", "--cfg_branch", type=str,
-                    default="tinyimagenet_200_notliving_living_expts",
+                    default="tinyimagenet200_notliving_living_expts",
                     help="dir for config files for set of expts")
     ap.add_argument("-l", "--cfg_leaf", type=str,
                     default="tfer_datasets",

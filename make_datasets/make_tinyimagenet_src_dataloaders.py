@@ -3,8 +3,8 @@ import configparser
 import itertools
 import os
 
-from trgt_task_dataloader_strings_caltech101 import import_str, header_str
-from trgt_task_dataloader_strings_caltech101 import doc_body_str, path_str, body_str
+from trgt_task_dataloader_strings_tiny_imagenet import import_str, header_str
+from trgt_task_dataloader_strings_tiny_imagenet import doc_body_str, path_str, body_str
 
 
 if __name__ == '__main__':
@@ -14,10 +14,10 @@ if __name__ == '__main__':
                     default="../cfg_dir/gen_cfg/opt_tfer_expts",
                     help="root dir for config files")
     ap.add_argument("-s", "--cfg_sub", type=str,
-                    default="caltech101_living_notliving_expts",
+                    default="tinyimagenet200_notliving_living_expts",
                     help="dir for config files for set of expts")
     ap.add_argument("-l", "--cfg_leaf", type=str,
-                    default="tfer_datasets/subsets.cfg",
+                    default="src_datasets/subsets.cfg",
                     help="dir for config files for set of expts")
     args = ap.parse_args()
 
@@ -42,7 +42,7 @@ if __name__ == '__main__':
     suffix_list = [x.strip() for x in config['Subsets']['suffixes'].split(',')]
 
     for spc, suffix in itertools.product(spc_list, suffix_list):
-        data_path = path_str
+        data_path = path_str 
         data_path += ")\n\n"
 
         out_str = import_str + header_str + doc_body_str + data_path + body_str
