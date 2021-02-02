@@ -14,7 +14,8 @@ def get_src_tfer_expt_root_dirs(config_v):
     root_dir = os.path.join('..', path_dict['expt_dir'],
                             path_dict['expt_class'],
                             path_dict['expt_datasets'],
-                            path_dict['expt_arch'], 'tfer_nets')
+                            path_dict['expt_arch'], 
+                            path_dict['net_group'])
 
     # Root dir containing src nets
     src_net_root_dir = os.path.join('..', path_dict['res_dir'],
@@ -194,10 +195,10 @@ if __name__ == '__main__':
                     help="dir for config files for set of expts")
 
     ap.add_argument("-c", "--cfg_skel", type=str,
-                    default="tfer_net_skeleton_0.cfg",
+                    default="tfer_net_skeleton_1.cfg",
                     help="skeleton for expt cfg files")
     ap.add_argument("-v", "--cfg_var", type=str,
-                    default="tfer_net_vars_0.cfg",
+                    default="tfer_net_vars_1.cfg",
                     help="dir for config files for set of expts")
     args = ap.parse_args()
 
