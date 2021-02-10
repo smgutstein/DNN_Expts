@@ -21,11 +21,12 @@ def write_shell_scripts(config_infile):
     enc_dir = config_infile['DirStructure']['enc_dir']
     expt_dir = config_infile['DirStructure']['expt_dir']
     src_nets_dir = config_infile['DirStructure']['src_nets_dir']
+    tfer_nets_dir = config_infile['DirStructure']['tfer_nets_dir']
 
     # Get data for shell script dir
     exec_sh_root_dir = os.path.join('..', 'execute_expts', expt_class,
                                     expt_datasets, expt_arch,
-                                    'tfer_nets')
+                                    tfer_nets_dir)
     exec_sh_spc_dir = config_infile['ExecParams']['exec_sh_spc_dir']
     exec_sh_file_prefix = config_infile['ExecParams']['exec_sh_file_prefix']
     exec_sh_file_suffix = config_infile['ExecParams']['exec_sh_file_suffix']
@@ -42,7 +43,7 @@ def write_shell_scripts(config_infile):
     # Create arguments for cmd strings (i.e. arguments for run_expt.py)
     arg_root_dir = os.path.join('./cfg_dir/expt_cfg',
                                 expt_class, expt_datasets,
-                                expt_arch, 'tfer_nets')
+                                expt_arch, tfer_nets_dir)
     arg_file_end_str = '.cfg --nocheckpoint'
 
 

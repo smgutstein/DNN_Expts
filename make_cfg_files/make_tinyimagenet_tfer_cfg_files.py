@@ -195,10 +195,10 @@ if __name__ == '__main__':
                     help="dir for config files for set of expts")
 
     ap.add_argument("-c", "--cfg_skel", type=str,
-                    default="tfer_net_skeleton_1.cfg",
+                    default="tfer_net_skeleton_2.cfg",
                     help="skeleton for expt cfg files")
     ap.add_argument("-v", "--cfg_var", type=str,
-                    default="tfer_net_vars_1.cfg",
+                    default="tfer_net_vars_2.cfg",
                     help="dir for config files for set of expts")
     args = ap.parse_args()
 
