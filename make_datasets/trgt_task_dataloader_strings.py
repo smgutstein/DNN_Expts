@@ -7,6 +7,7 @@ if file_dir not in sys.path:
     sys.path.append(file_dir)
 from cifar import load_batch
 from keras.utils.data_utils import get_file
+from keras.preprocessing.image import ImageDataGenerator
 from keras import backend as K
 import numpy as np
 from os.path import expanduser
@@ -15,13 +16,14 @@ home = expanduser("~")
 '''
 
 header_str = '''
-def load_data(label_mode='fine'):
+def load_data(self, trvate='train', label_mode='fine'):
 '''
 
 doc_body_str = '''
     
     
     # Arguments
+        trvate: one of 'train' or 'test'
         label_mode: one of \"fine\", \"coarse\".
 
     # Returns
@@ -33,31 +35,49 @@ doc_body_str = '''
 '''
 
 path_str = '''
-    path = os.path.join(home'''
+    path = os.path.join(home, self.data_path)
+    fpath = os.path.join(path, trvate'''
 
 body_str = '''
     if label_mode not in [\'fine\', \'coarse\']:
         raise ValueError(\'`label_mode` must be one of `\"fine\"`, `\"coarse\"`.')
 
-    fpath = os.path.join(path, \'train\')
-    x_train, y_train = load_batch(fpath, label_key=label_mode + \'_labels\')
 
-    fpath = os.path.join(path, 'test')
-    x_test, y_test = load_batch(fpath, label_key=label_mode + \'_labels\')
-
-    y_train = np.reshape(y_train, (len(y_train), 1))
-    y_test = np.reshape(y_test, (len(y_test), 1))
+    #Get data
+    x_data, y_data = load_batch(fpath, label_key=label_mode + '_labels')
+    y_data = np.reshape(y_data, (len(y_data), 1))
 
     # Rescale raw data
-    x_train = x_train.astype('float32')
-    x_test = x_test.astype('float32')
+    x_data = x_data.astype('float32')
+    x_data /= 255.
 
-    x_train /= 255.
-    x_test /= 255.
+    if K.image_data_format() == 'channels_last':
+        x_data = x_data.transpose(0, 2, 3, 1)
 
-    if K.image_data_format() == \'channels_last\':
-        x_train = x_train.transpose(0, 2, 3, 1)
-        x_test = x_test.transpose(0, 2, 3, 1)
+    # Get sorted list of class numbers (np.unique returns sorted list)
+    class_nums = sorted(list(np.unique(y_data)))
 
-    return (x_train, y_train), (x_test, y_test)
+    # Get shape of input images
+    self.get_input_shape(x_data.shape)
+
+    # Adding encoding
+    self.get_encoding_dict(class_nums)
+
+    nb_outputs = self.encodings.shape[1]
+
+    y_temp = y_data.ravel()
+    y_data_encoded = np.empty((len(y_temp), nb_outputs))
+    for i in range(len(y_temp)):
+        y_data_encoded[i, :] = self.encoding_dict[y_temp[i]]
+
+    # Set batches (i.e. steps) per epoch
+    batches_per_epoch = y_data_encoded.shape[0] // self.batch_size + 1
+
+    print("Preprocessing " + trvate + " Images")
+    image_gen = ImageDataGenerator(**self.ImageDataGen_args)
+    image_gen.fit(x_data)
+    data_gen = image_gen.flow(x_data, y_data_encoded, self.batch_size)
+
+    return data_gen, batches_per_epoch
+
 '''

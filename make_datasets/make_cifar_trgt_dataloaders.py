@@ -36,19 +36,14 @@ if __name__ == '__main__':
     data_dir = config['StorageDirectory']['data_dir']
     subset_root_dir = config['StorageDirectory']['subset_root_dir']
     subset_dir = config['StorageDirectory']['subset_dir']
-    path_str = ', '.join([path_str,
-                          "'" + data_root_dir + "'",
-                          "'" + data_dir + "'",
-                          "'" + subset_root_dir + "'",
-                          "'" + subset_dir])
 
     # Get spc and training set id suffix for each data loader
     spc_list = [x.strip() for x in config['Subsets']['spc'].split(',')]
     suffix_list = [x.strip() for x in config['Subsets']['suffixes'].split(',')]
 
     for spc, suffix in itertools.product(spc_list, suffix_list):
-        data_path = "_".join([path_str, str(spc), suffix + "'"])
-        data_path += ")"
+        data_path = path_str 
+        data_path += ")\n\n"
 
         out_str = import_str + header_str + doc_body_str + data_path + body_str
         out_path = '../dataset_loaders/'

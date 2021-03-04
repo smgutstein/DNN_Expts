@@ -6,6 +6,7 @@ if file_dir not in sys.path:
     sys.path.append(file_dir)
 from cifar import load_batch
 from keras import backend as K
+from keras.utils.data_utils import get_file
 from keras.preprocessing.image import ImageDataGenerator
 import numpy as np
 from os.path import expanduser
@@ -13,9 +14,11 @@ home = expanduser("~")
 
 
 def load_data(self, trvate='train', label_mode='fine'):
-    """Loads src tasks for CIFAR100 living_vs_notliving datasets.
+    """
+    Loads src tasks for CIFAR100 living_vs_notliving datasets.
 
     # Arguments
+        trvate: one of 'train' or 'test'
         label_mode: one of "fine", "coarse".
 
     # Returns
