@@ -1,6 +1,6 @@
 from __future__ import print_function
 import argparse
-from collections import defaultdict
+from collections import defaultdict, Counter
 import configparser
 import itertools
 import numpy as np
@@ -20,18 +20,15 @@ def convert(data):
     return data
 
 
-def get_subset(samps_per_class):
-    """Creates subset of a cifar100 training set. 
+def get_subset(train, samps_per_class):
+    """Creates subset of a tiny imagenet 200 training set. 
        New subset will have specified
        number of samples per class"""
 
-    print("Loading training set")
-    train = pickle.load(open(os.path.join(src_path, "train"), 'rb'))
-    train = convert(train)
     num_classes = len(set(train['fine_labels']))
     
     # Initialze info for subset_dict
-    subset_data = np.zeros((samps_per_class*num_classes, 3072))  # 32*32*3=3072
+    subset_data = np.zeros((samps_per_class*num_classes, 3072),dtype=train['data'].dtype)  # 32*32*3=3072
     subset_dict = dict()
     subset_dict['fine_labels'] = []
     subset_dict['coarse_labels'] = []
@@ -78,28 +75,35 @@ def get_subset(samps_per_class):
 
 if __name__ == '__main__':
 
-    # Get desired samples per class
+    # Get path to cfg file used to make subsets - Yes... this ishokey,
+    # but the cfg file specified is used by multiple modules. This way
+    # I don't have to type, or remember, a long path to the file used
+    # for each expt.I'll just have a build up of small cfg files in this dir
     ap = argparse.ArgumentParser()
-    ap.add_argument("-r", "--cfg_root", type=str,
-                    default="../cfg_dir/gen_cfg/opt_tfer_expts",
-                    help="root dir for config files")
-    ap.add_argument("-s", "--cfg_sub", type=str,
-                    default="cifar_100_living_notliving_expts",
-                    help="dir for config files for set of expts")
-    ap.add_argument("-l", "--cfg_leaf", type=str,
-                    default="tfer_datasets/subsets.cfg",
-                    help="dir for config files for set of expts")
+    ap.add_argument("cfg_path_file", type=str,
+                    help="cfg_file_specifying_path")
     args = ap.parse_args()
 
-    # Find and Read cfg file
-    config_file = os.path.join(args.cfg_root,
-                               args.cfg_sub,
-                               args.cfg_leaf)
-    print("Reading ", config_file)
+    # Get pre-cfg file
+    config_file = args.cfg_path_file
     config = configparser.ConfigParser()
     config.read(config_file)
 
-    # Get source dir for cifar 100 data
+    # Build path to cfg file
+    cfg_root = config['PathStrs']['root']
+    cfg_branch = config['PathStrs']['branch']
+    cfg_leaf = config['PathStrs']['leaf']
+    cfg_path = os.path.join(cfg_root,
+                            cfg_branch,
+                            cfg_leaf)
+    
+
+    # Find and Read cfg file
+    print("Reading ", cfg_path)
+    config = configparser.ConfigParser()
+    config.read(cfg_path)
+
+    # Get source dir for CalTech 101 data
     home = expanduser("~")
     data_root_dir = config['StorageDirectory']['data_root_dir']
     data_dir = config['StorageDirectory']['data_dir']
@@ -109,6 +113,11 @@ if __name__ == '__main__':
     subset_root_path = os.path.join(home, data_root_dir, data_dir,
                                     subset_root_dir)
     src_path = os.path.join(subset_root_path, subset_dir)
+    print("Full Dataset Path:", src_path)
+
+    print("Loading training set")
+    train = pickle.load(open(os.path.join(src_path, "train"), 'rb'))
+    train = convert(train)
 
     spc_list = [x.strip() for x in config['Subsets']['spc'].split(',')]
     suffix_list = [x.strip() for x in config['Subsets']['suffixes'].split(',')]
@@ -121,11 +130,13 @@ if __name__ == '__main__':
         # Note: shutil.copytree calls os.makedirs and will fail if trgt_path exists
         try:
             shutil.copytree(src_path, trgt_path, symlinks=False, ignore=None)
+            print("Copying {} to {}".format(src_path, trgt_path))
         except FileExistsError:
             print("Skipping", trgt_path, ". File Already exists.")
 
+
         # Save training subset
-        sd = get_subset(int(spc))
+        sd = get_subset(train, int(spc))
         pickle.dump(sd, open(os.path.join(trgt_path, 'train'), 'wb'))
         print("Saved to ", trgt_path)
     print("Done")
