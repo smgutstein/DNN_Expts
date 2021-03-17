@@ -10,25 +10,29 @@ from trgt_task_dataloader_strings_caltech101 import doc_body_str, path_str, body
 if __name__ == '__main__':
     # Get desired samples per class
     ap = argparse.ArgumentParser()
-    ap.add_argument("-r", "--cfg_root", type=str,
-                    default="../cfg_dir/gen_cfg/opt_tfer_expts",
-                    help="root dir for config files")
-    ap.add_argument("-s", "--cfg_sub", type=str,
-                    default="caltech101_living_notliving_expts",
-                    help="dir for config files for set of expts")
-    ap.add_argument("-l", "--cfg_leaf", type=str,
-                    default="tfer_datasets/subsets.cfg",
-                    help="dir for config files for set of expts")
+    ap.add_argument("cfg_path_file", type=str,
+                    help="cfg_file_specifying_path")
     args = ap.parse_args()
 
-    # Make target dirs and copy info from src dir
-    config_file = os.path.join(args.cfg_root,
-                               args.cfg_sub,
-                               args.cfg_leaf)
-    print("Reading ", config_file)
+    # Get pre-cfg file
+    config_file = args.cfg_path_file
     config = configparser.ConfigParser()
     config.read(config_file)
 
+    # Build path to cfg file
+    cfg_root = config['PathStrs']['root']
+    cfg_branch = config['PathStrs']['branch']
+    cfg_leaf = config['PathStrs']['leaf']
+    cfg_path = os.path.join(cfg_root,
+                            cfg_branch,
+                            cfg_leaf)
+
+    # Find and Read cfg file    
+    print("Reading ", cfg_path)
+    config = configparser.ConfigParser()
+    config.read(cfg_path)
+
+    # Make dataloader file
     note = "Loads data for " + config['Notes']['note']
     doc_body_str = '    \"\"\"\n' + '    ' + note + doc_body_str + '    \"\"\"\n'
 
