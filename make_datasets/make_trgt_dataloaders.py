@@ -8,6 +8,7 @@ from trgt_task_dataloader_strings_caltech101 import doc_body_str, path_str, body
 
 
 if __name__ == '__main__':
+    # NOTE: This uses same cfg files as make_spc_training_sets.py  
     # Get desired samples per class
     ap = argparse.ArgumentParser()
     ap.add_argument("cfg_path_file", type=str,

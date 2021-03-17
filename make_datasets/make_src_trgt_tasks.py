@@ -102,16 +102,38 @@ def get_subtasks(subtasks, data_path, dataset, samps_per_class):
 
 if __name__ == '__main__':
 
-    # Get cfg file
     ap = argparse.ArgumentParser()
-    ap.add_argument("-i", "--infile", type=str,
-                    default="../dataset_info/tinyimagenet200_src_trgt_v1.cfg",
-                    help="file with input parameters")
+    ap.add_argument("cfg_path_file", type=str,
+                    help="cfg_file_specifying_path")
     args = ap.parse_args()
 
-    # Parse cfg file
+    # Get pre-cfg file
+    config_file = args.cfg_path_file
     config = configparser.ConfigParser()
-    config.read(args.infile)
+    config.read(config_file)
+
+    # Build path to cfg file
+    cfg_root = config['CfgPathStrs']['root']
+    cfg_branch = config['CfgPathStrs']['branch']
+    cfg_leaf = config['CfgPathStrs']['leaf']
+    cfg_path = os.path.join(cfg_root,
+                            cfg_branch,
+                            cfg_leaf)
+
+    # Build path to raw data
+    raw_data_root = config['RawDataPathStrs']['root']
+    raw_data_branch = config['RawDataPathStrs']['branch']
+    raw_data_leaf = config['RawDataPathStrs']['leaf']
+    raw_data_path = os.path.join(raw_data_root,
+                                 raw_data_branch,
+                                 raw_data_leaf)
+
+    
+    # Find and Read cfg file    
+    print("Reading ", cfg_path)
+    config = configparser.ConfigParser()
+    config.read(cfg_path)
+
 
     # Get classes for src and trgt tasks
     src_tasks = [x.strip() for x in config.get("Tasks", "source").split(",")]
@@ -127,11 +149,12 @@ if __name__ == '__main__':
     source_name = config.get("output_names", "source")
     target_name = config.get("output_names", "target")
 
-    # Get source dir for tiny imagenet 200 data
+    # Get source dir for caltech 101 data
     home = expanduser("~")
-    parent_dir = '.keras/datasets/'
-    data_dir = 'tiny-imagenet-200'
-    data_path = os.path.join(home, parent_dir, data_dir)
+    data_path = os.path.join(home, raw_data_path)
+    #parent_dir = '.keras/datasets/'
+    #data_dir = 'caltech-101'
+    #data_path = os.path.join(home, parent_dir, data_dir)
 
     # Make ouput dirs 
     expt_path = os.path.join(data_path, expt_name)
