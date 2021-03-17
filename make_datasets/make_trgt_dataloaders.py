@@ -3,8 +3,8 @@ import configparser
 import itertools
 import os
 
-from trgt_task_dataloader_strings_caltech101 import import_str, header_str
-from trgt_task_dataloader_strings_caltech101 import doc_body_str, path_str, body_str
+from trgt_task_dataloader_strings import import_str1, import_str2, header_str
+from trgt_task_dataloader_strings import doc_body_str, path_str, body_str
 
 
 if __name__ == '__main__':
@@ -27,7 +27,8 @@ if __name__ == '__main__':
     cfg_path = os.path.join(cfg_root,
                             cfg_branch,
                             cfg_leaf)
-
+    load_module = config['PathStrs']['load_module']
+    
     # Find and Read cfg file    
     print("Reading ", cfg_path)
     config = configparser.ConfigParser()
@@ -50,7 +51,8 @@ if __name__ == '__main__':
         data_path = path_str
         data_path += ")\n\n"
 
-        out_str = import_str + header_str + doc_body_str + data_path + body_str
+        out_str = import_str1 + load_module + import_str2 + \\
+                  header_str + doc_body_str + data_path + body_str
         out_path = '../dataset_loaders/'
         out_file = '_'.join([subset_root_dir,
                              subset_dir,

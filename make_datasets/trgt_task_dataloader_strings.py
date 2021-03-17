@@ -1,11 +1,15 @@
-import_str = '''
+import_str1 = '''
 from __future__ import absolute_import
 import os
 import sys
 file_dir = os.path.dirname(os.path.realpath(__file__))
 if file_dir not in sys.path:
     sys.path.append(file_dir)
-from cifar import load_batch
+from '''
+
+#from cifar import load_batch
+
+import_str2 = ''' import load_batch
 from keras.utils.data_utils import get_file
 from keras.preprocessing.image import ImageDataGenerator
 from keras import backend as K
