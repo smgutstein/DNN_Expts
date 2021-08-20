@@ -187,8 +187,8 @@ if __name__ == "__main__":
     cfg_leaf = config['PathStrs']['leaf']
     cfg_exec_file = config['PathStrs']['exec_file']
 
-    exec_cfg_file = os.path.join(config_root, cfg_branch,
-                                 cfg_sub_branch, config_leaf,
+    exec_cfg_file = os.path.join(cfg_root, cfg_branch,
+                                 cfg_sub_branch, cfg_leaf,
                                  cfg_exec_file)
 
     print("Reading: ", exec_cfg_file)
