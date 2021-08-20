@@ -51,7 +51,7 @@ if __name__ == '__main__':
         data_path = path_str
         data_path += ")\n\n"
 
-        out_str = import_str1 + load_module + import_str2 + \\
+        out_str = import_str1 + load_module + import_str2 + \
                   header_str + doc_body_str + data_path + body_str
         out_path = '../dataset_loaders/'
         out_file = '_'.join([subset_root_dir,
