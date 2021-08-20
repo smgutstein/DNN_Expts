@@ -47,7 +47,7 @@ def get_varying_params(config_v, src_net_root_dir):
     return spc_list, tr_set_list, src_net_list
 
 
-def make_cfg_file_text(config_s, config_v,
+def make_cfg_file_text(config_sf, config_s, config_v, 
                        spc, src_epoch,
                        src_net, tr_set,
                        machine_name, version):
@@ -78,10 +78,17 @@ def make_cfg_file_text(config_s, config_v,
                                                            src_epoch_dir,
                                                            machine_dir,
                                                            tr_set_dir)
-    temp_config["ExptFiles"]["data_path"] = os.path.join('.keras/datasets',
-                                                         'cifar-100-python', 
-                                                         'cifar100_living_notliving',
-                                                         'trgt_tasks')
+
+    data_path_dict = config_sf['StorageDirectory']
+    data_root_dir = data_path_dict['data_root_dir']
+    data_dir = data_path_dict['data_dir']
+    subset_root_dir = data_path_dict['subset_root_dir']
+    subset_dir = data_path_dict['subset_dir']
+
+    temp_config["ExptFiles"]["data_path"] = os.path.join(data_root_dir,
+                                                         data_dir,
+                                                         subset_root_dir,
+                                                         subset_dir)
     temp = temp_config["ExptFiles"]["data_path"]
     temp_config["ExptFiles"]["data_path"] = '_'.join([temp, str(spc), 
                                                       str(tr_set)])
@@ -154,7 +161,7 @@ def make_cfg_files(root_dir, var_lists):
             os.makedirs(cfg_dir, exist_ok=True)
 
             # Create text of cfg file
-            text_cfg = make_cfg_file_text(config_s, config_v,
+            text_cfg = make_cfg_file_text(config_sf, config_s, config_v,
                                           spc, src_epoch,
                                           src_net_dir, tr_set,
                                           machine_name, version)
@@ -196,21 +203,23 @@ if __name__ == '__main__':
     cfg_root = config['CfgPathStrs']['root']
     cfg_branch = config['CfgPathStrs']['branch']
     cfg_sf = config['CfgPathStrs']['subset_file']
-    config_file = os.path.join(cfg_root, cfg_branch, cfg_sf)
+    cfg_skel = config['CfgPathStrs']['skel_file']
+    cfg_var = config['CfgPathStrs']['var_file']
+
+    # Find and Read cfg file with info about subset of tfer data
+    config_sf_file = os.path.join(cfg_root, cfg_branch, cfg_sf)
     print("Reading ", config_file)
-    config = configparser.ConfigParser()
-    config.read(config_file)
+    config_sf = configparser.ConfigParser()
+    config_sf.read(config_sf_file)
 
     # Find and Read cfg file with info common to all expts
-    cfg_skel = config['CfgPathStrs']['skel_file']
     config_skel_file = os.path.join(cfg_root, cfg_branch, cfg_skel)
     print("Reading ", config_skel_file)
     config_s = configparser.ConfigParser()
     config_s.read(config_skel_file)
 
     # Find and Read cfg file with info that varies by expt
-    cfg_var = config['CfgPathStrs']['var_file']
-    config_var_file = os.path.join(cfg_root, cfg_branch, cfg_sf)
+    config_var_file = os.path.join(cfg_root, cfg_branch, cfg_var)
     print("Reading ", config_var_file)
     config_v = configparser.ConfigParser()
     config_v.read(config_var_file)
