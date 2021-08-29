@@ -1,4 +1,4 @@
-Files in this directory exist to mkedatasets useable for transfer expts.
+Files in this directory exist to make datasets useable for transfer expts.
 First, they split datasets into source and target datasets. It will also make smaller subsets
 of target datasets, to reduce them to a specified number of samples per class (SPC).
 Finally, it will create the modules needed to load the resulting datasets.
@@ -81,7 +81,7 @@ the directory where these datasets will be stored.
 
 python make_trgt_dataloaders.py ./local_cfg/make_cifar100_spc_training_sets_0.cfg
 
-This is thesame cfg file as used before. Possibly, make_spc_training_sets and make_trgt_dataloaders
+This is the same cfg file as used before. Possibly, make_spc_training_sets and make_trgt_dataloaders
 should be combined.
 
 
